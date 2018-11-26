@@ -1,0 +1,224 @@
+/**
+ * FF Typescript Foundation Library
+ * Copyright 2018 Ralph Wiedemeier, Frame Factory GmbH
+ *
+ * License: MIT
+ */
+
+import { LitElement, property, PropertyValues } from "@polymer/lit-element";
+
+import { DockContentRegistry } from "./DockView";
+import DockStrip from "./DockStrip";
+import DockPanel, { IDockPanelLayout } from "./DockPanel";
+import DockPanelHeader from "./DockPanelHeader";
+
+////////////////////////////////////////////////////////////////////////////////
+
+export interface IDockStackLayout
+{
+    type: "stack";
+    size: number;
+    activePanelIndex: number;
+    panels: IDockPanelLayout[];
+}
+
+export default class DockStack extends LitElement
+{
+    static readonly tagName: string = "ff-dock-stack";
+
+    @property({ type: Number })
+    activeIndex: number = 0;
+
+    protected layoutApplied = false;
+
+    protected headers: HTMLElement;
+    protected activeHeader: DockPanelHeader = null;
+
+    constructor()
+    {
+        super();
+
+        this.onDragOver = this.onDragOver.bind(this);
+        this.onDragLeave = this.onDragLeave.bind(this);
+        this.onDrop = this.onDrop.bind(this);
+
+        this.addEventListener("dragover", this.onDragOver);
+        this.addEventListener("dragleave", this.onDragLeave);
+        this.addEventListener("drop", this.onDrop);
+
+        this.style.flex = "1 1";
+        this.style.display = "flex";
+        this.style.flexDirection = "column";
+        this.style.overflow = "hidden";
+
+        const size = Number(this.getAttribute("size"));
+        this.style.flexBasis = ((size || 1) * 100).toFixed(3) + "%";
+
+        this.headers = document.createElement("header");
+        const headersStyle = this.headers.style;
+        headersStyle.flex = "1 0 auto";
+        headersStyle.flexWrap = "wrap";
+        headersStyle.display = "flex";
+        headersStyle.flexDirection = "row";
+        headersStyle.overflow = "hidden";
+
+        this.appendChild(this.headers);
+    }
+
+    activatePanel(panel: DockPanel)
+    {
+        if (this.activeHeader && this.activeHeader.panel === panel) {
+            return;
+        }
+
+        if (this.activeHeader) {
+            this.activeHeader.active = false;
+        }
+
+        this.activeHeader = panel.header;
+        this.activeHeader.active = true;
+    }
+
+    insertPanel(panel: DockPanel, beforePanel?: DockPanel)
+    {
+        this.layoutApplied = true;
+        this.appendChild(panel);
+
+        const header = new DockPanelHeader(panel);
+
+        if (beforePanel) {
+            this.headers.insertBefore(header, beforePanel.header);
+        }
+        else {
+            this.headers.appendChild(header);
+        }
+    }
+
+    removePanel(panel: DockPanel)
+    {
+        const header = panel.header;
+        this.headers.removeChild(header);
+        this.removeChild(panel);
+
+        if (this.getPanelCount() === 0) {
+            const strip = this.parentElement as DockStrip;
+            strip.removeDockElement(this);
+        }
+        else if (this.activeHeader === header) {
+            const firstHeader = this.headers.firstChild as DockPanelHeader;
+            this.activatePanel(firstHeader.panel);
+        }
+    }
+
+    getPanelCount()
+    {
+        return this.headers.childElementCount;
+    }
+
+    setLayout(layout: IDockStackLayout, registry: DockContentRegistry)
+    {
+        this.layoutApplied = true;
+
+        this.style.flexBasis = (layout.size * 100).toFixed(3) + "%";
+        layout.panels.forEach(layout => {
+            const panel = new DockPanel();
+            panel.setLayout(layout, registry);
+            this.insertPanel(panel);
+        });
+
+        const firstHeader = this.headers.firstElementChild as DockPanelHeader;
+        if (firstHeader) {
+            this.activatePanel(firstHeader.panel);
+        }
+    }
+
+    getLayout(): IDockStackLayout
+    {
+        const panels = Array.from(this.getElementsByTagName("ff-dock-panel")) as DockPanel[];
+        const panelLayouts = panels.map(panel => panel.getLayout());
+        let activePanelIndex = -1;
+
+        for (let i = 0, n = panels.length; i < n; ++i) {
+            if (panels[i] === this.activeHeader.panel) {
+                activePanelIndex = i;
+                break;
+            }
+        }
+
+        return {
+            type: "stack",
+            size: parseFloat(this.style.flexBasis) * 0.01,
+            activePanelIndex,
+            panels: panelLayouts
+        };
+    }
+
+    protected onDragOver(event: DragEvent)
+    {
+        const items = Array.from(event.dataTransfer.items);
+        if (items.find(item => item.type === DockPanel.dragDropMimeType)) {
+            event.stopPropagation();
+            event.preventDefault();
+        }
+    }
+
+    protected onDragLeave(event: DragEvent)
+    {
+    }
+
+    protected onDrop(event: DragEvent)
+    {
+        event.stopPropagation();
+
+        const panelId = event.dataTransfer.getData(DockPanel.dragDropMimeType);
+        const targetPanel = (this.headers.lastChild as DockPanelHeader).panel;
+        targetPanel.movePanel(panelId, "after");
+
+        this.dispatchEvent(new CustomEvent("change", { bubbles: true }));
+    }
+
+    protected createRenderRoot()
+    {
+        return this;
+    }
+
+    protected update(changedProperties: PropertyValues)
+    {
+        super.update(changedProperties);
+
+        if (!this.layoutApplied) {
+            this.parseChildren();
+        }
+    }
+
+    protected parseChildren()
+    {
+        Array.from(this.children).forEach(child => {
+            if (child !== this.headers) {
+                this.removeChild(child);
+
+                if (child instanceof DockPanel) {
+                    this.insertPanel(child);
+                }
+                else {
+                    const panel = new DockPanel();
+                    panel.appendChild(child);
+                    this.insertPanel(panel);
+                }
+            }
+        });
+
+        const firstHeader = this.headers.firstElementChild as DockPanelHeader;
+        if (firstHeader) {
+            this.activatePanel(firstHeader.panel);
+        }
+    }
+}
+
+customElements.define(DockStack.tagName, DockStack);
+
+declare global {
+    interface HTMLElementTagNameMap {
+        "ff-dock-stack": DockStack;
+    }
+}

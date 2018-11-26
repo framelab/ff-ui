@@ -5,7 +5,8 @@
         "module": "commonjs",
         "declaration": true,
         "sourceMap": true,
-        "jsx": "react",
+        "experimentalDecorators": true,
+        "plugins": [{ "name": "typescript-lit-html-plugin" }],
 
         "outDir": "../node_modules/@ff/ui"
     }
