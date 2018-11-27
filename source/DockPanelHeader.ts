@@ -9,6 +9,7 @@ import { LitElement, html, property, PropertyValues } from "@polymer/lit-element
 
 import DockPanel from "./DockPanel";
 import DockStack from "./DockStack";
+import DockView from "./DockView";
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -21,6 +22,7 @@ export interface IDockPanelCloseEvent extends CustomEvent {
 export default class DockPanelHeader extends LitElement
 {
     static readonly tagName: string = "ff-dock-panel-header";
+    static readonly closeEvent: string = "ff-dock-panel-header-close";
 
     @property({ type: Boolean, reflect: true })
     active = false;
@@ -96,21 +98,20 @@ export default class DockPanelHeader extends LitElement
     {
         this.panel.activatePanel();
 
-        this.dispatchEvent(new CustomEvent("change", { bubbles: true }));
+        this.dispatchEvent(new CustomEvent(DockView.changeEvent, { bubbles: true }));
     }
 
     protected onClickButton(event: MouseEvent)
     {
-        this.dispatchEvent(new CustomEvent("close", {
-            detail: {
-                panelId: this.panel.id
-            }
+        this.dispatchEvent(new CustomEvent(DockPanelHeader.closeEvent, {
+            detail: { panelId: this.panel.id },
+            bubbles: true
         } as IDockPanelCloseEvent));
 
         this.panel.closePanel();
         event.stopPropagation();
 
-        this.dispatchEvent(new CustomEvent("change", { bubbles: true }));
+        this.dispatchEvent(new CustomEvent(DockView.changeEvent, { bubbles: true }));
     }
 
     protected onDragStart(event: DragEvent)
@@ -125,29 +126,17 @@ export default class DockPanelHeader extends LitElement
 
     protected onDragOver(event: DragEvent)
     {
-        const items = Array.from(event.dataTransfer.items);
-        if (items.find(item => item.type === DockPanel.dragDropMimeType)) {
-            event.stopPropagation();
-            event.preventDefault();
-        }
+        this.panel.parentStack.onDragOver(event);
     }
 
     protected onDragLeave(event: DragEvent)
     {
+        this.panel.parentStack.onDragLeave(event);
     }
 
     protected onDrop(event: DragEvent)
     {
-        event.stopPropagation();
-
-        const rect = this.getBoundingClientRect();
-        const x = (event.clientX - rect.left) / rect.width;
-        const zone = x < 0.5 ? "before" : "after";
-
-        const panelId = event.dataTransfer.getData(DockPanel.dragDropMimeType);
-        this.panel.movePanel(panelId, zone);
-
-        this.dispatchEvent(new CustomEvent("change", { bubbles: true }));
+        this.panel.parentStack.onDrop(event);
     }
 }
 

@@ -12,6 +12,7 @@ import { DockContentRegistry } from "./DockView";
 import DockStack from "./DockStack";
 import DockStrip from "./DockStrip";
 import DockPanelHeader from "./DockPanelHeader";
+import DockView from "./DockView";
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -211,7 +212,7 @@ export default class DockPanel extends LitElement
         const panelId = event.dataTransfer.getData(DockPanel.dragDropMimeType);
         this.movePanel(panelId, zone);
 
-        this.dispatchEvent(new CustomEvent("change"));
+        this.dispatchEvent(new CustomEvent(DockView.changeEvent, { bubbles: true }));
     }
 
     protected getDropZone(event: DragEvent): DropZone

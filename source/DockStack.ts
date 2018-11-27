@@ -9,8 +9,9 @@ import { LitElement, property, PropertyValues } from "@polymer/lit-element";
 
 import { DockContentRegistry } from "./DockView";
 import DockStrip from "./DockStrip";
-import DockPanel, { IDockPanelLayout } from "./DockPanel";
+import DockPanel, { DropZone, IDockPanelLayout } from "./DockPanel";
 import DockPanelHeader from "./DockPanelHeader";
+import DockView from "./DockView";
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -34,6 +35,11 @@ export default class DockStack extends LitElement
     protected headers: HTMLElement;
     protected activeHeader: DockPanelHeader = null;
 
+    protected dropMarker: HTMLElement = null;
+    protected dropTarget: DockPanel = null;
+    protected dropZone: DropZone = "none";
+
+
     constructor()
     {
         super();
@@ -46,6 +52,7 @@ export default class DockStack extends LitElement
         this.addEventListener("dragleave", this.onDragLeave);
         this.addEventListener("drop", this.onDrop);
 
+        this.style.position = "relative";
         this.style.flex = "1 1";
         this.style.display = "flex";
         this.style.flexDirection = "column";
@@ -153,28 +160,97 @@ export default class DockStack extends LitElement
         };
     }
 
-    protected onDragOver(event: DragEvent)
+    onDragOver(event: DragEvent)
     {
         const items = Array.from(event.dataTransfer.items);
         if (items.find(item => item.type === DockPanel.dragDropMimeType)) {
+            this.updateDropMarker(event);
             event.stopPropagation();
             event.preventDefault();
         }
     }
 
-    protected onDragLeave(event: DragEvent)
+    onDragLeave(event: DragEvent)
     {
+        this.updateDropMarker();
+        event.stopPropagation();
     }
 
-    protected onDrop(event: DragEvent)
+    onDrop(event: DragEvent)
     {
         event.stopPropagation();
+        this.updateDropMarker();
 
         const panelId = event.dataTransfer.getData(DockPanel.dragDropMimeType);
-        const targetPanel = (this.headers.lastChild as DockPanelHeader).panel;
-        targetPanel.movePanel(panelId, "after");
 
-        this.dispatchEvent(new CustomEvent("change", { bubbles: true }));
+        if (this.dropTarget && this.dropZone !== "none") {
+            this.dropTarget.movePanel(panelId, this.dropZone);
+        }
+
+        this.dispatchEvent(new CustomEvent(DockView.changeEvent, { bubbles: true }));
+    }
+
+    protected updateDropMarker(event?: DragEvent)
+    {
+        let marker = this.getElementsByClassName("ff-dock-drop-marker").item(0) as HTMLDivElement;
+
+        if (!event) {
+            if (marker) {
+                this.removeChild(marker);
+            }
+            return;
+        }
+
+        if (!marker) {
+            marker = document.createElement("div");
+            marker.classList.add("ff-dock-drop-marker");
+            this.appendChild(marker);
+            this.dropTarget = null;
+            this.dropZone = "none";
+        }
+
+        const style = marker.style;
+        style.pointerEvents = "none";
+        style.width = "25px";
+        style.position = "absolute";
+        style.zIndex = "1";
+
+        let dropTarget = this.dropTarget;
+        let dropZone = this.dropZone;
+        let headerRect;
+
+        if (event.currentTarget === this) {
+            const lastHeader = this.headers.lastChild as DockPanelHeader;
+            headerRect = lastHeader.getBoundingClientRect();
+            dropTarget = lastHeader.panel;
+            dropZone = "after";
+        }
+        else if (event.currentTarget instanceof DockPanelHeader) {
+            headerRect = event.currentTarget.getBoundingClientRect();
+            const x = (event.clientX - headerRect.left) / headerRect.width;
+            dropTarget = event.currentTarget.panel;
+            dropZone = x < 0.5 ? "before" : "after";
+        }
+        else {
+            dropTarget = null;
+            dropZone = "none";
+        }
+
+        if (dropTarget !== this.dropTarget || dropZone !== this.dropZone) {
+            this.dropTarget = dropTarget;
+            this.dropZone = dropZone;
+            if (dropTarget) {
+                const parentRect = this.headers.getBoundingClientRect();
+                const stackRect = this.getBoundingClientRect();
+                const pos = dropZone === "before" ? headerRect.left : headerRect.right;
+                style.top = (parentRect.top - stackRect.top) + "px";
+                style.height = parentRect.height + "px";
+                style.left = (pos - stackRect.left) + "px";
+            }
+            else {
+                marker.remove();
+            }
+        }
     }
 
     protected createRenderRoot()

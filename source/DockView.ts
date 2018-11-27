@@ -18,6 +18,7 @@ export type DockContentRegistry = Map<string, () => HTMLElement>;
 export default class DockView extends LitElement
 {
     static readonly tagName: string = "ff-dock-view";
+    static readonly changeEvent: string = "ff-dock-view-change";
 
     constructor()
     {
@@ -46,6 +47,10 @@ export default class DockView extends LitElement
 
     setLayout(layout: IDockElementLayout, registry: DockContentRegistry)
     {
+        while(this.firstChild) {
+            this.removeChild(this.firstChild);
+        }
+
         let element;
 
         switch(layout.type) {

@@ -14,6 +14,7 @@ export interface ISplitterHandleChangeEvent extends CustomEvent
     detail: {
         direction: SplitterHandleDirection;
         position: number;
+        isDragging: boolean;
     }
 }
 
@@ -22,6 +23,7 @@ export type SplitterHandleDirection = "horizontal" | "vertical";
 export default class SplitterHandle extends LitElement
 {
     static readonly tagName: string = "ff-splitter-handle";
+    static readonly changeEvent: string = "ff-splitter-handle-change";
 
     @property({ type: String })
     direction: SplitterHandleDirection = "horizontal";
@@ -37,6 +39,7 @@ export default class SplitterHandle extends LitElement
 
     protected isActive = false;
     protected offset = 0;
+    protected position = 0;
 
     constructor()
     {
@@ -104,11 +107,13 @@ export default class SplitterHandle extends LitElement
 
             const parentSize = isHorizontal ? rect.width : rect.height;
             const position = this.offset + (isHorizontal ? event.clientX - rect.left : event.clientY - rect.top);
+            this.position = position;
 
-            this.dispatchEvent(new CustomEvent("change", {
+            this.dispatchEvent(new CustomEvent(SplitterHandle.changeEvent, {
                 detail: {
                     direction: this.direction,
-                    position,
+                    position: this.position,
+                    isDragging: true
                 }
             }) as ISplitterHandleChangeEvent);
 
@@ -161,6 +166,14 @@ export default class SplitterHandle extends LitElement
     {
         if (event.isPrimary) {
             this.isActive = false;
+
+            this.dispatchEvent(new CustomEvent(SplitterHandle.changeEvent, {
+                detail: {
+                    direction: this.direction,
+                    position: this.position,
+                    isDragging: false
+                }
+            }) as ISplitterHandleChangeEvent);
         }
     }
 }

@@ -7,10 +7,11 @@
 
 import { LitElement, property, PropertyValues } from "@polymer/lit-element";
 
-import SplitterHandle, { SplitterHandleDirection } from "./SplitterHandle";
+import SplitterHandle, { ISplitterHandleChangeEvent, SplitterHandleDirection } from "./SplitterHandle";
 import { DockContentRegistry } from "./DockView";
 import DockStack, { IDockStackLayout } from "./DockStack";
 import DockPanel, { DropZone } from "./DockPanel";
+import DockView from "./DockView";
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -178,6 +179,13 @@ export default class DockStrip extends LitElement
         return this.direction === "horizontal";
     }
 
+    protected onSplitterChange(event: ISplitterHandleChangeEvent)
+    {
+        if (!event.detail.isDragging) {
+            this.dispatchEvent(new CustomEvent(DockView.changeEvent, { bubbles: true }));
+        }
+    }
+
     protected createRenderRoot()
     {
         return this;
@@ -238,6 +246,7 @@ export default class DockStrip extends LitElement
             if (prevChild && !(prevChild instanceof SplitterHandle)) {
                 const splitter = new SplitterHandle();
                 splitter.direction = this.direction;
+                splitter.addEventListener(SplitterHandle.changeEvent, this.onSplitterChange);
                 this.insertBefore(splitter, child);
             }
         }
