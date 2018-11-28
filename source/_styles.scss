@@ -73,12 +73,23 @@ html {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+// TAB CONTAINER
+
+ff-tab-container {
+  background: $color-background;
+}
+
+ff-tab-header {
+
+}
+
+////////////////////////////////////////////////////////////////////////////////
 // DOCK VIEW
 
 $color-dock-frame: $color-background-dark;
 $color-dock-background: $color-background;
 
-ff-dock-stack {
+ff-tab-container, ff-dock-stack {
   background: $color-dock-background;
   border: 1px solid $color-dock-frame;
 
@@ -87,7 +98,7 @@ ff-dock-stack {
   }
 }
 
-ff-dock-panel-header {
+ff-tab-header, ff-dock-panel-header {
   background: $color-dock-frame;
   color: $color-text;
   padding-right: 2px;

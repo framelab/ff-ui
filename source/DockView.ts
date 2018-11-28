@@ -5,8 +5,7 @@
  * License: MIT
  */
 
-import { LitElement } from "@polymer/lit-element";
-
+import CustomElement, { customElement, html, property, PropertyValues } from "./CustomElement";
 import DockStrip, { IDockElementLayout } from "./DockStrip";
 import DockStack from "./DockStack";
 import DockPanel from "./DockPanel";
@@ -15,7 +14,8 @@ import DockPanel from "./DockPanel";
 
 export type DockContentRegistry = Map<string, () => HTMLElement>;
 
-export default class DockView extends LitElement
+@customElement
+export default class DockView extends CustomElement
 {
     static readonly tagName: string = "ff-dock-view";
     static readonly changeEvent: string = "ff-dock-view-change";
@@ -81,5 +81,3 @@ export default class DockView extends LitElement
         return this;
     }
 }
-
-customElements.define(DockView.tagName, DockView);

@@ -6,7 +6,11 @@
         "sourceMap": true,
         "jsx": "react",
 
-        "outDir": "../node_modules/@ff/test/ui"
+        "outDir": "../node_modules/@ff/test/ui",
+        "baseUrl": ".",
+        "paths": {
+            "@ff/ui/*": [ "../source/*" ]
+        }
     },
     "references": [
         {

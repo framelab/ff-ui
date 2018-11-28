@@ -5,9 +5,10 @@
  * License: MIT
  */
 
-import { LitElement, property, PropertyValues } from "@polymer/lit-element";
 
 import uniqueId from "@ff/core/uniqueId";
+
+import CustomElement, { customElement, property, PropertyValues } from "./CustomElement";
 import { DockContentRegistry } from "./DockView";
 import DockStack from "./DockStack";
 import DockStrip from "./DockStrip";
@@ -26,7 +27,8 @@ export interface IDockPanelLayout
     movable?: boolean;
 }
 
-export default class DockPanel extends LitElement
+@customElement
+export default class DockPanel extends CustomElement
 {
     static readonly tagName: string = "ff-dock-panel";
     static readonly dragDropMimeType: string = "application/x-ff-dock-panel";
@@ -276,5 +278,3 @@ export default class DockPanel extends LitElement
         }
     }
 }
-
-customElements.define(DockPanel.tagName, DockPanel);

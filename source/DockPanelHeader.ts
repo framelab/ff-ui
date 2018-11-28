@@ -5,8 +5,7 @@
  * License: MIT
  */
 
-import { LitElement, html, property, PropertyValues } from "@polymer/lit-element";
-
+import CustomElement, { customElement, html, property, PropertyValues } from "./CustomElement";
 import DockPanel from "./DockPanel";
 import DockStack from "./DockStack";
 import DockView from "./DockView";
@@ -19,7 +18,8 @@ export interface IDockPanelCloseEvent extends CustomEvent {
     }
 }
 
-export default class DockPanelHeader extends LitElement
+@customElement
+export default class DockPanelHeader extends CustomElement
 {
     static readonly tagName: string = "ff-dock-panel-header";
     static readonly closeEvent: string = "ff-dock-panel-header-close";
@@ -139,5 +139,3 @@ export default class DockPanelHeader extends LitElement
         this.panel.parentStack.onDrop(event);
     }
 }
-
-customElements.define(DockPanelHeader.tagName, DockPanelHeader);

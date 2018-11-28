@@ -5,8 +5,7 @@
  * License: MIT
  */
 
-import { LitElement, property, PropertyValues } from "@polymer/lit-element";
-
+import CustomElement, { customElement, html, property, PropertyValues } from "./CustomElement";
 import { DockContentRegistry } from "./DockView";
 import DockStrip from "./DockStrip";
 import DockPanel, { DropZone, IDockPanelLayout } from "./DockPanel";
@@ -23,7 +22,8 @@ export interface IDockStackLayout
     panels: IDockPanelLayout[];
 }
 
-export default class DockStack extends LitElement
+@customElement
+export default class DockStack extends CustomElement
 {
     static readonly tagName: string = "ff-dock-stack";
 
@@ -288,13 +288,5 @@ export default class DockStack extends LitElement
         if (firstHeader) {
             this.activatePanel(firstHeader.panel);
         }
-    }
-}
-
-customElements.define(DockStack.tagName, DockStack);
-
-declare global {
-    interface HTMLElementTagNameMap {
-        "ff-dock-stack": DockStack;
     }
 }

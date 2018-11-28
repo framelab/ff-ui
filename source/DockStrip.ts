@@ -5,9 +5,9 @@
  * License: MIT
  */
 
-import { LitElement, property, PropertyValues } from "@polymer/lit-element";
+import CustomElement, { customElement, property, PropertyValues } from "./CustomElement";
 
-import SplitterHandle, { ISplitterHandleChangeEvent, SplitterHandleDirection } from "./SplitterHandle";
+import Splitter, { ISplitterChangeEvent, SplitterDirection } from "./Splitter";
 import { DockContentRegistry } from "./DockView";
 import DockStack, { IDockStackLayout } from "./DockStack";
 import DockPanel, { DropZone } from "./DockPanel";
@@ -19,7 +19,7 @@ export interface IDockStripLayout
 {
     type: "strip";
     size: number;
-    direction: SplitterHandleDirection;
+    direction: SplitterDirection;
     elements: IDockElementLayout[];
 }
 
@@ -28,12 +28,13 @@ export type IDockElementLayout = IDockStripLayout | IDockStackLayout;
 
 const _isDockElement = e => e instanceof DockStrip || e instanceof DockStack;
 
-export default class DockStrip extends LitElement
+@customElement
+export default class DockStrip extends CustomElement
 {
     static readonly tagName: string = "ff-dock-strip";
 
     @property({ type: String })
-    direction: SplitterHandleDirection = "horizontal";
+    direction: SplitterDirection = "horizontal";
 
     protected layoutApplied = false;
 
@@ -179,7 +180,7 @@ export default class DockStrip extends LitElement
         return this.direction === "horizontal";
     }
 
-    protected onSplitterChange(event: ISplitterHandleChangeEvent)
+    protected onSplitterChange(event: ISplitterChangeEvent)
     {
         if (!event.detail.isDragging) {
             this.dispatchEvent(new CustomEvent(DockView.changeEvent, { bubbles: true }));
@@ -225,7 +226,7 @@ export default class DockStrip extends LitElement
             const nextChild = child.nextElementSibling;
 
             // remove redundant splitter handles
-            if (child instanceof SplitterHandle && (i === 0 || !nextChild || nextChild instanceof SplitterHandle)) {
+            if (child instanceof Splitter && (i === 0 || !nextChild || nextChild instanceof Splitter)) {
                 this.removeChild(child);
                 continue;
             }
@@ -243,10 +244,10 @@ export default class DockStrip extends LitElement
 
             // add splitter between previous and this child if necessary
             const prevChild = child.previousElementSibling;
-            if (prevChild && !(prevChild instanceof SplitterHandle)) {
-                const splitter = new SplitterHandle();
+            if (prevChild && !(prevChild instanceof Splitter)) {
+                const splitter = new Splitter();
                 splitter.direction = this.direction;
-                splitter.addEventListener(SplitterHandle.changeEvent, this.onSplitterChange);
+                splitter.addEventListener(Splitter.changeEvent, this.onSplitterChange);
                 this.insertBefore(splitter, child);
             }
         }
@@ -268,5 +269,3 @@ export default class DockStrip extends LitElement
         });
     }
 }
-
-customElements.define(DockStrip.tagName, DockStrip);
