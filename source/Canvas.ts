@@ -36,11 +36,9 @@ export interface ICanvasResizeEvent extends CustomEvent
     }
 }
 
-@customElement
+@customElement("ff-canvas")
 export class Canvas extends CustomElement
 {
-    static readonly tagName: string = "ff-canvas";
-
     static readonly mountEvent = "ff-canvas-mount";
     static readonly resizeEvent = "ff-canvas-resize";
 
@@ -59,7 +57,7 @@ export class Canvas extends CustomElement
         this.appendChild(canvas);
     }
 
-    connectedCallback()
+    protected onConnect()
     {
         window.addEventListener("resize", this.onResize);
 
@@ -68,7 +66,7 @@ export class Canvas extends CustomElement
         }) as ICanvasMountEvent);
     }
 
-    disconnectedCallback()
+    protected onDisconnect()
     {
         this.dispatchEvent(new CustomEvent(Canvas.mountEvent, {
             detail: { canvas: null }

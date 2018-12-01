@@ -9,11 +9,9 @@ import CustomElement, { customElement, html, property, PropertyValues } from "./
 
 ////////////////////////////////////////////////////////////////////////////////
 
-@customElement
+@customElement("ff-tab-item")
 export default class TabItem extends CustomElement
 {
-    static readonly tagName: string = "ff-tab-item";
-
     @property({ type: Boolean, reflect: true })
     active = false;
 
@@ -25,10 +23,9 @@ export default class TabItem extends CustomElement
 
     header: TabHeader = null;
 
-    constructor()
-    {
-        super();
 
+    protected onInitialConnect()
+    {
         this.setStyle({
             flex: " 1 1 auto"
         });
@@ -48,11 +45,9 @@ export default class TabItem extends CustomElement
     }
 }
 
-@customElement
+@customElement("ff-tab-header")
 export class TabHeader extends CustomElement
 {
-    static readonly tagName: string = "ff-tab-header";
-
     @property({ type: Boolean, reflect: true })
     active = false;
 
@@ -61,9 +56,11 @@ export class TabHeader extends CustomElement
     constructor(item: TabItem)
     {
         super();
-
         this.item = item;
+    }
 
+    protected onInitialConnect()
+    {
         this.setStyle({
             flex: "0 0 auto",
             cursor: "pointer",

@@ -18,10 +18,9 @@ export interface IDockPanelCloseEvent extends CustomEvent {
     }
 }
 
-@customElement
+@customElement("ff-dock-panel-header")
 export default class DockPanelHeader extends CustomElement
 {
-    static readonly tagName: string = "ff-dock-panel-header";
     static readonly closeEvent: string = "ff-dock-panel-header-close";
 
     @property({ type: Boolean, reflect: true })
@@ -46,17 +45,16 @@ export default class DockPanelHeader extends CustomElement
 
         this.panel = panel;
         panel.header = this;
-
-        const style = this.style;
-        style.flex = "0 0 auto";
-        style.display = "block";
-        style.userSelect = "none";
-        style.cursor = "pointer";
     }
 
-    protected createRenderRoot()
+    protected onInitialConnect()
     {
-        return this;
+        this.setStyle({
+            flex: "0 0 auto",
+            display: "block",
+            userSelect: "none",
+            cursor: "pointer"
+        });
     }
 
     protected update(changedProperties: PropertyValues)

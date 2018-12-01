@@ -5,7 +5,7 @@
  * License: MIT
  */
 
-import CustomElement, { customElement, html, property, PropertyValues } from "./CustomElement";
+import CustomElement, { customElement, property } from "./CustomElement";
 import { DockContentRegistry } from "./DockView";
 import DockStrip from "./DockStrip";
 import DockPanel, { DropZone, IDockPanelLayout } from "./DockPanel";
@@ -22,15 +22,21 @@ export interface IDockStackLayout
     panels: IDockPanelLayout[];
 }
 
-@customElement
+@customElement("ff-dock-stack")
 export default class DockStack extends CustomElement
 {
-    static readonly tagName: string = "ff-dock-stack";
+    @property({ type: Number })
+    get size() {
+        //console.trace("DockStack.size GET", this.style.flexBasis);
+        return parseFloat(this.style.flexBasis) * 0.01;
+    }
+    set size(value: number) {
+        this.style.flexBasis = `${((value || 1) * 100).toFixed(3)}%`;
+        //console.trace("DockStack.size SET", this.style.flexBasis);
+    }
 
     @property({ type: Number })
     activeIndex: number = 0;
-
-    protected layoutApplied = false;
 
     protected headers: HTMLElement;
     protected activeHeader: DockPanelHeader = null;
@@ -39,6 +45,7 @@ export default class DockStack extends CustomElement
     protected dropTarget: DockPanel = null;
     protected dropZone: DropZone = "none";
 
+    protected isInit = false;
 
     constructor()
     {
@@ -51,25 +58,6 @@ export default class DockStack extends CustomElement
         this.addEventListener("dragover", this.onDragOver);
         this.addEventListener("dragleave", this.onDragLeave);
         this.addEventListener("drop", this.onDrop);
-
-        this.style.position = "relative";
-        this.style.flex = "1 1";
-        this.style.display = "flex";
-        this.style.flexDirection = "column";
-        this.style.overflow = "hidden";
-
-        const size = Number(this.getAttribute("size"));
-        this.style.flexBasis = ((size || 1) * 100).toFixed(3) + "%";
-
-        this.headers = document.createElement("header");
-        const headersStyle = this.headers.style;
-        headersStyle.flex = "1 0 auto";
-        headersStyle.flexWrap = "wrap";
-        headersStyle.display = "flex";
-        headersStyle.flexDirection = "row";
-        headersStyle.overflow = "hidden";
-
-        this.appendChild(this.headers);
     }
 
     activatePanel(panel: DockPanel)
@@ -88,7 +76,8 @@ export default class DockStack extends CustomElement
 
     insertPanel(panel: DockPanel, beforePanel?: DockPanel)
     {
-        this.layoutApplied = true;
+        this.init(false);
+
         this.appendChild(panel);
 
         const header = new DockPanelHeader(panel);
@@ -124,9 +113,11 @@ export default class DockStack extends CustomElement
 
     setLayout(layout: IDockStackLayout, registry: DockContentRegistry)
     {
-        this.layoutApplied = true;
+        this.init(false);
+        this.removeChildren();
 
-        this.style.flexBasis = (layout.size * 100).toFixed(3) + "%";
+        this.size = layout.size;
+
         layout.panels.forEach(layout => {
             const panel = new DockPanel();
             panel.setLayout(layout, registry);
@@ -154,7 +145,7 @@ export default class DockStack extends CustomElement
 
         return {
             type: "stack",
-            size: parseFloat(this.style.flexBasis) * 0.01,
+            size: this.size,
             activePanelIndex,
             panels: panelLayouts
         };
@@ -253,40 +244,67 @@ export default class DockStack extends CustomElement
         }
     }
 
-    protected createRenderRoot()
+    protected onInitialConnect()
     {
-        return this;
+        this.init(true);
     }
 
-    protected update(changedProperties: PropertyValues)
+    protected removeChildren()
     {
-        super.update(changedProperties);
-
-        if (!this.layoutApplied) {
-            this.parseChildren();
+        const children = Array.from(this.children);
+        for (let child of children) {
+            if (child !== this.headers) {
+                this.removeChild(child);
+            }
         }
     }
 
-    protected parseChildren()
+    protected init(parseChildren: boolean)
     {
-        Array.from(this.children).forEach(child => {
-            if (child !== this.headers) {
-                this.removeChild(child);
+        if (this.isInit) {
+            return;
+        }
 
-                if (child instanceof DockPanel) {
-                    this.insertPanel(child);
-                }
-                else {
-                    const panel = new DockPanel();
-                    panel.appendChild(child);
-                    this.insertPanel(panel);
-                }
-            }
+        this.isInit = true;
+
+        this.setStyle({
+            flex: "1 1 auto",
+            position: "relative",
+            display: "flex",
+            flexDirection: "column",
+            overflow: "hidden"
         });
 
-        const firstHeader = this.headers.firstElementChild as DockPanelHeader;
-        if (firstHeader) {
-            this.activatePanel(firstHeader.panel);
+        this.headers = document.createElement("header");
+        const headersStyle = this.headers.style;
+        headersStyle.flex = "1 0 auto";
+        headersStyle.flexWrap = "wrap";
+        headersStyle.display = "flex";
+        headersStyle.flexDirection = "row";
+        headersStyle.overflow = "hidden";
+
+        this.insertBefore(this.headers, this.firstChild);
+
+        if (parseChildren) {
+            Array.from(this.children).forEach(child => {
+                if (child !== this.headers) {
+                    this.removeChild(child);
+
+                    if (child instanceof DockPanel) {
+                        this.insertPanel(child);
+                    }
+                    else {
+                        const panel = new DockPanel();
+                        panel.appendChild(child);
+                        this.insertPanel(panel);
+                    }
+                }
+            });
+
+            const firstHeader = this.headers.firstElementChild as DockPanelHeader;
+            if (firstHeader) {
+                this.activatePanel(firstHeader.panel);
+            }
         }
     }
 }

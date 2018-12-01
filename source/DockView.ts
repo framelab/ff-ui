@@ -5,7 +5,7 @@
  * License: MIT
  */
 
-import CustomElement, { customElement, html, property, PropertyValues } from "./CustomElement";
+import CustomElement, { customElement } from "./CustomElement";
 import DockStrip, { IDockElementLayout } from "./DockStrip";
 import DockStack from "./DockStack";
 import DockPanel from "./DockPanel";
@@ -14,20 +14,10 @@ import DockPanel from "./DockPanel";
 
 export type DockContentRegistry = Map<string, () => HTMLElement>;
 
-@customElement
+@customElement("ff-dock-view")
 export default class DockView extends CustomElement
 {
-    static readonly tagName: string = "ff-dock-view";
     static readonly changeEvent: string = "ff-dock-view-change";
-
-    constructor()
-    {
-        super();
-
-        const style = this.style;
-        style.display = "flex";
-        style.alignItems = "stretch";
-    }
 
     setPanelsMovable(state: boolean)
     {
@@ -47,6 +37,7 @@ export default class DockView extends CustomElement
 
     setLayout(layout: IDockElementLayout, registry: DockContentRegistry)
     {
+        // remove all children
         while(this.firstChild) {
             this.removeChild(this.firstChild);
         }
@@ -76,8 +67,11 @@ export default class DockView extends CustomElement
         return null;
     }
 
-    protected createRenderRoot()
+    protected onInitialConnect()
     {
-        return this;
+        this.setStyle({
+            display: "flex",
+            alignItems: "stretch"
+        });
     }
 }

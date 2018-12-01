@@ -23,18 +23,18 @@ $font-ui: "Segoe UI", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-
 ////////////////////////////////////////////////////////////////////////////////
 // COLORS
 
-$color-background: #383838 !default;
-$color-background-dark: darken($color-background, 10%) !default;
-$color-background-darker: darken($color-background, 16%) !default;
+$color-background: #343434 !default;
+$color-background-dark: darken($color-background, 5%) !default;
+$color-background-darker: darken($color-background, 10%) !default;
 $color-background-light: lighten($color-background, 10%) !default;
-$color-background-lighter: lighten($color-background, 16%) !default;
+$color-background-lighter: lighten($color-background, 20%) !default;
 $color-background-hover: $color-background-lighter !default;
 
-$color-primary: #e64a19 !default; // deep orange
-$color-primary-light: lighten($color-primary, 15%) !default;
-$color-primary-dark: darken($color-primary, 15%) !default;
+$color-primary: #0277BD !default; // blue
+$color-primary-light: lighten($color-primary, 8%) !default;
+$color-primary-dark: darken($color-primary, 8%) !default;
 
-$color-secondary: #303f9f !default; // indigo
+$color-secondary: #E64A19 !default; // orange
 $color-secondary-light: lighten($color-secondary, 15%) !default;
 $color-secondary-dark: darken($color-secondary, 15%) !default;
 
@@ -63,13 +63,103 @@ html {
   color: $color-text;
 }
 
+button, input {
+  display: block;
+  padding: 0;
+  margin: 0;
+  border: none;
+  background-color: inherit;
+  color: inherit;
+  font-size: inherit;
+  cursor: inherit;
+}
+
+*:focus {
+  outline: 1px solid $color-primary;
+  outline-offset: 0;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// FRAMES
+
+ff-modal-plane {
+  background: transparentize($color-background-darker, 0.6);
+}
+
+ff-dialog {
+  background: $color-background;
+  border: 1px solid $color-background;
+  box-shadow: 3px 3px 24px rgba(0, 0, 0, 0.4);
+}
+
+.ff-frame {
+  padding: 4px;
+
+  .ff-control {
+    margin: 4px;
+  }
+}
+
+ff-title-bar {
+  background: $color-background-darker;
+  padding: 2px;
+
+  .ff-text {
+    flex: 1 1 auto;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    padding-right: 8px;
+  }
+  .ff-icon {
+    padding: 2px;
+  }
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // ELEMENTS
 
-.ff-button {
-  background-color: transparent;
-  border: none;
+.ff-text {
+  user-select: none;
+  pointer-events: none;
+}
+
+ff-button {
+  background: $color-background-light;
   cursor: pointer;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: $color-background-lighter;
+  }
+  &[selected] {
+    background-color: $color-primary;
+
+    &:hover {
+      background-color: $color-primary-light;
+    }
+  }
+
+  button {
+    padding: 4px 3px;
+  }
+
+  .ff-text {
+    padding: 4px 3px;
+    white-space: nowrap;
+  }
+  .ff-icon {
+    padding: 4px 3px;
+    font-size: 1.3em;
+  }
+}
+
+ff-line-edit {
+  background-color: $color-background-dark;
+
+  input {
+    padding: 2px;
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -86,7 +176,7 @@ ff-tab-header {
 ////////////////////////////////////////////////////////////////////////////////
 // DOCK VIEW
 
-$color-dock-frame: $color-background-dark;
+$color-dock-frame: $color-background-darker;
 $color-dock-background: $color-background;
 
 ff-tab-container, ff-dock-stack {

@@ -28,40 +28,31 @@ export type IDockElementLayout = IDockStripLayout | IDockStackLayout;
 
 const _isDockElement = e => e instanceof DockStrip || e instanceof DockStack;
 
-@customElement
+
+@customElement("ff-dock-strip")
 export default class DockStrip extends CustomElement
 {
-    static readonly tagName: string = "ff-dock-strip";
+    @property({ type: Number })
+    get size() {
+        //console.trace("DockStrip.size GET", this.style.flexBasis);
+        return parseFloat(this.style.flexBasis) * 0.01;
+    }
+    set size(value: number) {
+        this.style.flexBasis = `${((value || 1) * 100).toFixed(3)}%`;
+        //console.trace("DockStrip.size SET", this.style.flexBasis);
+    }
 
     @property({ type: String })
     direction: SplitterDirection = "horizontal";
 
-    protected layoutApplied = false;
+    protected isInit = false;
 
-    constructor()
-    {
-        super();
-
-        this.style.flex = "1 1";
-        this.style.display = "flex";
-        this.style.alignItems = "stretch";
-        this.style.overflow = "hidden";
-
-        const size = Number(this.getAttribute("size"));
-        this.style.flexBasis = ((size || 1) * 100).toFixed(3) + "%";
-    }
-
-    insertDockElement(element: DockElement, before?: DockElement)
-    {
-        this.layoutApplied = true;
-        this.insertBefore(element, before);
-        this.updateSplitters();
-    }
 
     insertPanel(panel: DockPanel, stack: DockStack, zone: DropZone)
     {
         const zoneDirection = (zone === "left" || zone === "right") ? "horizontal" : "vertical";
         const zoneBefore = zone === "left" || zone === "top";
+        const stackSize = stack.size;
 
         // wrap panel in new stack
         const newStack = new DockStack();
@@ -86,26 +77,32 @@ export default class DockStrip extends CustomElement
 
         if (zoneDirection === this.direction) {
             // direction matches, insert new stack into strip
-            const size = (parseFloat(stack.style.flexBasis) * 0.5).toFixed(3) + "%";
-            stack.style.flexBasis = newStack.style.flexBasis = size;
             this.insertDockElement(newStack, insertBefore);
+            newStack.size = stack.size = stackSize * 0.5;
         }
         else {
             // create new strip in orthogonal direction, insert stack into new strip
             const newStrip = new DockStrip();
-            newStrip.direction = zoneDirection;
-            newStrip.style.flexBasis = stack.style.flexBasis;
-            stack.style.flexBasis = newStack.style.flexBasis = "50%";
             this.insertBefore(newStrip, stack);
             newStrip.appendChild(stack);
             newStrip.insertDockElement(newStack, zoneBefore ? stack : null);
+
+            newStrip.direction = zoneDirection;
+            newStrip.size = stackSize;
+            stack.size = newStack.size = 0.5;
         }
+    }
+
+    insertDockElement(element: DockElement, before?: DockElement)
+    {
+        this.init(false);
+        this.insertBefore(element, before);
+        this.updateSplitters();
     }
 
     removeDockElement(element: DockElement)
     {
         let children = this.getDockElements();
-
         if (children.length === 1) {
             return;
         }
@@ -120,7 +117,7 @@ export default class DockStrip extends CustomElement
             const remainingElement = children[0] as DockElement;
             this.removeChild(remainingElement);
 
-            remainingElement.style.flexBasis = this.style.flexBasis;
+            remainingElement.size = this.size;
             parentStrip.insertBefore(remainingElement, this);
             parentStrip.removeChild(this);
             parentStrip.updateSplitters();
@@ -137,9 +134,14 @@ export default class DockStrip extends CustomElement
 
     setLayout(layout: IDockStripLayout, registry: DockContentRegistry)
     {
-        this.layoutApplied = true;
+        this.init(false);
 
-        this.style.flexBasis = (layout.size * 100).toFixed(3) + "%";
+        // remove all children
+        while(this.firstChild) {
+            this.removeChild(this.firstChild);
+        }
+
+        this.size = layout.size;
         this.direction = layout.direction;
 
         layout.elements.forEach((elementLayout, index) => {
@@ -169,7 +171,7 @@ export default class DockStrip extends CustomElement
 
         return {
             type: "strip",
-            size: parseFloat(this.style.flexBasis) * 0.01,
+            size: this.size,
             direction: this.direction,
             elements
         };
@@ -187,18 +189,14 @@ export default class DockStrip extends CustomElement
         }
     }
 
-    protected createRenderRoot()
+    protected onInitialConnect()
     {
-        return this;
+        this.init(true);
     }
 
     protected update(changedProperties: PropertyValues)
     {
         super.update(changedProperties);
-
-        if (!this.layoutApplied) {
-            this.parseChildren();
-        }
 
         if (changedProperties.has("direction")) {
             this.style.flexDirection = this.isHorizontal() ? "row" : "column";
@@ -254,18 +252,37 @@ export default class DockStrip extends CustomElement
 
         // adjust sizes
         for (let i = 0, n = dockElements.length; i < n; ++i) {
-            dockElements[i].style.flexBasis = (elementSizes[i] / childrenSize * 100).toFixed(3) + "%";
+            //const prev = dockElements[i].style.flexBasis;
+            dockElements[i].style.flexBasis = `${(elementSizes[i] / childrenSize * 100).toFixed(3)}%`;
+            //console.log(`updateSplitters, i=${i}, prev=${prev} new=${dockElements[i].style.flexBasis}`);
         }
     }
 
-    protected parseChildren()
+    protected init(parseChildren: boolean)
     {
-        Array.from(this.children).forEach(child => {
-            if (!_isDockElement(child)) {
-                const stack = new DockStack();
-                this.insertBefore(stack, child);
-                stack.appendChild(child);
-            }
+        if (this.isInit) {
+            return;
+        }
+
+        this.isInit = true;
+
+        this.setStyle({
+            flex: "1 1 auto",
+            display: "flex",
+            alignItems: "stretch",
+            overflow: "hidden"
         });
+
+        if (parseChildren) {
+            // parse children and wrap them in dock stack elements
+            Array.from(this.children).forEach(child => {
+                if (!_isDockElement(child)) {
+                    const stack = new DockStack();
+                    const nextSibling = child.nextSibling;
+                    stack.appendChild(child);
+                    this.insertBefore(stack, nextSibling);
+                }
+            });
+        }
     }
 }

@@ -27,10 +27,9 @@ export interface IDockPanelLayout
     movable?: boolean;
 }
 
-@customElement
+@customElement("ff-dock-panel")
 export default class DockPanel extends CustomElement
 {
-    static readonly tagName: string = "ff-dock-panel";
     static readonly dragDropMimeType: string = "application/x-ff-dock-panel";
 
     static getPanelById(id: string): DockPanel
@@ -71,14 +70,6 @@ export default class DockPanel extends CustomElement
         this.id = uniqueId();
         this.contentId = "";
         this.dropZone = "none";
-
-        const style = this.style;
-        style.flex = "1 1 100%";
-        style.position = "relative";
-        style.display = "none";
-        style.flexDirection = "column";
-        style.boxSizing = "border-box";
-        style.overflow = "hidden";
     }
 
     get parentStack(): DockStack
@@ -159,9 +150,16 @@ export default class DockPanel extends CustomElement
         this.parentStack.removePanel(this);
     }
 
-    protected createRenderRoot()
+    protected onInitialConnect()
     {
-        return this;
+        this.setStyle({
+            flex: "1 1 100%",
+            position: "relative",
+            display: "none",
+            flexDirection: "column",
+            boxSizing: "border-box",
+            overflow: "hidden"
+        });
     }
 
     protected update(changedProperties: PropertyValues)

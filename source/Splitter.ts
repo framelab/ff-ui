@@ -20,10 +20,9 @@ export interface ISplitterChangeEvent extends CustomEvent
 
 export type SplitterDirection = "horizontal" | "vertical";
 
-@customElement
+@customElement("ff-splitter")
 export default class Splitter extends CustomElement
 {
-    static readonly tagName: string = "ff-splitter";
     static readonly changeEvent: string = "ff-splitter-change";
 
     @property({ type: String })
@@ -45,13 +44,6 @@ export default class Splitter extends CustomElement
     constructor()
     {
         super();
-        this.setAttribute("touch-action", "none");
-
-        const style = this.style;
-        style.position = "relative";
-        style.display = "block";
-        style.zIndex = "1";
-        style.touchAction = "none";
 
         this.addEventListener("pointerdown", (e) => this.onPointerDown(e));
         this.addEventListener("pointermove", (e) => this.onPointerMove(e));
@@ -63,22 +55,30 @@ export default class Splitter extends CustomElement
         return this.direction === "horizontal";
     }
 
+    protected onInitialConnect()
+    {
+        this.setAttribute("touch-action", "none");
+
+        this.setStyle({
+            position: "relative",
+            display: "block",
+            zIndex: "1",
+            touchAction: "none"
+        });
+    }
+
     protected update(changedProperties)
     {
         super.update(changedProperties);
 
         const isHorizontal = this.isHorizontal();
         const width = this.width;
-        const style = this.style;
 
-        style.padding = isHorizontal ? `0 ${width}px` : `${width}px 0`;
-        style.margin = isHorizontal ? `0 ${-width}px` : `${-width}px 0`;
-        style.cursor = isHorizontal ? "col-resize" : "row-resize";
-    }
-
-    protected createRenderRoot()
-    {
-        return this;
+        this.setStyle({
+            padding: isHorizontal ? `0 ${width}px` : `${width}px 0`,
+            margin: isHorizontal ? `0 ${-width}px` : `${-width}px 0`,
+            cursor: isHorizontal ? "col-resize" : "row-resize"
+        });
     }
 
     protected onPointerDown(event: PointerEvent)

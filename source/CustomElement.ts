@@ -12,10 +12,9 @@ import { LitElement, html, property, PropertyValues } from "@polymer/lit-element
 
 export { html, property, PropertyValues };
 
-@customElement
 export default class CustomElement extends LitElement
 {
-    static readonly tagName: string = "ff-element";
+    static readonly tagName: string;
     static readonly shady: boolean = false;
 
     static setStyle(element: HTMLElement, style: Partial<CSSStyleDeclaration>)
@@ -23,9 +22,35 @@ export default class CustomElement extends LitElement
         Object.assign(element.style, style);
     }
 
+    private _initialConnect: boolean;
+
+    constructor()
+    {
+        super();
+        this._initialConnect = false;
+    }
+
     setStyle(style: Partial<CSSStyleDeclaration>)
     {
         CustomElement.setStyle(this, style);
+    }
+
+    connectedCallback()
+    {
+        super.connectedCallback();
+
+        if (!this._initialConnect) {
+            this._initialConnect = true;
+            this.onInitialConnect();
+        }
+
+        this.onConnect();
+    }
+
+    disconnectedCallback()
+    {
+        super.disconnectedCallback();
+        this.onDisconnect();
     }
 
     protected get shady()
@@ -37,10 +62,25 @@ export default class CustomElement extends LitElement
     {
         return this.shady ? super.createRenderRoot() : this;
     }
+
+    protected onInitialConnect()
+    {
+    }
+
+    protected onConnect()
+    {
+    }
+
+    protected onDisconnect()
+    {
+    }
 }
 
-export function customElement<T extends CustomElement>(constructor: TypeOf<T>)
+export function customElement<T extends CustomElement>(tagName?: string)
 {
-    customElements.define((constructor as any).tagName, constructor);
-    return constructor as any;
+    return <T extends CustomElement>(constructor: TypeOf<T>) => {
+        (constructor as any).tagName = tagName;
+        customElements.define((constructor as any).tagName, constructor);
+        return constructor as any;
+    }
 }

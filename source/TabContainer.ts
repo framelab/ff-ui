@@ -10,11 +10,9 @@ import TabItem, { TabHeader } from "./TabItem";
 
 ////////////////////////////////////////////////////////////////////////////////
 
-@customElement
+@customElement("ff-tab-container")
 export default class TabContainer extends CustomElement
 {
-    static readonly tagName: string = "ff-tab-container";
-
     @property({ type: Number, reflect: true })
     activeIndex = 0;
 
@@ -29,7 +27,10 @@ export default class TabContainer extends CustomElement
 
         this.onObserver = this.onObserver.bind(this);
         this.onTabClick = this.onTabClick.bind(this);
+    }
 
+    protected onInitialConnect()
+    {
         this.setStyle({
             display: "flex",
             flexDirection: "column"
@@ -43,15 +44,13 @@ export default class TabContainer extends CustomElement
         this.insertBefore(this.headers, this.firstChild);
     }
 
-    connectedCallback()
+    protected onConnect()
     {
-        super.connectedCallback();
         this.observer.observe(this, { childList: true });
     }
 
-    disconnectedCallback()
+    protected onDisconnect()
     {
-        super.disconnectedCallback();
         this.observer.disconnect();
     }
 

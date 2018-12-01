@@ -5,47 +5,25 @@
  * License: MIT
  */
 
-import { LitElement, html, customElement, property } from "@polymer/lit-element";
+import CustomElement, { customElement, property, html } from "./CustomElement";
 
 ////////////////////////////////////////////////////////////////////////////////
 
-@customElement("ff-button" as any)
-export class Button extends LitElement
+export interface IButtonClickEvent extends MouseEvent
 {
-    protected static style = html`
-        <style>
-            :host {
-                display: inline-block;
-                cursor: pointer;
-            }
-            
-            :host[hidden] {
-                display: none;
-            }
-            
-            button {
-                padding: var(--ff-button-padding);
-                border: inherit;
-                background-color: var(--ff-button-background);
-                color: inherit;
-                cursor: inherit;
-            }
-            
-            button:hover {
-                background-color: var(--ff-button-background-hover);
-            }
-            
-            .selected:not(:hover) {
-                background-color: var(--ff-button-background-selected);
-            }
+    currentTarget: Button;
+}
 
-        </style>
-    `;
+@customElement("ff-button")
+export default class Button extends CustomElement
+{
+    @property({ type: String })
+    name = "a";
 
     @property({ type: Number })
     index = 0;
 
-    @property({ type: Boolean })
+    @property({ type: Boolean, reflect: true })
     selected = false;
 
     @property({ type: Boolean })
@@ -59,43 +37,38 @@ export class Button extends LitElement
 
     protected observer = new MutationObserver(this.onObserver);
 
-    constructor()
+    protected onInitialConnect()
     {
-        super();
+        this.setStyle({
+            flex: "1 1 auto",
+            display: "flex",
+            justifyContent: "center",
+            flexWrap: "wrap"
+        });
 
-        this.text = this.innerText || this.text || "";
+        this.classList.add("ff-control", "ff-button");
     }
 
-    connectedCallback()
+    protected onConnect()
     {
-        console.log("Button.connectedCallback");
-        super.connectedCallback();
         this.observer.observe(this, { childList: true });
     }
 
-    disconnectedCallback()
+    protected onDisconnect()
     {
-        console.log("Button.disconnectedCallback");
-        super.disconnectedCallback();
         this.observer.disconnect();
     }
 
-    attributeChangedCallback(attrName, oldVal, newVal)
+    protected render()
     {
-        console.log("Button.attributeChangedCallback");
-        super.attributeChangedCallback(attrName, oldVal, newVal);
-    }
-
-    render()
-    {
-        const text = this.text ? html`<span class="text">${this.text}</span>` : null;
-        const icon = this.icon ? html`<span class=${this.icon}></span>` : null;
-
-        const className = this.selected ? "selected" : "";
+        const icon = this.icon ? html`<span class=${"ff-icon " + this.icon}></span>` : null;
+        const text = this.text ? html`<span class="ff-text">${this.text}</span>` : null;
 
         return html`
-            ${Button.style}
-            <button class=${className} @click=${this.onClick}>${text}${icon}</button>
+            <button @click=${this.onClick} style="width: 100%; height: 100%;">
+                ${icon}
+                ${text}
+            </button>
         `;
     }
 
@@ -103,24 +76,15 @@ export class Button extends LitElement
     {
         mutations.forEach(mutation => {
             if (mutation.type === "childList") {
-                this.text = this.innerText || this.text || "";
+                // TODO
             }
         });
     }
 
     protected onClick()
     {
-        console.log("Button.onClick - " + this.text);
         if (this.selectable) {
             this.selected = !this.selected;
-            console.log(this.selected);
         }
-    }
-}
-
-declare global {
-    interface HTMLElementTagNameMap
-    {
-        "ff-button": Button
     }
 }
