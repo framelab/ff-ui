@@ -42,7 +42,7 @@ class FlexContainer extends CustomElement
 @customElement("ff-flex-row")
 export class FlexRow extends FlexContainer
 {
-    protected onInitialConnect()
+    protected firstUpdated()
     {
         this.setStyle({
             display: "flex",
@@ -57,7 +57,7 @@ export class FlexRow extends FlexContainer
 @customElement("ff-flex-column")
 export class FlexColumn extends FlexContainer
 {
-    protected onInitialConnect()
+    protected firstUpdated()
     {
         this.setStyle({
             display: "flex",

@@ -57,7 +57,7 @@ export class Canvas extends CustomElement
         this.appendChild(canvas);
     }
 
-    protected onConnect()
+    protected connected()
     {
         window.addEventListener("resize", this.onResize);
 
@@ -66,7 +66,7 @@ export class Canvas extends CustomElement
         }) as ICanvasMountEvent);
     }
 
-    protected onDisconnect()
+    protected disconnected()
     {
         this.dispatchEvent(new CustomEvent(Canvas.mountEvent, {
             detail: { canvas: null }

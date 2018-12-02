@@ -29,7 +29,7 @@ export default class TabContainer extends CustomElement
         this.onTabClick = this.onTabClick.bind(this);
     }
 
-    protected onInitialConnect()
+    protected firstUpdated()
     {
         this.setStyle({
             display: "flex",
@@ -44,12 +44,12 @@ export default class TabContainer extends CustomElement
         this.insertBefore(this.headers, this.firstChild);
     }
 
-    protected onConnect()
+    protected connected()
     {
         this.observer.observe(this, { childList: true });
     }
 
-    protected onDisconnect()
+    protected disconnected()
     {
         this.observer.disconnect();
     }

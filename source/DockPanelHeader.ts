@@ -47,16 +47,6 @@ export default class DockPanelHeader extends CustomElement
         panel.header = this;
     }
 
-    protected onInitialConnect()
-    {
-        this.setStyle({
-            flex: "0 0 auto",
-            display: "block",
-            userSelect: "none",
-            cursor: "pointer"
-        });
-    }
-
     protected update(changedProperties: PropertyValues)
     {
         super.update(changedProperties);
@@ -90,6 +80,16 @@ export default class DockPanelHeader extends CustomElement
             <label class="ff-text">${text}</label>
             ${icon}
         `;
+    }
+
+    protected firstUpdated()
+    {
+        this.setStyle({
+            flex: "0 0 auto",
+            display: "block",
+            userSelect: "none",
+            cursor: "pointer"
+        });
     }
 
     protected onClick(event: MouseEvent)

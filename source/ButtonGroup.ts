@@ -29,40 +29,28 @@ export default class ButtonGroup extends CustomElement
         super();
 
         this.addEventListener("click", (e) => this.onClick(e));
-
     }
 
-    protected onConnect()
+    protected connected()
     {
         this.observer.observe(this, { childList: true });
     }
 
-    protected onDisconnect()
+    protected disconnected()
     {
         this.observer.disconnect();
     }
 
-    protected onInitialConnect()
+    protected firstUpdate()
     {
-        const buttons = Array.from(this.getElementsByTagName(Button.tagName)) as Button[];
-        if (this.selectionIndex < 0 || this.selectionIndex >= buttons.length) {
-            if (this.mode === "radio") {
-                this.selectionIndex = 0;
-            }
-            else {
-                return;
-            }
-        }
-
-        this.selectedButton = buttons[this.selectionIndex];
-        this.selectedButton.selected = true;
+        this.parseChildren();
     }
 
     protected onObserver(mutations)
     {
         mutations.forEach(mutation => {
             if (mutation.type === "childList") {
-                // TODO
+                this.parseChildren();
             }
         });
     }
@@ -93,6 +81,27 @@ export default class ButtonGroup extends CustomElement
             this.selectedButton = target;
             this.selectedButton.selected = true;
             this.selectionIndex = this.getIndexFromButton(target);
+        }
+    }
+
+    protected parseChildren()
+    {
+        const buttons = Array.from(this.getElementsByTagName(Button.tagName)) as Button[];
+        if (this.selectedButton) {
+            this.selectionIndex = this.getIndexFromButton(this.selectedButton);
+            if (this.selectionIndex < 0) {
+                this.selectedButton.selected = false;
+                this.selectedButton = null;
+            }
+        }
+
+        if (this.selectionIndex < 0 || this.selectionIndex >= buttons.length) {
+            this.selectionIndex = this.mode === "radio" ? 0 : -1;
+        }
+
+        if (this.selectionIndex >= 0) {
+            this.selectedButton = buttons[this.selectionIndex];
+            this.selectedButton.selected = true;
         }
     }
 

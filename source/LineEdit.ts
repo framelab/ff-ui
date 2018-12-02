@@ -13,14 +13,14 @@ import CustomElement, { customElement, property, html, PropertyValues } from "./
 export default class LineEdit extends CustomElement
 {
     @property({ type: String })
-    text: "";
+    text = "";
 
     @property({ type: String })
-    placeholder: "";
+    placeholder = "";
 
     protected initialValue: string = "";
 
-    protected onInitialConnect()
+    protected firstUpdated()
     {
         this.style.display = "block";
         this.classList.add("ff-control", "ff-line-edit");
@@ -30,7 +30,7 @@ export default class LineEdit extends CustomElement
     {
         return html`
             <input
-             type="text" value=${this.text} placeholder=${this.placeholder} readonly
+             type="text" value=${this.text} placeholder=${this.placeholder}
              @keydown=${this.onKeyDown} @change=${this.onChange} @input=${this.onInput} @focus=${this.onFocus} @blur=${this.onBlur}
              style="box-sizing: border-box; width:100%;">
         `;

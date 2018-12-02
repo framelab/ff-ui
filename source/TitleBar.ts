@@ -37,15 +37,6 @@ export default class TitleBar extends CustomElement
         this.addEventListener("pointerup", (e) => this.dragHelper.onPointerUp(e));
     }
 
-    protected onInitialConnect()
-    {
-        this.setStyle({
-            flex: "0 0 auto",
-            display: "flex",
-            alignItems: "center"
-        });
-    }
-
     protected update(changedProperties: PropertyValues)
     {
         this.dragHelper.enabled = this.draggable;
@@ -64,4 +55,14 @@ export default class TitleBar extends CustomElement
             ${closeIcon}
         `;
     }
+
+    protected firstUpdated()
+    {
+        this.setStyle({
+            flex: "0 0 auto",
+            display: "flex",
+            alignItems: "center"
+        });
+    }
+
 }

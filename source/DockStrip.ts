@@ -189,7 +189,7 @@ export default class DockStrip extends CustomElement
         }
     }
 
-    protected onInitialConnect()
+    protected firstConnected()
     {
         this.init(true);
     }

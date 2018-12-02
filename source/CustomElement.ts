@@ -22,35 +22,42 @@ export default class CustomElement extends LitElement
         Object.assign(element.style, style);
     }
 
-    private _initialConnect: boolean;
+    private isFirstConnected = false;
 
-    constructor()
-    {
-        super();
-        this._initialConnect = false;
-    }
 
     setStyle(style: Partial<CSSStyleDeclaration>)
     {
         CustomElement.setStyle(this, style);
     }
 
+    removeChildren()
+    {
+        while(this.firstChild) {
+            this.removeChild(this.firstChild);
+        }
+    }
+
+    getChildrenArray()
+    {
+        return Array.from(this.children);
+    }
+
     connectedCallback()
     {
         super.connectedCallback();
 
-        if (!this._initialConnect) {
-            this._initialConnect = true;
-            this.onInitialConnect();
+        if (!this.isFirstConnected) {
+            this.isFirstConnected = true;
+            this.firstConnected();
         }
 
-        this.onConnect();
+        this.connected();
     }
 
     disconnectedCallback()
     {
         super.disconnectedCallback();
-        this.onDisconnect();
+        this.disconnected();
     }
 
     protected get shady()
@@ -63,15 +70,15 @@ export default class CustomElement extends LitElement
         return this.shady ? super.createRenderRoot() : this;
     }
 
-    protected onInitialConnect()
+    protected firstConnected()
     {
     }
 
-    protected onConnect()
+    protected connected()
     {
     }
 
-    protected onDisconnect()
+    protected disconnected()
     {
     }
 }

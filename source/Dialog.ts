@@ -57,18 +57,20 @@ export default class Dialog extends CustomElement
         }
     }
 
-    protected onInitialConnect()
+    protected firstUpdated()
     {
         this.setStyle({
             position: "absolute",
             display: "flex",
+            opacity: "0",
             boxSizing: "border-box",
             flexDirection: "column",
-            overflow: "hidden"
+            overflow: "hidden",
+            transition: "opacity 0.2s"
         });
     }
 
-    protected onConnect()
+    protected connected()
     {
         window.addEventListener("resize", this.onResize);
 
@@ -77,7 +79,7 @@ export default class Dialog extends CustomElement
         }
     }
 
-    protected onDisconnect()
+    protected disconnected()
     {
         window.removeEventListener("resize", this.onResize);
     }
@@ -88,10 +90,9 @@ export default class Dialog extends CustomElement
 
     protected moveToCenter()
     {
-        const thisRect = this.getBoundingClientRect();
-        const parentRect = this.parentElement.getBoundingClientRect();
-        this.style.left = `${(parentRect.width - thisRect.width) * 0.5}px`;
-        this.style.top = `${(parentRect.height - thisRect.height) * 0.5}px`;
+        this.style.left = `${(window.innerWidth - this.clientWidth) * 0.5}px`;
+        this.style.top = `${(window.innerHeight - this.clientHeight) * 0.5}px`;
+        this.style.opacity = "1.0";
     }
 }
 
@@ -110,17 +111,6 @@ export class ModalPlane extends CustomElement
         this.addEventListener("pointerdown", (e) => this.onPointerDown(e));
     }
 
-    protected onInitialConnect()
-    {
-        this.setStyle({
-            position: "absolute",
-            top: "0",
-            bottom: "0",
-            left: "0",
-            right: "0"
-        });
-    }
-
     protected update(changedProperties: PropertyValues): void
     {
         super.update(changedProperties);
@@ -129,6 +119,17 @@ export class ModalPlane extends CustomElement
             this.style.cursor = this.closable ? "default" : "not-allowed";
             this.style.opacity = this.closable ? "1.0" : "0.0";
         }
+    }
+
+    protected firstUpdated()
+    {
+        this.setStyle({
+            position: "absolute",
+            top: "0",
+            bottom: "0",
+            left: "0",
+            right: "0"
+        });
     }
 
     protected onPointerDown(event: PointerEvent)

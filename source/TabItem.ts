@@ -59,15 +59,6 @@ export class TabHeader extends CustomElement
         this.item = item;
     }
 
-    protected onInitialConnect()
-    {
-        this.setStyle({
-            flex: "0 0 auto",
-            cursor: "pointer",
-            userSelect: "none"
-        });
-    }
-
     protected update(changedProperties: PropertyValues)
     {
         super.update(changedProperties);
@@ -85,5 +76,14 @@ export class TabHeader extends CustomElement
         const iconElement = item.icon ? html`<span class=${"ff-icon " + item.icon}></span>` : null;
 
         return html`${textElement}${iconElement}`;
+    }
+
+    protected firstUpdated()
+    {
+        this.setStyle({
+            flex: "0 0 auto",
+            cursor: "pointer",
+            userSelect: "none"
+        });
     }
 }

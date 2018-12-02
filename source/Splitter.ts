@@ -55,7 +55,7 @@ export default class Splitter extends CustomElement
         return this.direction === "horizontal";
     }
 
-    protected onInitialConnect()
+    protected firstUpdated()
     {
         this.setAttribute("touch-action", "none");
 

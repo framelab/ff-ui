@@ -35,9 +35,7 @@ export default class Button extends CustomElement
     @property()
     icon = "";
 
-    protected observer = new MutationObserver(this.onObserver);
-
-    protected onInitialConnect()
+    protected firstUpdated()
     {
         this.setStyle({
             flex: "1 1 auto",
@@ -49,20 +47,10 @@ export default class Button extends CustomElement
         this.classList.add("ff-control", "ff-button");
     }
 
-    protected onConnect()
-    {
-        this.observer.observe(this, { childList: true });
-    }
-
-    protected onDisconnect()
-    {
-        this.observer.disconnect();
-    }
-
     protected render()
     {
-        const icon = this.icon ? html`<span class=${"ff-icon " + this.icon}></span>` : null;
-        const text = this.text ? html`<span class="ff-text">${this.text}</span>` : null;
+        const icon = this.icon ? html`<div class=${"ff-icon " + this.icon}></div>` : null;
+        const text = this.text ? html`<div class="ff-text">${this.text}</div>` : null;
 
         return html`
             <button @click=${this.onClick} style="width: 100%; height: 100%;">
@@ -70,15 +58,6 @@ export default class Button extends CustomElement
                 ${text}
             </button>
         `;
-    }
-
-    protected onObserver(mutations)
-    {
-        mutations.forEach(mutation => {
-            if (mutation.type === "childList") {
-                // TODO
-            }
-        });
     }
 
     protected onClick()

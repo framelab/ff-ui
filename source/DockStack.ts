@@ -244,7 +244,7 @@ export default class DockStack extends CustomElement
         }
     }
 
-    protected onInitialConnect()
+    protected firstConnected()
     {
         this.init(true);
     }

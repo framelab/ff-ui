@@ -56,6 +56,41 @@ $color-focus: $color-secondary-light;
   bottom: 0;
 }
 
+@mixin triangle($color, $size, $angle) {
+  &:before {
+    content: '';
+    position: absolute;
+    top: 0.6em;
+    left: 3px;
+    width: 0;
+    height: 0;
+    border-left: $size solid transparent;
+    border-right: $size solid transparent;
+    border-bottom: $size solid $color;
+    transform: rotate($angle);
+  }
+}
+
+@mixin dot($color, $size: 4px, $left: 5px, $top: 0.6em) {
+  &:before {
+    content: '';
+    position: absolute;
+    top: $top;
+    left: $left;
+    width: $size;
+    height: $size;
+    border: none;
+    background: $color;
+  }
+}
+
+@mixin window {
+  box-sizing: border-box;
+  background: $color-background;
+  border: 1px solid $color-background-light;
+  box-shadow: 3px 3px 24px rgba(0, 0, 0, 0.4);
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // GLOBAL
 
@@ -87,9 +122,7 @@ ff-modal-plane {
 }
 
 ff-dialog {
-  background: $color-background;
-  border: 1px solid $color-background;
-  box-shadow: 3px 3px 24px rgba(0, 0, 0, 0.4);
+  @include window;
 }
 
 .ff-frame {
@@ -162,6 +195,79 @@ ff-line-edit {
   }
 }
 
+ff-property-field {
+  background: $color-background-dark;
+  height: 18px;
+  font-size: 14px;
+  cursor: pointer;
+
+  &:focus {
+    outline: none;
+  }
+
+  .ff-bar {
+    margin: 2px 0;
+    background: $color-background-light;
+  }
+  .ff-content {
+    margin: -1px 2px 0 2px;
+    text-align: end;
+  }
+  .ff-event {
+
+  }
+  .ff-option {
+
+  }
+  input {
+    padding: 0 2px;
+    background-color: $color-background-darker;
+    text-align: end;
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// MENU
+
+.ff-menu {
+  @include window;
+  min-width: 6rem;
+
+  button {
+    padding: 4px 8px;
+    text-align: start;
+    user-select: none;
+  }
+
+  button + button {
+    margin-top: 1px;
+  }
+
+  button:hover {
+    background-color: $color-background-light;
+  }
+  button:focus {
+    outline: none;
+    background-color: $color-primary;
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// TREE
+
+ff-tree {
+
+}
+
+ff-tree-node {
+  margin-left: -500px;
+  border-top: 1px solid $color-background;
+
+  .ff-content {
+    margin-left: 500px;
+  }
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // TAB CONTAINER
 
@@ -202,8 +308,6 @@ ff-tab-header, ff-dock-panel-header {
     pointer-events: none;
   }
   .ff-text {
-    font-size: 0.9rem;
-    line-height: 1.2rem;
     padding: 0 3px;
   }
   .ff-icon {

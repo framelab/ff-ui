@@ -67,7 +67,7 @@ export default class DockView extends CustomElement
         return null;
     }
 
-    protected onInitialConnect()
+    protected firstConnected()
     {
         this.setStyle({
             display: "flex",

@@ -150,18 +150,6 @@ export default class DockPanel extends CustomElement
         this.parentStack.removePanel(this);
     }
 
-    protected onInitialConnect()
-    {
-        this.setStyle({
-            flex: "1 1 100%",
-            position: "relative",
-            display: "none",
-            flexDirection: "column",
-            boxSizing: "border-box",
-            overflow: "hidden"
-        });
-    }
-
     protected update(changedProperties: PropertyValues)
     {
         super.update(changedProperties);
@@ -173,6 +161,17 @@ export default class DockPanel extends CustomElement
         if (changedProperties.has("active")) {
             this.style.display = this.active ? "flex" : "none";
         }
+    }
+
+    protected firstUpdated()
+    {
+        this.setStyle({
+            flex: "1 1 100%",
+            position: "relative",
+            flexDirection: "column",
+            boxSizing: "border-box",
+            overflow: "hidden"
+        });
     }
 
     protected onDragOver(event: DragEvent)
