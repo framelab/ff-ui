@@ -11,6 +11,8 @@ import CustomElement, { customElement, property } from "./CustomElement";
 
 export interface ISplitterChangeEvent extends CustomEvent
 {
+    target: Splitter;
+
     detail: {
         direction: SplitterDirection;
         position: number;
@@ -37,9 +39,9 @@ export default class Splitter extends CustomElement
     @property({ type: Boolean })
     detached = false;
 
-    protected isActive = false;
-    protected offset = 0;
-    protected position = 0;
+    protected _isActive = false;
+    protected _offset = 0;
+    protected _position = 0;
 
     constructor()
     {
@@ -47,7 +49,13 @@ export default class Splitter extends CustomElement
 
         this.addEventListener("pointerdown", (e) => this.onPointerDown(e));
         this.addEventListener("pointermove", (e) => this.onPointerMove(e));
-        this.addEventListener("pointerup", (e) => this.onPointerUp(e));
+        this.addEventListener("pointerup", (e) => this.onPointerUpOrCancel(e));
+        this.addEventListener("pointercancel", (e) => this.onPointerUpOrCancel(e));
+    }
+
+    get position()
+    {
+        return this._position;
     }
 
     isHorizontal()
@@ -84,11 +92,14 @@ export default class Splitter extends CustomElement
     protected onPointerDown(event: PointerEvent)
     {
         if (event.isPrimary) {
-            this.isActive = true;
+            event.stopPropagation();
+            event.preventDefault();
+
+            this._isActive = true;
 
             this.setPointerCapture(event.pointerId);
             const rect = this.getBoundingClientRect();
-            this.offset = this.isHorizontal()
+            this._offset = this.isHorizontal()
                 ? rect.left + rect.width * 0.5 - event.clientX
                 : rect.top + rect.height * 0.5 - event.clientY;
         }
@@ -96,7 +107,10 @@ export default class Splitter extends CustomElement
 
     protected onPointerMove(event: PointerEvent)
     {
-        if (event.isPrimary && this.isActive) {
+        if (event.isPrimary && this._isActive) {
+            event.stopPropagation();
+            event.preventDefault();
+
             const parent = this.parentElement;
             if (!parent) {
                 return;
@@ -107,13 +121,13 @@ export default class Splitter extends CustomElement
             const isHorizontal = this.isHorizontal();
 
             const parentSize = isHorizontal ? rect.width : rect.height;
-            const position = this.offset + (isHorizontal ? event.clientX - rect.left : event.clientY - rect.top);
-            this.position = position;
+            const position = this._offset + (isHorizontal ? event.clientX - rect.left : event.clientY - rect.top);
+            this._position = position / parentSize;
 
             this.dispatchEvent(new CustomEvent(Splitter.changeEvent, {
                 detail: {
                     direction: this.direction,
-                    position: this.position,
+                    position: this._position,
                     isDragging: true
                 }
             }) as ISplitterChangeEvent);
@@ -163,15 +177,18 @@ export default class Splitter extends CustomElement
         }
     }
 
-    protected onPointerUp(event: PointerEvent)
+    protected onPointerUpOrCancel(event: PointerEvent)
     {
         if (event.isPrimary) {
-            this.isActive = false;
+            event.stopPropagation();
+            event.preventDefault();
+
+            this._isActive = false;
 
             this.dispatchEvent(new CustomEvent(Splitter.changeEvent, {
                 detail: {
                     direction: this.direction,
-                    position: this.position,
+                    position: this._position,
                     isDragging: false
                 }
             }) as ISplitterChangeEvent);

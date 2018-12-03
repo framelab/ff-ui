@@ -30,6 +30,33 @@ export default class CustomElement extends LitElement
         CustomElement.setStyle(this, style);
     }
 
+    createElement<T extends CustomElement>(
+        type: TypeOf<T>, style?: Partial<CSSStyleDeclaration>, parent?: Element): T;
+
+    createElement<K extends keyof HTMLElementTagNameMap>(
+        tagName: K, style?: Partial<CSSStyleDeclaration>, parent?: Element): HTMLElementTagNameMap[K];
+
+    createElement(tagOrType, style?: Partial<CSSStyleDeclaration>, parent?: Element)
+    {
+        let element;
+
+        if (typeof tagOrType === "string") {
+            element = document.createElement(tagOrType);
+        }
+        else {
+            element = new tagOrType();
+        }
+
+        if (style) {
+            Object.assign(element.style, style);
+        }
+        if (parent) {
+            parent.appendChild(element);
+        }
+
+        return element;
+    }
+
     removeChildren()
     {
         while(this.firstChild) {
