@@ -52,13 +52,6 @@ export default class Tree extends CustomElement
 @customElement("ff-tree-node")
 export class TreeNode extends CustomElement
 {
-    static renderNode(node: ITreeNode)
-    {
-        return html`
-            <ff-tree-node ?expanded=${expanded} ?selected=${selected}></ff-tree-node>
-        `;
-    }
-
     @property({ type: Boolean, reflect: true })
     expanded = false;
 

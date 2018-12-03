@@ -6,8 +6,9 @@
  */
 
 import Property from "@ff/core/ecs/Property";
+
 import PropertyField from "./PropertyField";
-import CustomElement, { customElement, property, PropertyValues, html } from "./CustomElement";
+import CustomElement, { customElement, property, html } from "./CustomElement";
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -23,15 +24,22 @@ export default class PropertyView extends CustomElement
 
         let fields;
         if (property.isArray()) {
-
+            fields = [];
+            for (let i = 0; i < property.elementCount; ++i) {
+                const field = new PropertyField();
+                field.property = property;
+                field.index = i;
+                fields.push(field);
+            }
         }
         else {
-            fields = html`<ff-property-field .property=${property}></ff-property-field>`
+            fields = new PropertyField();
+            fields.property = property;
         }
 
         return html`
-            <div class="ff-name"></div>
-            ${fields}
+            <div class="ff-label"></div>
+            <div class="ff-fields">${fields}</div>
         `;
     }
 

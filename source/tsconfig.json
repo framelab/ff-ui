@@ -6,7 +6,6 @@
         "declaration": true,
         "sourceMap": true,
         "experimentalDecorators": true,
-        "plugins": [{ "name": "typescript-lit-html-plugin" }],
 
         "outDir": "../node_modules/@ff/ui"
     }

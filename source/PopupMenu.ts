@@ -6,7 +6,7 @@
  */
 
 import math from "@ff/core/math";
-import CustomElement, { customElement, html, property } from "@ff/ui/CustomElement";
+import CustomElement, { customElement, html, property } from "./CustomElement";
 
 ////////////////////////////////////////////////////////////////////////////////
 

@@ -114,7 +114,14 @@ export default class DockStack extends CustomElement
     setLayout(layout: IDockStackLayout, registry: DockContentRegistry)
     {
         this.init(false);
-        this.removeChildren();
+
+        // remove existing children/panels
+        const children = Array.from(this.children);
+        for (let child of children) {
+            if (child !== this.headers) {
+                this.removeChild(child);
+            }
+        }
 
         this.size = layout.size;
 
@@ -247,16 +254,6 @@ export default class DockStack extends CustomElement
     protected firstConnected()
     {
         this.init(true);
-    }
-
-    protected removeChildren()
-    {
-        const children = Array.from(this.children);
-        for (let child of children) {
-            if (child !== this.headers) {
-                this.removeChild(child);
-            }
-        }
     }
 
     protected init(parseChildren: boolean)
