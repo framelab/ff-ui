@@ -56,6 +56,14 @@ $color-focus: $color-secondary-light;
   bottom: 0;
 }
 
+@mixin full-screen {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+}
+
 @mixin triangle($color, $size, $angle) {
   &:before {
     content: '';
@@ -91,6 +99,11 @@ $color-focus: $color-secondary-light;
   box-shadow: 3px 3px 24px rgba(0, 0, 0, 0.4);
 }
 
+// short hover animation
+$tx-short: 0.15s;
+// medium transition
+$tx-medium: 0.3s;
+
 ////////////////////////////////////////////////////////////////////////////////
 // GLOBAL
 
@@ -117,8 +130,9 @@ button, input {
 ////////////////////////////////////////////////////////////////////////////////
 // FRAMES
 
-ff-modal-plane {
-  background: transparentize($color-background-darker, 0.6);
+.ff-modal-plane {
+  @include full-screen;
+  background: transparentize(red, 0.6);
 }
 
 ff-dialog {
@@ -157,10 +171,11 @@ ff-title-bar {
   pointer-events: none;
 }
 
-ff-button {
+.ff-button {
+  padding: 4px 3px;
   background: $color-background-light;
-  cursor: pointer;
   transition: background-color 0.2s;
+  cursor: pointer;
 
   &:hover {
     background-color: $color-background-lighter;
@@ -173,10 +188,6 @@ ff-button {
     }
   }
 
-  button {
-    padding: 4px 3px;
-  }
-
   .ff-text {
     padding: 4px 3px;
     white-space: nowrap;
@@ -184,6 +195,12 @@ ff-button {
   .ff-icon {
     padding: 4px 3px;
     font-size: 1.3em;
+  }
+}
+
+ff-popup-button {
+  .ff-content {
+    transition: opacity $tx-short;
   }
 }
 

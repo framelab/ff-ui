@@ -5,12 +5,12 @@
  * License: MIT
  */
 
-import CustomElement, { customElement, property, html, PropertyValues } from "./CustomElement";
+import LitElement, { customElement, property, html } from "./LitElement";
 
 ////////////////////////////////////////////////////////////////////////////////
 
 @customElement("ff-line-edit")
-export default class LineEdit extends CustomElement
+export default class LineEdit extends LitElement
 {
     @property({ type: String })
     text = "";

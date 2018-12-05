@@ -6,15 +6,16 @@
  */
 
 import { TypeOf, Partial, Dictionary } from "@ff/core/types";
+import { LitElement as LitElementBase, html, property, PropertyValues } from "@polymer/lit-element";
 
 ////////////////////////////////////////////////////////////////////////////////
 
-export { html, svg, render } from 'lit-html/lit-html';
+export { html, property, PropertyValues };
 
-
-export default class CustomElement extends HTMLElement
+export default class LitElement extends LitElementBase
 {
-    static readonly tagName: string = "ff-custom-element";
+    static readonly tagName: string;
+    static readonly shady: boolean = false;
 
     static setStyle(element: HTMLElement, style: Partial<CSSStyleDeclaration>)
     {
@@ -33,13 +34,13 @@ export default class CustomElement extends HTMLElement
 
     setStyle(style: Partial<CSSStyleDeclaration>): this
     {
-        CustomElement.setStyle(this, style);
+        LitElement.setStyle(this, style);
         return this;
     }
 
     setAttribs(attribs: Dictionary<string>): this
     {
-        CustomElement.setAttribs(this, attribs);
+        LitElement.setAttribs(this, attribs);
         return this;
     }
 
@@ -99,8 +100,10 @@ export default class CustomElement extends HTMLElement
         return element;
     }
 
-    protected connectedCallback()
+    connectedCallback()
     {
+        super.connectedCallback();
+
         if (!this._isFirstConnected) {
             this._isFirstConnected = true;
             this.firstConnected();
@@ -109,9 +112,20 @@ export default class CustomElement extends HTMLElement
         this.connected();
     }
 
-    protected disconnectedCallback()
+    disconnectedCallback()
     {
+        super.disconnectedCallback();
         this.disconnected();
+    }
+
+    protected get shady()
+    {
+        return (this.constructor as typeof LitElement).shady;
+    }
+
+    protected createRenderRoot()
+    {
+        return this.shady ? super.createRenderRoot() : this;
     }
 
     protected firstConnected()
@@ -127,9 +141,9 @@ export default class CustomElement extends HTMLElement
     }
 }
 
-export function customElement<T extends CustomElement>(tagName?: string)
+export function customElement<T extends LitElement>(tagName?: string)
 {
-    return <T extends CustomElement>(constructor: TypeOf<T>) => {
+    return <T extends LitElement>(constructor: TypeOf<T>) => {
         (constructor as any).tagName = tagName;
         customElements.define((constructor as any).tagName, constructor);
         return constructor as any;

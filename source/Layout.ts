@@ -5,11 +5,11 @@
  * License: MIT
  */
 
-import CustomElement, { customElement, property, PropertyValues } from "./CustomElement";
+import LitElement, { customElement, property, PropertyValues } from "./LitElement";
 
 ////////////////////////////////////////////////////////////////////////////////
 
-class FlexContainer extends CustomElement
+class FlexContainer extends LitElement
 {
     @property({ type: Boolean })
     wrap = false;

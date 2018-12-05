@@ -5,12 +5,12 @@
  * License: MIT
  */
 
-import CustomElement, { customElement, property, html } from "./CustomElement";
+import LitElement, { customElement, property, html } from "./LitElement";
 
 ////////////////////////////////////////////////////////////////////////////////
 
 @customElement("ff-checkbox")
-export default class Checkbox extends CustomElement
+export default class Checkbox extends LitElement
 {
     @property({ type: Boolean })
     checked = false;

@@ -8,12 +8,12 @@
 import Property from "@ff/core/ecs/Property";
 
 import PropertyField from "./PropertyField";
-import CustomElement, { customElement, property, html } from "./CustomElement";
+import LitElement, { customElement, property, html } from "./LitElement";
 
 ////////////////////////////////////////////////////////////////////////////////
 
 @customElement("ff-property-view")
-export default class PropertyView extends CustomElement
+export default class PropertyView extends LitElement
 {
     @property({ attribute: false })
     property: Property = null;

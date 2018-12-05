@@ -5,7 +5,7 @@
  * License: MIT
  */
 
-import CustomElement, { customElement, property, html } from "./CustomElement";
+import LitElement, { customElement, property, html } from "./LitElement";
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -15,10 +15,10 @@ export interface IButtonClickEvent extends MouseEvent
 }
 
 @customElement("ff-button")
-export default class Button extends CustomElement
+export default class Button extends LitElement
 {
     @property({ type: String })
-    name = "a";
+    name = "";
 
     @property({ type: Number })
     index = 0;
@@ -35,6 +35,29 @@ export default class Button extends CustomElement
     @property()
     icon = "";
 
+    constructor()
+    {
+        super();
+
+        this.addEventListener("click", (e) => this.onClick(e));
+        this.addEventListener("keydown", (e) => this.onKeyPress(e));
+    }
+
+    protected render()
+    {
+        const icon = this.icon ? html`<div class=${"ff-icon " + this.icon}></div>` : null;
+        const text = this.text ? html`<div class="ff-text">${this.text}</div>` : null;
+
+        // return html`
+        //     <button @click=${this.onClick} style="width: 100%; height: 100%;">
+        //         ${icon}
+        //         ${text}
+        //     </button>
+        // `;
+
+        return html`${icon}${text}`;
+    }
+
     protected firstUpdated()
     {
         this.setStyle({
@@ -45,25 +68,20 @@ export default class Button extends CustomElement
         });
 
         this.classList.add("ff-control", "ff-button");
+        this.tabIndex = 0;
     }
 
-    protected render()
-    {
-        const icon = this.icon ? html`<div class=${"ff-icon " + this.icon}></div>` : null;
-        const text = this.text ? html`<div class="ff-text">${this.text}</div>` : null;
-
-        return html`
-            <button @click=${this.onClick} style="width: 100%; height: 100%;">
-                ${icon}
-                ${text}
-            </button>
-        `;
-    }
-
-    protected onClick()
+    protected onClick(event: MouseEvent)
     {
         if (this.selectable) {
             this.selected = !this.selected;
+        }
+    }
+
+    protected onKeyPress(event: KeyboardEvent)
+    {
+        if (event.code === "Space") {
+            this.dispatchEvent(new MouseEvent("click", { bubbles: true }));
         }
     }
 }

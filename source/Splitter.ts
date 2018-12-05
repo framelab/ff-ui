@@ -5,7 +5,7 @@
  * License: MIT
  */
 
-import CustomElement, { customElement, property } from "./CustomElement";
+import LitElement, { customElement, property } from "./LitElement";
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -23,7 +23,7 @@ export interface ISplitterChangeEvent extends CustomEvent
 export type SplitterDirection = "horizontal" | "vertical";
 
 @customElement("ff-splitter")
-export default class Splitter extends CustomElement
+export default class Splitter extends LitElement
 {
     static readonly changeEvent: string = "ff-splitter-change";
 

@@ -5,12 +5,12 @@
  * License: MIT
  */
 
-import CustomElement, { customElement, html, property, PropertyValues } from "./CustomElement";
+import LitElement, { customElement, html, property, PropertyValues } from "./LitElement";
 
 ////////////////////////////////////////////////////////////////////////////////
 
 @customElement("ff-tab-item")
-export default class TabItem extends CustomElement
+export default class TabItem extends LitElement
 {
     @property({ type: Boolean, reflect: true })
     active = false;
@@ -46,7 +46,7 @@ export default class TabItem extends CustomElement
 }
 
 @customElement("ff-tab-header")
-export class TabHeader extends CustomElement
+export class TabHeader extends LitElement
 {
     @property({ type: Boolean, reflect: true })
     active = false;

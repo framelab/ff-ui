@@ -5,12 +5,12 @@
  * License: MIT
  */
 
-import CustomElement, { customElement, property, html, PropertyValues } from "./CustomElement";
+import LitElement, { customElement, property, html, PropertyValues } from "./LitElement";
 
 ////////////////////////////////////////////////////////////////////////////////
 
 @customElement("ff-radio-button")
-export default class RadioButton extends CustomElement
+export default class RadioButton extends LitElement
 {
     static readonly shady = true;
 

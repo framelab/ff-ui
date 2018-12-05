@@ -5,7 +5,7 @@
  * License: MIT
  */
 
-import CustomElement, { customElement, property, html } from "./CustomElement";
+import LitElement, { customElement, property, html } from "./LitElement";
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -16,7 +16,7 @@ export interface ITreeNode
 }
 
 @customElement("ff-tree")
-export default class Tree extends CustomElement
+export default class Tree extends LitElement
 {
     constructor()
     {
@@ -50,7 +50,7 @@ export default class Tree extends CustomElement
 }
 
 @customElement("ff-tree-node")
-export class TreeNode extends CustomElement
+export class TreeNode extends LitElement
 {
     @property({ type: Boolean, reflect: true })
     expanded = false;

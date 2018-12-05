@@ -5,7 +5,7 @@
  * License: MIT
  */
 
-import CustomElement, { customElement, property } from "./CustomElement";
+import LitElement, { customElement, property } from "./LitElement";
 import Button from "./Button";
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -13,7 +13,7 @@ import Button from "./Button";
 export type ButtonGroupMode = "exclusive" | "radio";
 
 @customElement("ff-button-group")
-export default class ButtonGroup extends CustomElement
+export default class ButtonGroup extends LitElement
 {
     @property({ type: String })
     mode: ButtonGroupMode = "radio";
@@ -80,15 +80,16 @@ export default class ButtonGroup extends CustomElement
 
             this.selectedButton = target;
             this.selectedButton.selected = true;
-            this.selectionIndex = this.getIndexFromButton(target);
+            this.selectionIndex = this.getButtons().indexOf(target);
         }
     }
 
     protected parseChildren()
     {
-        const buttons = Array.from(this.getElementsByTagName(Button.tagName)) as Button[];
+        const buttons = this.getButtons();
+
         if (this.selectedButton) {
-            this.selectionIndex = this.getIndexFromButton(this.selectedButton);
+            this.selectionIndex = buttons.indexOf(this.selectedButton);
             if (this.selectionIndex < 0) {
                 this.selectedButton.selected = false;
                 this.selectedButton = null;
@@ -105,15 +106,8 @@ export default class ButtonGroup extends CustomElement
         }
     }
 
-    protected getIndexFromButton(button: Button)
+    protected getButtons(): Button[]
     {
-        const buttons = Array.from(this.getElementsByTagName(Button.tagName));
-        for (let i = 0, n = buttons.length; i < n; ++i) {
-            if (button === buttons[i]) {
-                return i;
-            }
-        }
-
-        return -1;
+        return this.getChildrenArray().filter(child => child instanceof Button) as Button[];
     }
 }

@@ -6,12 +6,12 @@
  */
 
 import DragHelper from "./DragHelper";
-import CustomElement, { customElement, property, html, PropertyValues } from "./CustomElement";
+import LitElement, { customElement, property, html, PropertyValues } from "./LitElement";
 
 ////////////////////////////////////////////////////////////////////////////////
 
 @customElement("ff-title-bar")
-export default class TitleBar extends CustomElement
+export default class TitleBar extends LitElement
 {
     protected static readonly closeIcon: string = "ff-icon fa fas fa-times";
 

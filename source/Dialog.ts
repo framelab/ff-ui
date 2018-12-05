@@ -5,7 +5,7 @@
  * License: MIT
  */
 
-import CustomElement, { customElement, property } from "./CustomElement";
+import LitElement, { customElement, property } from "./LitElement";
 import { PropertyValues } from "@polymer/lit-element";
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -16,7 +16,7 @@ export type DialogMode = "default" | "popup" | "modal";
  * Dialog container element.
  */
 @customElement("ff-dialog")
-export default class Dialog extends CustomElement
+export default class Dialog extends LitElement
 {
     @property({ type: String, reflect: true })
     mode: DialogMode = "default";
@@ -99,7 +99,7 @@ export default class Dialog extends CustomElement
 ////////////////////////////////////////////////////////////////////////////////
 
 @customElement("ff-modal-plane")
-export class ModalPlane extends CustomElement
+export class ModalPlane extends LitElement
 {
     @property({ type: Boolean })
     closable = false;

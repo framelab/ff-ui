@@ -5,7 +5,7 @@
  * License: MIT
  */
 
-import CustomElement, { customElement, html, property, PropertyValues } from "./CustomElement";
+import LitElement, { customElement, html, property, PropertyValues } from "./LitElement";
 import DockPanel from "./DockPanel";
 import DockStack from "./DockStack";
 import DockView from "./DockView";
@@ -19,7 +19,7 @@ export interface IDockPanelCloseEvent extends CustomEvent {
 }
 
 @customElement("ff-dock-panel-header")
-export default class DockPanelHeader extends CustomElement
+export default class DockPanelHeader extends LitElement
 {
     static readonly closeEvent: string = "ff-dock-panel-header-close";
 

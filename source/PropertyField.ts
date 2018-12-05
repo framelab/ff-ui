@@ -9,15 +9,15 @@ import math from "@ff/core/math";
 import Property from "@ff/core/ecs/Property";
 import types from "@ff/core/ecs/propertyTypes";
 
-import PopupMenu, { IPopupMenuSelectEvent } from "./PopupMenu";
-import CustomElement, { customElement, property, PropertyValues } from "./CustomElement";
+import PopupOptions, { IPopupMenuSelectEvent } from "./PopupOptions";
+import LitElement, { customElement, property, PropertyValues } from "./LitElement";
 
 ////////////////////////////////////////////////////////////////////////////////
 
 export { Property };
 
 @customElement("ff-property-field")
-export default class PropertyField extends CustomElement
+export default class PropertyField extends LitElement
 {
     static readonly defaultPrecision = 3;
     static readonly defaultStep = 0.1;
@@ -134,10 +134,10 @@ export default class PropertyField extends CustomElement
         const schema = property.schema;
 
         if (schema.options) {
-            const menu = new PopupMenu();
+            const menu = new PopupOptions();
             menu.options = schema.options;
             menu.show(event);
-            menu.addEventListener(PopupMenu.selectEvent, this.onSelectOption);
+            menu.addEventListener(PopupOptions.selectEvent, this.onSelectOption);
             return;
         }
 
