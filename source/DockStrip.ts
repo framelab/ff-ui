@@ -5,7 +5,7 @@
  * License: MIT
  */
 
-import LitElement, { customElement, property, PropertyValues } from "./LitElement";
+import CustomElement, { customElement, property, PropertyValues } from "./CustomElement";
 
 import Splitter, { ISplitterChangeEvent, SplitterDirection } from "./Splitter";
 import { DockContentRegistry } from "./DockView";
@@ -30,7 +30,7 @@ const _isDockElement = e => e instanceof DockStrip || e instanceof DockStack;
 
 
 @customElement("ff-dock-strip")
-export default class DockStrip extends LitElement
+export default class DockStrip extends CustomElement
 {
     @property({ type: Number })
     get size() {

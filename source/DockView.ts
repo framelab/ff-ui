@@ -5,7 +5,7 @@
  * License: MIT
  */
 
-import LitElement, { customElement } from "./LitElement";
+import CustomElement, { customElement } from "./CustomElement";
 import DockStrip, { IDockElementLayout } from "./DockStrip";
 import DockStack from "./DockStack";
 import DockPanel from "./DockPanel";
@@ -15,7 +15,7 @@ import DockPanel from "./DockPanel";
 export type DockContentRegistry = Map<string, () => HTMLElement>;
 
 @customElement("ff-dock-view")
-export default class DockView extends LitElement
+export default class DockView extends CustomElement
 {
     static readonly changeEvent: string = "ff-dock-view-change";
 

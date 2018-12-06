@@ -7,66 +7,80 @@
 
 import Button from "./Button";
 import Popup from "./Popup";
-import { customElement, html, PropertyValues } from "./LitElement";
+import { customElement, property, PropertyValues } from "./CustomElement";
 
 ////////////////////////////////////////////////////////////////////////////////
 
 @customElement("ff-popup-button")
 export default class PopupButton extends Button
 {
-    protected popupElement: HTMLElement;
-    protected isPopupVisible = false;
+    @property({ attribute: false })
+    content: HTMLElement = null;
+
+    @property({ attribute: false })
+    contentParent: HTMLElement = this;
+
+    @property({ type: Boolean })
+    transient = false;
 
     constructor()
     {
         super();
-
-        this.popupElement = this.createElement("div", {
-            position: "relative"
-        });
-
         this.addEventListener(Popup.closeEvent, () => this.selected = false);
+
+        this.onPointerDown = this.onPointerDown.bind(this);
+        this.onKeyDown = this.onKeyDown.bind(this);
     }
 
-    protected firstConnected()
+    protected connected()
     {
-        this.popupElement.classList.add("ff-content");
-        this.getChildrenArray().forEach(child => this.popupElement.appendChild(child));
+        document.addEventListener("pointerdown", this.onPointerDown, { capture: true, passive: true });
+        document.addEventListener("keydown", this.onKeyDown, { capture: true, passive: true });
+
+    }
+
+    protected disconnected()
+    {
+        document.removeEventListener("pointerdown", this.onPointerDown);
+        document.removeEventListener("keydown", this.onKeyDown);
+
     }
 
     protected update(changedProperties: PropertyValues)
     {
-        const style = this.popupElement.style;
-
-        if (changedProperties.has("selected") && this.selected) {
-            style.opacity = "1";
-            this.isPopupVisible = true;
-        }
-
         super.update(changedProperties);
 
-        if (changedProperties.has("selected") && !this.selected) {
-            style.opacity = "0";
-            this.isPopupVisible = false;
-            const duration = parseFloat(style.transitionDuration) || 0;
-            setTimeout(() => this.requestUpdate(), duration * 1000);
+        const contentElement = this.content;
+
+        if (contentElement && changedProperties.has("selected")) {
+            const parentElement = this.contentParent || this;
+
+            if (this.selected) {
+                parentElement.appendChild(contentElement);
+                setTimeout(() => contentElement.style.opacity = "1.0", 0);
+            }
+            else if (contentElement.parentElement === parentElement) {
+                this.focus();
+                contentElement.style.opacity = "0";
+                const duration = parseFloat(window.getComputedStyle(contentElement).transitionDuration) || 0;
+                setTimeout(() => parentElement.removeChild(contentElement), duration * 1000);
+            }
         }
     }
 
-    protected render()
+    protected onPointerDown(event: PointerEvent)
     {
-        if (this.isPopupVisible) {
-            const button = super.render();
-            return html`${button}${this.popupElement}`;
+        console.log("onPointerDown");
+        if (event.target instanceof Node && !this.contains(event.target)) {
+            this.selected = false;
         }
-
-        return super.render();
     }
 
-    protected firstUpdated()
+    protected onKeyDown(event: KeyboardEvent)
     {
-        super.firstUpdated();
-
-        this.classList.add("ff-popup-button");
+        console.log("onKeyDown", event.key);
+        if (event.key === "Escape") {
+            this.selected = false;
+        }
     }
 }

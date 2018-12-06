@@ -5,7 +5,7 @@
  * License: MIT
  */
 
-import LitElement, { customElement, property, PropertyValues } from "./LitElement";
+import CustomElement, { customElement } from "./CustomElement";
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -37,7 +37,7 @@ export interface ICanvasResizeEvent extends CustomEvent
 }
 
 @customElement("ff-canvas")
-export class Canvas extends LitElement
+export class Canvas extends CustomElement
 {
     static readonly mountEvent = "ff-mount";
     static readonly resizeEvent = "ff-resize";

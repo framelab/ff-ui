@@ -5,17 +5,17 @@
  * License: MIT
  */
 
-import LitElement, { customElement, property, html } from "./LitElement";
+import CustomElement, { customElement, property, html } from "./CustomElement";
 
 ////////////////////////////////////////////////////////////////////////////////
 
 export interface IButtonClickEvent extends MouseEvent
 {
-    currentTarget: Button;
+    target: Button;
 }
 
 @customElement("ff-button")
-export default class Button extends LitElement
+export default class Button extends CustomElement
 {
     @property({ type: String })
     name = "";
@@ -48,13 +48,6 @@ export default class Button extends LitElement
         const icon = this.icon ? html`<div class=${"ff-icon " + this.icon}></div>` : null;
         const text = this.text ? html`<div class="ff-text">${this.text}</div>` : null;
 
-        // return html`
-        //     <button @click=${this.onClick} style="width: 100%; height: 100%;">
-        //         ${icon}
-        //         ${text}
-        //     </button>
-        // `;
-
         return html`${icon}${text}`;
     }
 
@@ -80,7 +73,7 @@ export default class Button extends LitElement
 
     protected onKeyPress(event: KeyboardEvent)
     {
-        if (event.code === "Space") {
+        if (document.activeElement === this && event.code === "Space") {
             this.dispatchEvent(new MouseEvent("click", { bubbles: true }));
         }
     }

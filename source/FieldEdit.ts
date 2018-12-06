@@ -5,14 +5,14 @@
  * License: MIT
  */
 
-import LitElement, { customElement, property } from "./LitElement";
+import CustomElement, { customElement, property } from "./CustomElement";
 
 ////////////////////////////////////////////////////////////////////////////////
 
 export type FieldType = "number" | "boolean" | "string" | "object";
 
 @customElement("ff-field-edit")
-export default class FieldEdit<T = number> extends LitElement
+export default class FieldEdit<T = number> extends CustomElement
 {
     @property({ type: String })
     type: FieldType = "number";

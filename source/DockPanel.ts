@@ -8,7 +8,7 @@
 
 import uniqueId from "@ff/core/uniqueId";
 
-import LitElement, { customElement, property, PropertyValues } from "./LitElement";
+import CustomElement, { customElement, property, PropertyValues } from "./CustomElement";
 import { DockContentRegistry } from "./DockView";
 import DockStack from "./DockStack";
 import DockStrip from "./DockStrip";
@@ -28,7 +28,7 @@ export interface IDockPanelLayout
 }
 
 @customElement("ff-dock-panel")
-export default class DockPanel extends LitElement
+export default class DockPanel extends CustomElement
 {
     static readonly dragDropMimeType: string = "application/x-ff-dock-panel";
 

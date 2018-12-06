@@ -6,7 +6,7 @@
  */
 
 import Popup from "./Popup";
-import { customElement, html, property } from "./LitElement";
+import { customElement, html, property } from "./CustomElement";
 
 ////////////////////////////////////////////////////////////////////////////////
 

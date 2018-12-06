@@ -7,18 +7,18 @@
 
 import System from "@ff/core/ecs/System";
 import Entity from "@ff/core/ecs/Entity";
-import LitElement, { customElement, property } from "./LitElement";
+import CustomElement, { customElement, property } from "./CustomElement";
 
 ////////////////////////////////////////////////////////////////////////////////
 
 @customElement("ff-entity-tree")
-export default class EntityTree extends LitElement
+export default class EntityTree extends CustomElement
 {
 
 }
 
 @customElement("ff-entity-tree-node")
-export class EntityTreeNode extends LitElement
+export class EntityTreeNode extends CustomElement
 {
 
 }

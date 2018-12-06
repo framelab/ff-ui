@@ -10,14 +10,14 @@ import Property from "@ff/core/ecs/Property";
 import types from "@ff/core/ecs/propertyTypes";
 
 import PopupOptions, { IPopupMenuSelectEvent } from "./PopupOptions";
-import LitElement, { customElement, property, PropertyValues } from "./LitElement";
+import CustomElement, { customElement, property, PropertyValues } from "./CustomElement";
 
 ////////////////////////////////////////////////////////////////////////////////
 
 export { Property };
 
 @customElement("ff-property-field")
-export default class PropertyField extends LitElement
+export default class PropertyField extends CustomElement
 {
     static readonly defaultPrecision = 3;
     static readonly defaultStep = 0.1;

@@ -5,7 +5,7 @@
  * License: MIT
  */
 
-import LitElement, { customElement, property } from "./LitElement";
+import CustomElement, { customElement, property } from "./CustomElement";
 import { DockContentRegistry } from "./DockView";
 import DockStrip from "./DockStrip";
 import DockPanel, { DropZone, IDockPanelLayout } from "./DockPanel";
@@ -23,7 +23,7 @@ export interface IDockStackLayout
 }
 
 @customElement("ff-dock-stack")
-export default class DockStack extends LitElement
+export default class DockStack extends CustomElement
 {
     @property({ type: Number })
     get size() {

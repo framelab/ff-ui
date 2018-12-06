@@ -5,13 +5,13 @@
  * License: MIT
  */
 
-import LitElement, { customElement, property, PropertyValues } from "./LitElement";
+import CustomElement, { customElement, property, PropertyValues } from "./CustomElement";
 import TabItem, { TabHeader } from "./TabItem";
 
 ////////////////////////////////////////////////////////////////////////////////
 
 @customElement("ff-tab-container")
-export default class TabContainer extends LitElement
+export default class TabContainer extends CustomElement
 {
     @property({ type: Number, reflect: true })
     activeIndex = 0;

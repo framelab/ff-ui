@@ -5,7 +5,7 @@
  * License: MIT
  */
 
-import LitElement, { customElement, property } from "./LitElement";
+import CustomElement, { customElement, property } from "./CustomElement";
 import Button from "./Button";
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -13,7 +13,7 @@ import Button from "./Button";
 export type ButtonGroupMode = "exclusive" | "radio";
 
 @customElement("ff-button-group")
-export default class ButtonGroup extends LitElement
+export default class ButtonGroup extends CustomElement
 {
     @property({ type: String })
     mode: ButtonGroupMode = "radio";

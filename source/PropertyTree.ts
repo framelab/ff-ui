@@ -5,18 +5,18 @@
  * License: MIT
  */
 
-import LitElement, { customElement, property } from "./LitElement";
+import CustomElement, { customElement, property } from "./CustomElement";
 
 ////////////////////////////////////////////////////////////////////////////////
 
 @customElement("ff-property-tree")
-export default class PropertyTree extends LitElement
+export default class PropertyTree extends CustomElement
 {
 
 }
 
 @customElement("ff-property-tree-node")
-export class PropertyTreeNode extends LitElement
+export class PropertyTreeNode extends CustomElement
 {
 
 }

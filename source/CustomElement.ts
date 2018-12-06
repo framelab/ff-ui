@@ -6,15 +6,20 @@
  */
 
 import { TypeOf, Partial, Dictionary } from "@ff/core/types";
+import { LitElement } from "@polymer/lit-element";
 
 ////////////////////////////////////////////////////////////////////////////////
 
-export { html, svg, render } from 'lit-html/lit-html';
+export { property, PropertyValues } from "@polymer/lit-element";
+export { html, svg, render } from "lit-html/lit-html";
 
 
-export default class CustomElement extends HTMLElement
+export default class CustomElement extends LitElement
 {
     static readonly tagName: string = "ff-custom-element";
+    static readonly shady: boolean = false;
+
+    private _isFirstConnected = false;
 
     static setStyle(element: HTMLElement, style: Partial<CSSStyleDeclaration>)
     {
@@ -28,8 +33,10 @@ export default class CustomElement extends HTMLElement
         }
     }
 
-    private _isFirstConnected = false;
-
+    get shady()
+    {
+        return (this.constructor as typeof CustomElement).shady;
+    }
 
     setStyle(style: Partial<CSSStyleDeclaration>): this
     {
@@ -99,7 +106,7 @@ export default class CustomElement extends HTMLElement
         return element;
     }
 
-    protected connectedCallback()
+    connectedCallback()
     {
         if (!this._isFirstConnected) {
             this._isFirstConnected = true;
@@ -109,9 +116,14 @@ export default class CustomElement extends HTMLElement
         this.connected();
     }
 
-    protected disconnectedCallback()
+    disconnectedCallback()
     {
         this.disconnected();
+    }
+
+    protected createRenderRoot()
+    {
+        return this.shady ? super.createRenderRoot() : this;
     }
 
     protected firstConnected()
