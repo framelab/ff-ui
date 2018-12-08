@@ -83,7 +83,7 @@ export default class PopupOptions extends Popup
                 }}) as IPopupMenuSelectEvent);
         }
 
-        this.close();
+        this.remove();
     }
 
 

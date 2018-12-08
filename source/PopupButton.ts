@@ -70,7 +70,6 @@ export default class PopupButton extends Button
 
     protected onPointerDown(event: PointerEvent)
     {
-        console.log("onPointerDown");
         if (event.target instanceof Node && !this.contains(event.target)) {
             this.selected = false;
         }
@@ -78,7 +77,6 @@ export default class PopupButton extends Button
 
     protected onKeyDown(event: KeyboardEvent)
     {
-        console.log("onKeyDown", event.key);
         if (event.key === "Escape") {
             this.selected = false;
         }

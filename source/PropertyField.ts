@@ -136,7 +136,6 @@ export default class PropertyField extends CustomElement
         if (schema.options) {
             const menu = new PopupOptions();
             menu.options = schema.options;
-            menu.show(event);
             menu.addEventListener(PopupOptions.selectEvent, this.onSelectOption);
             return;
         }
