@@ -6,8 +6,11 @@
  */
 
 import math from "@ff/core/math";
-import Property from "@ff/core/ecs/Property";
-import types from "@ff/core/ecs/propertyTypes";
+
+import {
+    Property,
+    types
+} from "@ff/core/ecs";
 
 import PopupOptions, { IPopupMenuSelectEvent } from "./PopupOptions";
 import CustomElement, { customElement, property, PropertyValues } from "./CustomElement";

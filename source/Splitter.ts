@@ -132,6 +132,8 @@ export default class Splitter extends CustomElement
                 }
             }) as ISplitterChangeEvent);
 
+            window.dispatchEvent(new CustomEvent("resize"));
+
             if (!this.detached) {
                 const prevElement = this.previousElementSibling;
                 const nextElement = this.nextElementSibling;

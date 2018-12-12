@@ -25,8 +25,8 @@
     },
     "homepage": "https://github.com/framelab/ff-ui#readme",
     "dependencies": {
-        "@polymer/lit-element": "^0.6.3",
-        "@webcomponents/webcomponentsjs": "^2.2.0"
+        "@polymer/lit-element": "^0.6.4",
+        "@webcomponents/webcomponentsjs": "^2.2.1"
     },
     "devDependencies": {
         "@types/chai": "^4.1.7",
