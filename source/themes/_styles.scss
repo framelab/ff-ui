@@ -163,6 +163,17 @@ ff-title-bar {
   }
 }
 
+ff-quad-splitter {
+  .ff-left {
+    box-sizing: border-box;
+    border-right: 1px solid $color-background;
+  }
+  .ff-top {
+    box-sizing: border-box;
+    border-bottom: 1px solid $color-background;
+  }
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // ELEMENTS
 

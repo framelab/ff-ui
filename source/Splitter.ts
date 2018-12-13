@@ -121,16 +121,8 @@ export default class Splitter extends CustomElement
             const isHorizontal = this.isHorizontal();
 
             const parentSize = isHorizontal ? rect.width : rect.height;
-            const position = this._offset + (isHorizontal ? event.clientX - rect.left : event.clientY - rect.top);
-            this._position = position / parentSize;
-
-            this.dispatchEvent(new CustomEvent(Splitter.changeEvent, {
-                detail: {
-                    direction: this.direction,
-                    position: this._position,
-                    isDragging: true
-                }
-            }) as ISplitterChangeEvent);
+            let position = this._offset + (isHorizontal ? event.clientX - rect.left : event.clientY - rect.top);
+            let relativePosition = position / parentSize;
 
             if (!this.detached) {
                 const prevElement = this.previousElementSibling;
@@ -164,19 +156,29 @@ export default class Splitter extends CustomElement
                     const minSize = this.margin;
                     const maxSize = splitAreaSize - minSize;
 
-                    let prevSize = (position - splitAreaStart);
-                    prevSize = prevSize < minSize ? minSize : (prevSize > maxSize ? maxSize : prevSize);
+                    position = (position - splitAreaStart);
+                    position = position < minSize ? minSize : (position > maxSize ? maxSize : position);
 
-                    const nextSize = (splitAreaSize - prevSize) / parentSize;
-                    prevSize = prevSize / parentSize;
+                    const nextSize = (splitAreaSize - position) / parentSize;
+                    relativePosition = position / parentSize;
 
-                    prevElement.style.flexBasis = (prevSize * 100).toFixed(3) + "%";
+                    prevElement.style.flexBasis = (relativePosition * 100).toFixed(3) + "%";
                     nextElement.style.flexBasis = (nextSize * 100).toFixed(3) + "%";
 
                     // send global resize event so components can adjust to new size
                     setTimeout(() => window.dispatchEvent(new CustomEvent("resize")), 0);
                 }
             }
+
+            this._position = relativePosition;
+
+            this.dispatchEvent(new CustomEvent(Splitter.changeEvent, {
+                detail: {
+                    direction: this.direction,
+                    position: this._position,
+                    isDragging: true
+                }
+            }) as ISplitterChangeEvent);
         }
     }
 
