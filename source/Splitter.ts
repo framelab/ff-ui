@@ -63,18 +63,6 @@ export default class Splitter extends CustomElement
         return this.direction === "horizontal";
     }
 
-    protected firstUpdated()
-    {
-        this.setAttribute("touch-action", "none");
-
-        this.setStyle({
-            position: "relative",
-            display: "block",
-            zIndex: "1",
-            touchAction: "none"
-        });
-    }
-
     protected update(changedProperties)
     {
         super.update(changedProperties);
@@ -86,6 +74,18 @@ export default class Splitter extends CustomElement
             padding: isHorizontal ? `0 ${width}px` : `${width}px 0`,
             margin: isHorizontal ? `0 ${-width}px` : `${-width}px 0`,
             cursor: isHorizontal ? "col-resize" : "row-resize"
+        });
+    }
+
+    protected firstUpdated()
+    {
+        this.setAttribute("touch-action", "none");
+
+        this.setStyle({
+            position: "relative",
+            display: "block",
+            zIndex: "1",
+            touchAction: "none"
         });
     }
 
@@ -132,8 +132,6 @@ export default class Splitter extends CustomElement
                 }
             }) as ISplitterChangeEvent);
 
-            window.dispatchEvent(new CustomEvent("resize"));
-
             if (!this.detached) {
                 const prevElement = this.previousElementSibling;
                 const nextElement = this.nextElementSibling;
@@ -174,6 +172,9 @@ export default class Splitter extends CustomElement
 
                     prevElement.style.flexBasis = (prevSize * 100).toFixed(3) + "%";
                     nextElement.style.flexBasis = (nextSize * 100).toFixed(3) + "%";
+
+                    // send global resize event so components can adjust to new size
+                    setTimeout(() => window.dispatchEvent(new CustomEvent("resize")), 0);
                 }
             }
         }

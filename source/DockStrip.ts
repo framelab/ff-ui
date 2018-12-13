@@ -206,7 +206,7 @@ export default class DockStrip extends CustomElement
 
     protected updateSplitters()
     {
-        const children = Array.from(this.children);
+        const children = this.getChildrenArray();
         const parent = this.parentElement;
 
         if (!parent) {
@@ -224,10 +224,15 @@ export default class DockStrip extends CustomElement
             const nextChild = child.nextElementSibling;
 
             // remove redundant splitter handles
-            if (child instanceof Splitter && (i === 0 || !nextChild || nextChild instanceof Splitter)) {
-                this.removeChild(child);
-                continue;
+            if (child instanceof Splitter) {
+                if (i === 0 || !nextChild || nextChild instanceof Splitter) {
+                    this.removeChild(child);
+                    continue;
+                }
+
+                child.direction = this.direction;
             }
+
 
             if (!_isDockElement(child)) {
                 continue;
@@ -256,6 +261,15 @@ export default class DockStrip extends CustomElement
             dockElements[i].style.flexBasis = `${(elementSizes[i] / childrenSize * 100).toFixed(3)}%`;
             //console.log(`updateSplitters, i=${i}, prev=${prev} new=${dockElements[i].style.flexBasis}`);
         }
+
+        // log strip configuration
+        const currentChildren = this.getChildrenArray();
+        console.log("DockStrip.updateSplitters");
+        currentChildren.forEach(child => {
+            const size = child["style"].flexBasis;
+            const direction = child["direction"];
+            console.log("   %s (%s)", child.tagName, size || direction)
+        });
     }
 
     protected init(parseChildren: boolean)

@@ -55,6 +55,9 @@ export default class DockView extends CustomElement
 
        element.setLayout(layout, registry);
        this.appendChild(element);
+
+        // panel configuration has changed, send global resize event so components can adjust to new size
+        setTimeout(() => window.dispatchEvent(new CustomEvent("resize")), 0);
     }
 
     getLayout(): IDockElementLayout | null

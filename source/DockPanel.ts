@@ -138,6 +138,9 @@ export default class DockPanel extends CustomElement
             const parentStrip = stack.parentElement as DockStrip;
             parentStrip.insertPanel(panel, stack, zone);
         }
+
+        // panel configuration has changed, send global resize event so components can adjust to new size
+        setTimeout(() => window.dispatchEvent(new CustomEvent("resize")), 0);
     }
 
     activatePanel()
@@ -148,6 +151,9 @@ export default class DockPanel extends CustomElement
     closePanel()
     {
         this.parentStack.removePanel(this);
+
+        // panel configuration has changed, send global resize event so components can adjust to new size
+        setTimeout(() => window.dispatchEvent(new CustomEvent("resize")), 0);
     }
 
     protected update(changedProperties: PropertyValues)
