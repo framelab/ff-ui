@@ -11,8 +11,8 @@ import { LitElement } from "@polymer/lit-element";
 ////////////////////////////////////////////////////////////////////////////////
 
 export { property, PropertyValues } from "@polymer/lit-element";
-export { html, svg, render } from "lit-html/lit-html";
-
+export { html, svg, render, TemplateResult } from "lit-html";
+export { repeat } from "lit-html/directives/repeat";
 
 export default class CustomElement extends LitElement
 {
@@ -69,7 +69,7 @@ export default class CustomElement extends LitElement
     }
 
     appendElement<T extends HTMLElement>(
-        type: TypeOf<T>, style?: Partial<CSSStyleDeclaration>): T;
+        type: TypeOf<T> | T, style?: Partial<CSSStyleDeclaration>): T;
 
     appendElement<K extends keyof HTMLElementTagNameMap>(
         tagName: K, style?: Partial<CSSStyleDeclaration>): HTMLElementTagNameMap[K];
@@ -80,7 +80,7 @@ export default class CustomElement extends LitElement
     }
 
     createElement<T extends HTMLElement>(
-        type: TypeOf<T>, style?: Partial<CSSStyleDeclaration>, parent?: Element): T;
+        type: TypeOf<T> | T, style?: Partial<CSSStyleDeclaration>, parent?: Element): T;
 
     createElement<K extends keyof HTMLElementTagNameMap>(
         tagName: K, style?: Partial<CSSStyleDeclaration>, parent?: Element): HTMLElementTagNameMap[K];
@@ -91,6 +91,9 @@ export default class CustomElement extends LitElement
 
         if (typeof tagOrType === "string") {
             element = document.createElement(tagOrType);
+        }
+        else if (tagOrType instanceof HTMLElement) {
+            element = tagOrType;
         }
         else {
             element = new tagOrType();

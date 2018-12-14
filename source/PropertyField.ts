@@ -113,7 +113,7 @@ export default class PropertyField extends CustomElement
         this.updateElement();
     }
 
-    protected firstUpdated()
+    protected firstConnected()
     {
         this.tabIndex = 0;
 
@@ -121,6 +121,8 @@ export default class PropertyField extends CustomElement
             position: "relative",
             overflow: "hidden"
         });
+
+        this.classList.add("ff-property-field");
     }
 
     protected onFocus(event: FocusEvent)

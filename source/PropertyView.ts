@@ -7,10 +7,12 @@
 
 import Property from "@ff/core/ecs/Property";
 
-import PropertyField from "./PropertyField";
+import "./PropertyField";
 import CustomElement, { customElement, property, html } from "./CustomElement";
 
 ////////////////////////////////////////////////////////////////////////////////
+
+const _defaultLabels = [ "X", "Y", "Z", "W" ];
 
 @customElement("ff-property-view")
 export default class PropertyView extends CustomElement
@@ -22,31 +24,32 @@ export default class PropertyView extends CustomElement
     {
         const property = this.property;
 
-        let fields;
         if (property.isArray()) {
-            fields = [];
-            for (let i = 0; i < property.elementCount; ++i) {
-                const field = new PropertyField();
-                field.property = property;
-                field.index = i;
-                fields.push(field);
+            if (property.elementCount > 4) {
+                return;
             }
-        }
-        else {
-            fields = new PropertyField();
-            fields.property = property;
+
+            const labels = property.schema.labels || _defaultLabels;
+            let fields = [];
+            for (let i = 0; i < property.elementCount; ++i) {
+                fields.push(html`
+                    <div class="ff-label">${labels[i]}</div>
+                    <ff-property-field .property=${property} .index=${i}></ff-property-field>
+                `);
+            }
+            return html`${fields}`;
         }
 
-        return html`
-            <div class="ff-label"></div>
-            <div class="ff-fields">${fields}</div>
-        `;
+        return html`<ff-property-field .property=${property}></ff-property-field>`;
     }
 
-    protected firstUpdated()
+    protected firstConnected()
     {
         this.setStyle({
-            display: "flex"
+            display: "flex",
+            overflow: "hidden"
         });
+
+        this.classList.add("ff-property-view");
     }
 }

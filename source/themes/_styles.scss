@@ -24,13 +24,13 @@ $font-ui: "Segoe UI", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-
 // COLORS
 
 $color-background: #343434 !default;
-$color-background-dark: darken($color-background, 5%) !default;
+$color-background-dark: darken($color-background, 4%) !default;
 $color-background-darker: darken($color-background, 10%) !default;
 $color-background-light: lighten($color-background, 10%) !default;
 $color-background-lighter: lighten($color-background, 20%) !default;
 $color-background-hover: $color-background-lighter !default;
 
-$color-primary: #0277BD !default; // blue
+$color-primary: #1f6699 !default; // blue
 $color-primary-light: lighten($color-primary, 8%) !default;
 $color-primary-dark: darken($color-primary, 8%) !default;
 
@@ -47,6 +47,12 @@ $color-focus: $color-secondary-light;
 
 ////////////////////////////////////////////////////////////////////////////////
 // MIXINS
+
+// short hover animation
+$tx-short: 0.15s;
+// medium transition
+$tx-medium: 0.3s;
+
 
 @mixin full-size {
   position: absolute;
@@ -76,6 +82,7 @@ $color-focus: $color-secondary-light;
     border-right: $size solid transparent;
     border-bottom: $size solid $color;
     transform: rotate($angle);
+    transition: transform 0.05s;
   }
 }
 
@@ -98,11 +105,6 @@ $color-focus: $color-secondary-light;
   border: 1px solid $color-background-light;
   box-shadow: 3px 3px 24px rgba(0, 0, 0, 0.4);
 }
-
-// short hover animation
-$tx-short: 0.15s;
-// medium transition
-$tx-medium: 0.3s;
 
 ////////////////////////////////////////////////////////////////////////////////
 // GLOBAL
@@ -128,7 +130,90 @@ button, input {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// FRAMES
+// SEMANTIC ELEMENTS
+
+.ff-text {
+  user-select: none;
+  pointer-events: none;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// CONTROLS
+
+.ff-button {
+  padding: 4px 3px;
+  background: $color-background-light;
+  transition: background-color 0.2s;
+  cursor: pointer;
+
+  &:hover {
+    background-color: $color-background-lighter;
+  }
+  &[selected] {
+    background-color: $color-primary;
+
+    &:hover {
+      background-color: $color-primary-light;
+    }
+  }
+
+  .ff-text {
+    padding: 4px 3px;
+    white-space: nowrap;
+  }
+  .ff-icon {
+    padding: 4px 3px;
+    font-size: 1.3em;
+  }
+}
+
+ff-popup-button {
+  .ff-content {
+    transition: opacity $tx-short;
+  }
+}
+
+ff-line-edit {
+  background-color: $color-background-dark;
+
+  input {
+    padding: 2px;
+  }
+}
+
+ff-property-field {
+  background: $color-background-dark;
+  //height: 18px;
+  //font-size: 14px;
+  cursor: pointer;
+
+  &:focus {
+    outline: none;
+  }
+
+  .ff-bar {
+    margin: 2px 0;
+    background: $color-background-light;
+  }
+  .ff-content {
+    margin: -2px 2px 0 2px;
+    text-align: end;
+  }
+  .ff-event {
+
+  }
+  .ff-option {
+
+  }
+  input {
+    padding: 0 2px;
+    background-color: $color-background-darker;
+    text-align: end;
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// COMPONENTS
 
 .ff-modal-plane {
   @include full-screen;
@@ -175,86 +260,6 @@ ff-quad-splitter {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// ELEMENTS
-
-.ff-text {
-  user-select: none;
-  pointer-events: none;
-}
-
-.ff-button {
-  padding: 4px 3px;
-  background: $color-background-light;
-  transition: background-color 0.2s;
-  cursor: pointer;
-
-  &:hover {
-    background-color: $color-background-lighter;
-  }
-  &[selected] {
-    background-color: $color-primary;
-
-    &:hover {
-      background-color: $color-primary-light;
-    }
-  }
-
-  .ff-text {
-    padding: 4px 3px;
-    white-space: nowrap;
-  }
-  .ff-icon {
-    padding: 4px 3px;
-    font-size: 1.3em;
-  }
-}
-
-ff-popup-button {
-  .ff-content {
-    transition: opacity $tx-short;
-  }
-}
-
-ff-line-edit {
-  background-color: $color-background-dark;
-
-  input {
-    padding: 2px;
-  }
-}
-
-ff-property-field {
-  background: $color-background-dark;
-  height: 18px;
-  font-size: 14px;
-  cursor: pointer;
-
-  &:focus {
-    outline: none;
-  }
-
-  .ff-bar {
-    margin: 2px 0;
-    background: $color-background-light;
-  }
-  .ff-content {
-    margin: -1px 2px 0 2px;
-    text-align: end;
-  }
-  .ff-event {
-
-  }
-  .ff-option {
-
-  }
-  input {
-    padding: 0 2px;
-    background-color: $color-background-darker;
-    text-align: end;
-  }
-}
-
-////////////////////////////////////////////////////////////////////////////////
 // MENU
 
 .ff-menu {
@@ -283,16 +288,58 @@ ff-property-field {
 ////////////////////////////////////////////////////////////////////////////////
 // TREE
 
-ff-tree {
+.ff-tree {
+  .ff-node-container {
+    margin-left: -501px;
+    border-top: 1px solid $color-background-light;
+    border-bottom: 1px solid $color-background-light;
+    margin-bottom: -1px;
+  }
 
-}
-
-ff-tree-node {
-  margin-left: -500px;
-  border-top: 1px solid $color-background;
-
-  .ff-content {
+  .ff-node {
     margin-left: 500px;
+
+    &.ff-inner {
+      background-color: darken($color-background, 2%);
+    }
+    &.ff-leaf {
+      background-color: lighten($color-background, 3%);
+    }
+    &.ff-root {
+      background-color: $color-background-dark;
+    }
+    &[selected] {
+      background-color: $color-primary;
+    }
+
+    .ff-header {
+      position: relative;
+      cursor: pointer;
+      padding: 0 0 2px 14px;
+      display: flex;
+
+      .ff-text {
+        user-select: none;
+      }
+    }
+
+    &[expanded] .ff-header {
+      @include triangle($color-icon, 3px, 180deg);
+    }
+    &:not([expanded]) .ff-header {
+      @include triangle($color-icon, 3px, 90deg);
+    }
+    &.ff-leaf .ff-header {
+      @include dot($color-icon-disabled, 3px, 6px, 0.6em);
+      cursor: default;
+    }
+
+    .ff-content {
+      margin-left: 10px;
+    }
+    &:not([expanded]) .ff-content {
+      display: none;
+    }
   }
 }
 
@@ -311,7 +358,7 @@ ff-tab-header {
 // DOCK VIEW
 
 $color-dock-frame: $color-background-darker;
-$color-dock-background: $color-background;
+$color-dock-background: $color-background-dark;
 
 ff-tab-container, ff-dock-stack {
   background: $color-dock-background;
@@ -325,7 +372,7 @@ ff-tab-container, ff-dock-stack {
 ff-tab-header, ff-dock-panel-header {
   background: $color-dock-frame;
   color: $color-text;
-  padding-right: 2px;
+  padding: 0 2px 2px 0;
 
   &[active] {
     background: linear-gradient(lighten($color-dock-background, 15%), $color-dock-background);
@@ -351,4 +398,68 @@ ff-tab-header, ff-dock-panel-header {
   border: 1px solid $color-primary;
 }
 
+////////////////////////////////////////////////////////////////////////////////
+// ENTITY COMPONENT SYSTEM
 
+.ff-hierarchy-tree {
+  .ff-node {
+    &.ff-entity {
+      background-color: darken($color-background, 6%);
+
+      & > .ff-content {
+        margin-left: 9px;
+      }
+    }
+    &.ff-component {
+      background-color: lighten($color-background, 3%);
+
+      & > .ff-content {
+        margin-left: 11px;
+      }
+    }
+    &[selected] {
+      background-color: $color-primary;
+    }
+  }
+}
+
+.ff-property-tree {
+  font-size: 0.9rem;
+
+  .ff-node {
+    &.ff-inner {
+      background-color: darken($color-background, 4%);
+    }
+    &.ff-component {
+      background-color: $color-background-darker;
+    }
+    &.ff-set {
+      background-color: darken($color-background, 6%);
+    }
+
+    .ff-header {
+      position: relative;
+      display: flex;
+
+      & > .ff-text {
+        width: 27%;
+      }
+      ff-property-view {
+        flex: 1 1 auto;
+      }
+    }
+  }
+}
+
+.ff-property-view {
+  .ff-label {
+    padding: 0 2px;
+    color: $color-icon;
+  }
+  .ff-property-field {
+    flex: 1 1 auto;
+    margin: 2px 1px 0 0;
+    background-color: $color-background;
+  }
+
+}
