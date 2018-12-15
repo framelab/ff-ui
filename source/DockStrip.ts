@@ -263,13 +263,13 @@ export default class DockStrip extends CustomElement
         }
 
         // log strip configuration
-        const currentChildren = this.getChildrenArray();
-        console.log("DockStrip.updateSplitters");
-        currentChildren.forEach(child => {
-            const size = child["style"].flexBasis;
-            const direction = child["direction"];
-            console.log("   %s (%s)", child.tagName, size || direction)
-        });
+        // const currentChildren = this.getChildrenArray();
+        // console.log("DockStrip.updateSplitters");
+        // currentChildren.forEach(child => {
+        //     const size = child["style"].flexBasis;
+        //     const direction = child["direction"];
+        //     console.log("   %s (%s)", child.tagName, size || direction)
+        // });
     }
 
     protected init(parseChildren: boolean)
