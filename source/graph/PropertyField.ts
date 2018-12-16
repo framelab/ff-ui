@@ -10,10 +10,10 @@ import math from "@ff/core/math";
 import {
     Property,
     types
-} from "@ff/core/ecs";
+} from "@ff/graph";
 
-import PopupOptions, { IPopupMenuSelectEvent } from "./PopupOptions";
-import CustomElement, { customElement, property, PropertyValues } from "./CustomElement";
+import PopupOptions, { IPopupMenuSelectEvent } from "../PopupOptions";
+import CustomElement, { customElement, property, PropertyValues } from "../CustomElement";
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -62,13 +62,6 @@ export default class PropertyField extends CustomElement
         this.addEventListener("pointercancel", this.onPointerUp);
 
         this.property = property;
-
-        this.contentElement = document.createElement("div");
-        this.contentElement.classList.add("ff-content");
-        PropertyField.setStyle(this.contentElement, {
-            position: "absolute", top: "0", bottom: "0", left: "0", right: "0",
-            userSelect: "none", pointerEvents: "none"
-        });
     }
 
     protected update(changedProperties: PropertyValues)
@@ -81,35 +74,45 @@ export default class PropertyField extends CustomElement
         const oldProp = changedProperties.get("property") as Property;
         if (oldProp) {
             oldProp.off("value", this.onPropertyValue);
+
+            if (this.contentElement) {
+                this.contentElement.remove();
+                if (this.barElement) {
+                    this.barElement.remove();
+                }
+            }
         }
+
+        const property = this.property;
+        const schema = property.schema;
+
         if (this.property) {
             this.property.on("value", this.onPropertyValue);
         }
 
-        const schema = this.property.schema;
+        // content element
+        this.contentElement = this.appendElement("div", {
+            position: "absolute", top: "0", bottom: "0", left: "0", right: "0",
+            userSelect: "none", pointerEvents: "none"
+        });
+        this.contentElement.classList.add("ff-content");
+
+        const classList = this.classList;
+        property.isOutput() ? classList.add("ff-output") : classList.remove("ff-output");
+        property.hasInLinks() ? classList.add("ff-linked") : classList.remove("ff-linked");
+        schema.event ? classList.add("ff-event") : classList.remove("ff-event");
+        schema.options ? classList.add("ff-option") : classList.remove("ff-option");
 
         // bar element
         const { min, max, bar } = schema;
         if (!schema.options && min !== undefined && max !== undefined && bar !== undefined) {
-            this.barElement = document.createElement("div");
-            this.barElement.classList.add("ff-bar");
-            this.renderRoot.appendChild(this.barElement);
-
-            PropertyField.setStyle(this.barElement, {
+            this.barElement = this.appendElement("div", {
                 position: "absolute", top: "0", bottom: "0", left: "0"
             });
-        }
-        else if (this.barElement) {
-            this.barElement.remove();
-            this.barElement = null;
+
+            this.barElement.classList.add("ff-bar");
         }
 
-        // content element
-        const classList = this.contentElement.classList;
-        schema.event ? classList.add("ff-event") : classList.remove("ff-event");
-        schema.options ? classList.add("ff-option") : classList.remove("ff-option");
-
-        this.renderRoot.appendChild(this.contentElement);
         this.updateElement();
     }
 
@@ -171,7 +174,6 @@ export default class PropertyField extends CustomElement
             return;
         }
 
-        this.setPointerCapture(event.pointerId);
         this.startX = event.clientX;
         this.startY = event.clientY;
     }
@@ -187,6 +189,7 @@ export default class PropertyField extends CustomElement
             const dy = event.clientY - this.startY;
             const delta = Math.abs(dx) + Math.abs(dy);
             if (delta > 2) {
+                this.setPointerCapture(event.pointerId);
                 this.isDragging = true;
             }
         }

@@ -6,22 +6,22 @@
  */
 
 import uniqueId from "@ff/core/uniqueId";
-import { Entity, Component, Hierarchy, System } from "@ff/core/ecs";
+import { Node, Component, Hierarchy, System } from "@ff/graph";
 
 import SelectionController, {
     ISelectComponentEvent,
-    ISelectEntityEvent
-} from "@ff/core/ecs/SelectionController";
+    ISelectNodeEvent
+} from "@ff/graph/SelectionController";
 
 import Tree from "../Tree";
 import { customElement, html } from "../CustomElement";
 
 ////////////////////////////////////////////////////////////////////////////////
 
-type ECS = Entity | Component | System;
+type NCS = Node | Component | System;
 
 @customElement("ff-hierarchy-tree")
-export default class HierarchyTree extends Tree<ECS>
+export default class HierarchyTree extends Tree<NCS>
 {
     protected controller: SelectionController;
     protected rootId = uniqueId();
@@ -42,7 +42,7 @@ export default class HierarchyTree extends Tree<ECS>
     {
         super.connected();
 
-        this.controller.on("entity", this.onSelectEntity, this);
+        this.controller.on("node", this.onSelectNode, this);
         this.controller.on("component", this.onSelectComponent, this);
     }
 
@@ -50,16 +50,16 @@ export default class HierarchyTree extends Tree<ECS>
     {
         super.disconnected();
 
-        this.controller.off("entity", this.onSelectEntity, this);
+        this.controller.off("node", this.onSelectNode, this);
         this.controller.off("component", this.onSelectComponent, this);
     }
 
-    protected renderNodeHeader(node: ECS)
+    protected renderNodeHeader(node: NCS)
     {
         let text;
 
-        if (node instanceof Entity) {
-            text = node.name || "Entity";
+        if (node instanceof Node) {
+            text = node.name || "Node";
         }
         else if (node instanceof Component) {
             text = node.name || node.type;
@@ -71,15 +71,15 @@ export default class HierarchyTree extends Tree<ECS>
         return html`<div class="ff-text">${text}</div>`
     }
 
-    protected getId(node: ECS)
+    protected getId(node: NCS)
     {
         return node instanceof System ? this.rootId : node.id;
     }
 
-    protected getClasses(node: ECS)
+    protected getClasses(node: NCS)
     {
-        if (node instanceof Entity) {
-            return "ff-entity";
+        if (node instanceof Node) {
+            return "ff-node";
         }
         if (node instanceof Component) {
             return "ff-component";
@@ -88,41 +88,39 @@ export default class HierarchyTree extends Tree<ECS>
         return "ff-system";
     }
 
-    protected getChildren(node: ECS)
+    protected getChildren(node: NCS)
     {
-        if (node instanceof Entity) {
+        if (node instanceof Node) {
             return node.components.getArray();
         }
         if (node instanceof Hierarchy) {
-            return node.children.map(child => child.entity);
+            return node.children.map(child => child.node);
         }
         if (node instanceof System) {
-            return node.module.entities.findRoots();
+            return node.graph.nodes.findRoots();
         }
 
         return null;
     }
 
-    protected onNodeClick(event: MouseEvent, node: ECS, id: string)
+    protected onNodeClick(event: MouseEvent, node: NCS, id: string)
     {
         const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
 
         if (event.clientX - rect.left < 30) {
             this.toggleExpanded(node);
         }
-        else if (node instanceof Entity) {
-            this.controller.selectEntity(node, event.ctrlKey);
+        else if (node instanceof Node) {
+            this.controller.selectNode(node, event.ctrlKey);
         }
         else if (node instanceof Component) {
             this.controller.selectComponent(node, event.ctrlKey);
         }
-
-        event.stopPropagation();
     }
 
-    protected onSelectEntity(event: ISelectEntityEvent)
+    protected onSelectNode(event: ISelectNodeEvent)
     {
-        this.setSelected(event.entity, event.selected);
+        this.setSelected(event.node, event.selected);
     }
 
     protected onSelectComponent(event: ISelectComponentEvent)

@@ -5,20 +5,18 @@
  * License: MIT
  */
 
-import { Entity, Component, Property, PropertySet } from "@ff/core/ecs";
+import { Node, Component, Property, PropertySet } from "@ff/graph";
 
 import SelectionController, {
     ISelectComponentEvent,
-    ISelectEntityEvent
-} from "@ff/core/ecs/SelectionController";
+    ISelectNodeEvent
+} from "@ff/graph/SelectionController";
 
+import "./PropertyView";
 import Tree from "../Tree";
-import "../PropertyView";
 import { customElement, html } from "../CustomElement";
 
 ////////////////////////////////////////////////////////////////////////////////
-
-type EC = Entity | Component;
 
 interface ITreeNode
 {
@@ -50,7 +48,7 @@ export default class PropertyTree extends Tree<ITreeNode>
     {
         super.connected();
 
-        this.controller.on("entity", this.onSelectEntity, this);
+        this.controller.on("node", this.onSelectNode, this);
         this.controller.on("component", this.onSelectComponent, this);
     }
 
@@ -58,7 +56,7 @@ export default class PropertyTree extends Tree<ITreeNode>
     {
         super.disconnected();
 
-        this.controller.off("entity", this.onSelectEntity, this);
+        this.controller.off("node", this.onSelectNode, this);
         this.controller.off("component", this.onSelectComponent, this);
     }
 
@@ -75,31 +73,31 @@ export default class PropertyTree extends Tree<ITreeNode>
         `;
     }
 
-    protected onSelectEntity(event: ISelectEntityEvent)
+    protected onSelectNode(event: ISelectNodeEvent)
     {
         if (event.selected) {
-            this.root = this.createEntityNode(event.entity);
+            this.root = this.createNodeTreeNode(event.node);
         }
     }
 
     protected onSelectComponent(event: ISelectComponentEvent)
     {
         if (event.selected) {
-            this.root = this.createComponentNode(event.component);
+            this.root = this.createComponentTreeNode(event.component);
         }
     }
 
-    protected createEntityNode(entity: Entity): ITreeNode
+    protected createNodeTreeNode(node: Node): ITreeNode
     {
         return {
-            id: entity.id,
-            text: entity.name || "Entity",
-            classes: "ff-entity",
-            children: entity.components.getArray().map(component => this.createComponentNode(component))
+            id: node.id,
+            text: node.name || "Node",
+            classes: "ff-node",
+            children: node.components.getArray().map(component => this.createComponentTreeNode(component))
         };
     }
 
-    protected createComponentNode(component: Component): ITreeNode
+    protected createComponentTreeNode(component: Component): ITreeNode
     {
         const id = component.id;
         const inputsId = id + "i";

@@ -289,14 +289,14 @@ ff-quad-splitter {
 // TREE
 
 .ff-tree {
-  .ff-node-container {
+  .ff-tree-node-container {
     margin-left: -501px;
     border-top: 1px solid $color-background-light;
     border-bottom: 1px solid $color-background-light;
     margin-bottom: -1px;
   }
 
-  .ff-node {
+  .ff-tree-node {
     margin-left: 500px;
 
     &.ff-inner {
@@ -337,7 +337,7 @@ ff-quad-splitter {
     .ff-content {
       margin-left: 10px;
     }
-    &:not([expanded]) .ff-content {
+    &:not([expanded]) > .ff-content {
       display: none;
     }
   }
@@ -399,67 +399,6 @@ ff-tab-header, ff-dock-panel-header {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// ENTITY COMPONENT SYSTEM
+// NODE GRAPH SYSTEM
 
-.ff-hierarchy-tree {
-  .ff-node {
-    &.ff-entity {
-      background-color: darken($color-background, 6%);
-
-      & > .ff-content {
-        margin-left: 9px;
-      }
-    }
-    &.ff-component {
-      background-color: lighten($color-background, 3%);
-
-      & > .ff-content {
-        margin-left: 11px;
-      }
-    }
-    &[selected] {
-      background-color: $color-primary;
-    }
-  }
-}
-
-.ff-property-tree {
-  font-size: 0.9rem;
-
-  .ff-node {
-    &.ff-inner {
-      background-color: darken($color-background, 4%);
-    }
-    &.ff-component {
-      background-color: $color-background-darker;
-    }
-    &.ff-set {
-      background-color: darken($color-background, 6%);
-    }
-
-    .ff-header {
-      position: relative;
-      display: flex;
-
-      & > .ff-text {
-        width: 27%;
-      }
-      ff-property-view {
-        flex: 1 1 auto;
-      }
-    }
-  }
-}
-
-.ff-property-view {
-  .ff-label {
-    padding: 0 2px;
-    color: $color-icon;
-  }
-  .ff-property-field {
-    flex: 1 1 auto;
-    margin: 2px 1px 0 0;
-    background-color: $color-background;
-  }
-
-}
+@import "./graph";

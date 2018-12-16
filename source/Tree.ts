@@ -44,14 +44,14 @@ export default class Tree<T extends any = any> extends CustomElement
         this.root = root;
     }
 
-    toggleSelected(node: T)
+    toggleSelected(treeNode: T)
     {
-        this.setSelected(node, undefined);
+        this.setSelected(treeNode, undefined);
     }
 
-    setSelected(node: T, state: boolean)
+    setSelected(treeNode: T, state: boolean)
     {
-        const id = this.idByNode.get(node);
+        const id = this.idByNode.get(treeNode);
         if (id) {
             const nodeElement = document.getElementById(id);
             if (state === undefined) {
@@ -67,9 +67,9 @@ export default class Tree<T extends any = any> extends CustomElement
         }
     }
 
-    isSelected(node: T)
+    isSelected(treeNode: T)
     {
-        const id = this.idByNode.get(node);
+        const id = this.idByNode.get(treeNode);
         if (id) {
             const nodeElement = document.getElementById(id);
             return nodeElement.hasAttribute("selected");
@@ -78,14 +78,14 @@ export default class Tree<T extends any = any> extends CustomElement
         return false;
     }
 
-    toggleExpanded(node: T)
+    toggleExpanded(treeNode: T)
     {
-        this.setExpanded(node, undefined);
+        this.setExpanded(treeNode, undefined);
     }
 
-    setExpanded(node: T, state: boolean)
+    setExpanded(treeNode: T, state: boolean)
     {
-        const id = this.idByNode.get(node);
+        const id = this.idByNode.get(treeNode);
         if (id) {
             const nodeElement = document.getElementById(id);
             if (state === undefined) {
@@ -101,9 +101,9 @@ export default class Tree<T extends any = any> extends CustomElement
         }
     }
 
-    isExpanded(node: T)
+    isExpanded(treeNode: T)
     {
-        const id = this.idByNode.get(node);
+        const id = this.idByNode.get(treeNode);
         if (id) {
             const nodeElement = document.getElementById(id);
             return nodeElement.hasAttribute("expanded");
@@ -141,42 +141,42 @@ export default class Tree<T extends any = any> extends CustomElement
         }
     }
 
-    protected getId(node: T): string
+    protected getId(treeNode: T): string
     {
-        return node.id || uniqueId();
+        return treeNode.id || uniqueId();
     }
 
-    protected getClasses(node: T): string
+    protected getClasses(treeNode: T): string
     {
         return null;
     }
 
-    protected getChildren(node: T): any[] | null
+    protected getChildren(treeNode: T): any[] | null
     {
-        return node.children || null;
+        return treeNode.children || null;
     }
 
-    protected isNodeSelected(node: T): boolean
+    protected isNodeSelected(treeNode: T): boolean
     {
-        return !!node.selected;
+        return !!treeNode.selected;
     }
 
-    protected isNodeExpanded(node: T): boolean
+    protected isNodeExpanded(treeNode: T): boolean
     {
-        return node.expanded !== undefined ? node.expanded : true;
+        return treeNode.expanded !== undefined ? treeNode.expanded : true;
     }
 
-    protected renderNodeHeader(node: T): TemplateResult | string
+    protected renderNodeHeader(treeNode: T): TemplateResult | string
     {
-        return node.toString();
+        return treeNode.toString();
     }
 
-    protected renderNodeContent(node: T, children: T[] | null): TemplateResult | string
+    protected renderNodeContent(treeNode: T, children: T[] | null): TemplateResult | string
     {
-        return this.renderNodeChildren(node, children);
+        return this.renderNodeChildren(treeNode, children);
     }
 
-    protected renderNodeChildren(node: T, children: T[] | null): TemplateResult
+    protected renderNodeChildren(treeNode: T, children: T[] | null): TemplateResult
     {
         if (!children || children.length === 0) {
             return null;
@@ -189,27 +189,27 @@ export default class Tree<T extends any = any> extends CustomElement
         `;
     }
 
-    protected renderNode(node: T, id: string): TemplateResult
+    protected renderNode(treeNode: T, id: string): TemplateResult
     {
-        this.nodeById[id] = node;
-        this.idByNode.set(node, id);
+        this.nodeById[id] = treeNode;
+        this.idByNode.set(treeNode, id);
 
-        const children = this.getChildren(node);
+        const children = this.getChildren(treeNode);
 
-        const selected = this.isNodeSelected(node);
-        const expanded = this.isNodeExpanded(node);
+        const selected = this.isNodeSelected(treeNode);
+        const expanded = this.isNodeExpanded(treeNode);
 
         const typeClass = children && children.length > 0 ? "ff-inner " : "ff-leaf ";
-        let classes = "ff-node " + typeClass + this.getClasses(node);
+        let classes = "ff-tree-node " + typeClass + this.getClasses(treeNode);
 
-        const header = this.renderNodeHeader(node);
-        const content = this.renderNodeContent(node, children);
+        const header = this.renderNodeHeader(treeNode);
+        const content = this.renderNodeContent(treeNode, children);
 
 
         return html`
-            <div class="ff-node-container">
-                <div class=${classes} id=${id} ?selected=${selected} ?expanded=${expanded} @click=${this.onClick}>
-                    <div class="ff-header">${header}</div>
+            <div class="ff-tree-node-container">
+                <div class=${classes} id=${id} ?selected=${selected} ?expanded=${expanded}>
+                    <div class="ff-header" @click=${this.onClick}>${header}</div>
                     <div class="ff-content">${content}</div>
                 </div>
             </div>
@@ -218,17 +218,19 @@ export default class Tree<T extends any = any> extends CustomElement
 
     protected onClick(event: MouseEvent)
     {
-        const id = (event.currentTarget as Element).id;
-        const node = this.nodeById[id];
+        const headerElement = event.currentTarget as HTMLDivElement;
+        const id = headerElement.parentElement.id; // node element
+        const treeNode = this.nodeById[id];
 
-        if (node) {
-            this.onNodeClick(event, node, id);
+        if (treeNode) {
+            this.onNodeClick(event, treeNode, id);
         }
+
+        event.stopPropagation();
     }
 
-    protected onNodeClick(event: MouseEvent, node: T, id: string)
+    protected onNodeClick(event: MouseEvent, treeNode: T, id: string)
     {
-        this.toggleExpanded(node);
-        event.stopPropagation();
+        this.toggleExpanded(treeNode);
     }
 }

@@ -15,10 +15,9 @@
  * limitations under the License.
  */
 
-import "../Splitter";
-import { ISplitterChangeEvent } from "../Splitter";
-
-import CustomElement, { customElement, html, property } from "@ff/ui/CustomElement";
+import "./Splitter";
+import { ISplitterChangeEvent } from "./Splitter";
+import CustomElement, { customElement, html, property } from "./CustomElement";
 
 ////////////////////////////////////////////////////////////////////////////////
 

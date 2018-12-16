@@ -5,10 +5,10 @@
  * License: MIT
  */
 
-import Property from "@ff/core/ecs/Property";
+import Property from "@ff/graph/Property";
 
 import "./PropertyField";
-import CustomElement, { customElement, property, html } from "./CustomElement";
+import CustomElement, { customElement, property, html } from "../CustomElement";
 
 ////////////////////////////////////////////////////////////////////////////////
 

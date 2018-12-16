@@ -1,0 +1,78 @@
+/**
+ * FF Typescript Foundation Library
+ * Copyright 2018 Ralph Wiedemeier, Frame Factory GmbH
+ *
+ * License: MIT
+ */
+
+////////////////////////////////////////////////////////////////////////////////
+// NODE GRAPH SYSTEM
+
+.ff-hierarchy-tree {
+  .ff-tree-node {
+    &.ff-node {
+      background-color: darken($color-background, 6%);
+
+      & > .ff-content {
+        margin-left: 9px;
+      }
+    }
+    &.ff-component {
+      background-color: lighten($color-background, 3%);
+
+      & > .ff-content {
+        margin-left: 11px;
+      }
+    }
+    &[selected] {
+      background-color: $color-primary;
+    }
+  }
+}
+
+.ff-property-tree {
+  font-size: 0.9rem;
+
+  .ff-tree-node {
+    &.ff-inner {
+      background-color: darken($color-background, 4%);
+    }
+    &.ff-component {
+      background-color: $color-background-darker;
+    }
+    &.ff-set {
+      background-color: darken($color-background, 6%);
+    }
+
+    .ff-header {
+      & > .ff-text {
+        width: 27%;
+      }
+      ff-property-view {
+        flex: 1 1 auto;
+      }
+    }
+  }
+}
+
+.ff-property-view {
+  .ff-label {
+    padding: 0 2px;
+    color: $color-icon;
+    user-select: none;
+  }
+  .ff-property-field {
+    flex: 1 1 auto;
+    margin: 2px 1px 0 0;
+    background-color: darken($color-background, 2%);
+
+    &.ff-output {
+      pointer-events: none;
+    }
+    &.ff-linked {
+      pointer-events: none;
+      background-color: #3b2923;
+      color: #d99882;
+    }
+  }
+}
