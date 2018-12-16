@@ -14,7 +14,7 @@ import SelectionController, {
 
 import "./PropertyView";
 import Tree from "../Tree";
-import { customElement, html } from "../CustomElement";
+import { customElement, property, PropertyValues, html } from "../CustomElement";
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -30,18 +30,24 @@ interface ITreeNode
 @customElement("ff-property-tree")
 export default class PropertyTree extends Tree<ITreeNode>
 {
-    protected controller: SelectionController;
+    @property({ attribute: false })
+    controller: SelectionController;
 
-    constructor(controller: SelectionController)
+    constructor(controller?: SelectionController)
     {
         super();
         this.controller = controller;
+        this.includeRoot = true;
     }
 
     protected firstConnected()
     {
         super.firstConnected();
         this.classList.add("ff-property-tree");
+
+        if (!this.controller) {
+            throw new Error("missing controller");
+        }
     }
 
     protected connected()
@@ -78,12 +84,18 @@ export default class PropertyTree extends Tree<ITreeNode>
         if (event.selected) {
             this.root = this.createNodeTreeNode(event.node);
         }
+        else {
+            this.root = null;
+        }
     }
 
     protected onSelectComponent(event: ISelectComponentEvent)
     {
         if (event.selected) {
             this.root = this.createComponentTreeNode(event.component);
+        }
+        else {
+            this.root = null;
         }
     }
 
@@ -121,7 +133,7 @@ export default class PropertyTree extends Tree<ITreeNode>
         const root: ITreeNode = {
             id,
             text,
-            classes: "ff-set",
+            classes: set.isInput() ? "ff-inputs" : "ff-outputs",
             children: []
         };
 

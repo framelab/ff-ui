@@ -181,37 +181,6 @@ ff-line-edit {
   }
 }
 
-ff-property-field {
-  background: $color-background-dark;
-  //height: 18px;
-  //font-size: 14px;
-  cursor: pointer;
-
-  &:focus {
-    outline: none;
-  }
-
-  .ff-bar {
-    margin: 2px 0;
-    background: $color-background-light;
-  }
-  .ff-content {
-    margin: -2px 2px 0 2px;
-    text-align: end;
-  }
-  .ff-event {
-
-  }
-  .ff-option {
-
-  }
-  input {
-    padding: 0 2px;
-    background-color: $color-background-darker;
-    text-align: end;
-  }
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 // COMPONENTS
 
@@ -262,7 +231,7 @@ ff-quad-splitter {
 ////////////////////////////////////////////////////////////////////////////////
 // MENU
 
-.ff-menu {
+.ff-popup-options {
   @include window;
   min-width: 6rem;
 

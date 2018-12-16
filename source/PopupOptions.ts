@@ -21,7 +21,7 @@ export interface IPopupMenuSelectEvent extends CustomEvent
 @customElement("ff-popup-options")
 export default class PopupOptions extends Popup
 {
-    static readonly selectEvent = "ff-popup-options-select";
+    static readonly selectEvent = "ff-select";
 
     @property({ attribute: false })
     options: string[];
@@ -34,7 +34,10 @@ export default class PopupOptions extends Popup
         super();
 
         this.onClick = this.onClick.bind(this);
+        this.onClose = this.onClose.bind(this);
+
         this.addEventListener("click", this.onClick);
+        this.addEventListener(Popup.closeEvent, this.onClose);
 
         this.options = options || [];
         this.selectionIndex = -1;
@@ -51,6 +54,8 @@ export default class PopupOptions extends Popup
 
     protected updated()
     {
+        super.updated();
+
         const index = this.selectionIndex >= 0 ? this.selectionIndex : 0;
         const button = this.children.item(index) as HTMLButtonElement;
         if (button) {
@@ -60,14 +65,13 @@ export default class PopupOptions extends Popup
 
     protected firstUpdated()
     {
-        this.classList.add("ff-menu", "ff-popup-menu");
+        super.firstUpdated();
+
+        this.classList.add("ff-popup-options");
 
         this.setStyle({
             display: "flex",
-            flexDirection: "column",
-            position: "absolute",
-            zIndex: "1000",
-            opacity: "0",
+            flexDirection: "column"
         });
     }
 
@@ -86,7 +90,8 @@ export default class PopupOptions extends Popup
         this.remove();
     }
 
-
-
-
+    protected onClose()
+    {
+        this.remove();
+    }
 }

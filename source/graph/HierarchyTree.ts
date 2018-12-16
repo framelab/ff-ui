@@ -14,7 +14,7 @@ import SelectionController, {
 } from "@ff/graph/SelectionController";
 
 import Tree from "../Tree";
-import { customElement, html } from "../CustomElement";
+import { customElement, html, property } from "../CustomElement";
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -23,7 +23,9 @@ type NCS = Node | Component | System;
 @customElement("ff-hierarchy-tree")
 export default class HierarchyTree extends Tree<NCS>
 {
-    protected controller: SelectionController;
+    @property({ attribute: false })
+    controller: SelectionController;
+
     protected rootId = uniqueId();
 
     constructor(controller: SelectionController)
@@ -36,6 +38,10 @@ export default class HierarchyTree extends Tree<NCS>
     {
         super.firstConnected();
         this.classList.add("ff-hierarchy-tree");
+
+        if (!this.controller) {
+            throw new Error("missing controller");
+        }
     }
 
     protected connected()
@@ -54,21 +60,38 @@ export default class HierarchyTree extends Tree<NCS>
         this.controller.off("component", this.onSelectComponent, this);
     }
 
-    protected renderNodeHeader(node: NCS)
+    protected render()
+    {
+        console.log("HierarchyTree.render");
+        return super.render();
+    }
+
+    protected renderNodeHeader(treeNode: NCS)
     {
         let text;
 
-        if (node instanceof Node) {
-            text = node.name || "Node";
+        if (treeNode instanceof Node) {
+            text = treeNode.name || "Node";
         }
-        else if (node instanceof Component) {
-            text = node.name || node.type;
+        else if (treeNode instanceof Component) {
+            text = treeNode.name || treeNode.type;
         }
         else {
             text = "System";
         }
 
         return html`<div class="ff-text">${text}</div>`
+    }
+
+    protected isNodeSelected(treeNode: NCS)
+    {
+        const controller = this.controller;
+        if (treeNode instanceof Component) {
+            return controller.isComponentSelected(treeNode);
+        }
+        else if (treeNode instanceof Node) {
+            return controller.isNodeSelected(treeNode);
+        }
     }
 
     protected getId(node: NCS)

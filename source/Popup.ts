@@ -10,7 +10,7 @@ import CustomElement, { customElement, property } from "./CustomElement";
 ////////////////////////////////////////////////////////////////////////////////
 
 export type FloaterPosition = "fixed" | "anchor" | "center";
-export type FloaterAlign = "start" | "center" | "end";
+export type FloaterAlign = "start" | "center" | "end" | "fixed";
 export type FloaterJustify = FloaterAlign;
 
 @customElement("ff-popup")
@@ -34,6 +34,12 @@ export default class Popup extends CustomElement
     justify: FloaterJustify = undefined;
 
     @property({ type: Number })
+    positionX = 0;
+
+    @property({ type: Number })
+    positionY = 0;
+
+    @property({ type: Number })
     offsetX = 0;
 
     @property({ type: Number })
@@ -46,22 +52,30 @@ export default class Popup extends CustomElement
     {
         super();
         this.onResize = this.onResize.bind(this);
+        this.onPointerDown = this.onPointerDown.bind(this);
     }
 
     protected connected()
     {
         this.calculatePosition();
+
         window.addEventListener("resize", this.onResize);
+        document.addEventListener("pointerdown", this.onPointerDown, { capture: true, passive: true });
     }
 
     protected disconnected()
     {
-        window.removeEventListener("resize", this.onResize)
+        window.removeEventListener("resize", this.onResize);
+        document.removeEventListener("pointerdown", this.onPointerDown);
     }
 
     protected firstUpdated()
     {
-        this.style.position = "fixed";
+        this.setStyle({
+            position: "fixed",
+            zIndex: "1000"
+        });
+
         this.classList.add("ff-popup");
     }
 
@@ -101,7 +115,7 @@ export default class Popup extends CustomElement
             }
         }
         else {
-            position = { x: thisRect.left, y: thisRect.top };
+            position = { x: this.positionX, y: this.positionY };
         }
 
         if (this.keepVisible && this.position !== "center") {
@@ -133,12 +147,15 @@ export default class Popup extends CustomElement
             case "start":
                 position.x = justify !== "start" && justify !== "end"
                     ? anchorRect.left - thisRect.width - offsetX
-                    : anchorRect.right - thisRect.width;
+                    : anchorRect.left;
                 break;
             case "end":
                 position.x = justify !== "start" && justify !== "end"
                     ? anchorRect.right + offsetX
-                    : anchorRect.left;
+                    : anchorRect.right - thisRect.width;
+                break;
+            case "fixed":
+                position.x = this.positionX;
                 break;
             default:
                 position.x = anchorRect.left + (anchorRect.width - thisRect.width) * 0.5;
@@ -147,19 +164,21 @@ export default class Popup extends CustomElement
 
         switch(justify) {
             case "start":
-                position.y = align !== "start" && align !== "end"
-                    ? anchorRect.top - thisRect.height - offsetY
-                    : anchorRect.bottom - thisRect.height;
+                position.y = anchorRect.top - thisRect.height - offsetY;
                 break;
             case "end":
-                position.y = align !== "start" && align !== "end"
-                    ? anchorRect.bottom + offsetY
-                    : anchorRect.top;
+                position.y = anchorRect.bottom + offsetY;
+                break;
+            case "fixed":
+                position.y = this.positionY;
                 break;
             default:
                 position.y = anchorRect.top + (anchorRect.height - thisRect.height) * 0.5;
                 break;
         }
+
+        position.x += this.offsetX;
+        position.y += this.offsetY;
 
         return position;
     }
@@ -195,5 +214,14 @@ export default class Popup extends CustomElement
     protected onResize()
     {
         this.calculatePosition();
+    }
+
+    protected onPointerDown(event: PointerEvent)
+    {
+        if (event.target instanceof Node && this.contains(event.target)) {
+            return;
+        }
+
+        this.dispatchEvent(new CustomEvent(Popup.closeEvent));
     }
 }

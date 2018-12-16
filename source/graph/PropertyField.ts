@@ -66,31 +66,18 @@ export default class PropertyField extends CustomElement
 
     protected update(changedProperties: PropertyValues)
     {
-        if (!changedProperties.has("property")) {
-            return;
-        }
-
-        // property value event hook
-        const oldProp = changedProperties.get("property") as Property;
-        if (oldProp) {
-            oldProp.off("value", this.onPropertyValue);
-
-            if (this.contentElement) {
-                this.contentElement.remove();
-                if (this.barElement) {
-                    this.barElement.remove();
-                }
+        // remove child elements
+        if (this.contentElement) {
+            this.contentElement.remove();
+            if (this.barElement) {
+                this.barElement.remove();
             }
         }
 
         const property = this.property;
         const schema = property.schema;
 
-        if (this.property) {
-            this.property.on("value", this.onPropertyValue);
-        }
-
-        // content element
+        // create content element
         this.contentElement = this.appendElement("div", {
             position: "absolute", top: "0", bottom: "0", left: "0", right: "0",
             userSelect: "none", pointerEvents: "none"
@@ -98,12 +85,22 @@ export default class PropertyField extends CustomElement
         this.contentElement.classList.add("ff-content");
 
         const classList = this.classList;
-        property.isOutput() ? classList.add("ff-output") : classList.remove("ff-output");
-        property.hasInLinks() ? classList.add("ff-linked") : classList.remove("ff-linked");
+        const isInput = property.isInput();
+        if (isInput) {
+            classList.add("ff-input");
+            classList.remove("ff-output");
+        }
+        else {
+            classList.add("ff-output");
+            classList.remove("ff-input");
+        }
+
+        const isLinked = isInput ? property.hasInLinks(this.index) : property.hasOutLinks(this.index);
+        isLinked ? classList.add("ff-linked") : classList.remove("ff-linked");
         schema.event ? classList.add("ff-event") : classList.remove("ff-event");
         schema.options ? classList.add("ff-option") : classList.remove("ff-option");
 
-        // bar element
+        // create bar element
         const { min, max, bar } = schema;
         if (!schema.options && min !== undefined && max !== undefined && bar !== undefined) {
             this.barElement = this.appendElement("div", {
@@ -126,6 +123,20 @@ export default class PropertyField extends CustomElement
         });
 
         this.classList.add("ff-property-field");
+
+        if (!this.property) {
+            throw new Error("missing property");
+        }
+    }
+
+    protected connected()
+    {
+        this.property.on("value", this.onPropertyValue);
+    }
+
+    protected disconnected()
+    {
+        this.property.off("value", this.onPropertyValue);
     }
 
     protected onFocus(event: FocusEvent)
@@ -142,9 +153,17 @@ export default class PropertyField extends CustomElement
         const schema = property.schema;
 
         if (schema.options) {
-            const menu = new PopupOptions();
-            menu.options = schema.options;
-            menu.addEventListener(PopupOptions.selectEvent, this.onSelectOption);
+            const popup = new PopupOptions();
+            popup.options = schema.options;
+            popup.selectionIndex = types.getOptionIndex(schema.options, property.value);
+            popup.position = "anchor";
+            popup.anchor = this;
+            popup.align = "fixed";
+            popup.justify = "end";
+            popup.positionX = event.clientX - 10;
+            popup.keepVisible = true;
+            popup.addEventListener(PopupOptions.selectEvent, this.onSelectOption);
+            document.body.appendChild(popup);
             return;
         }
 

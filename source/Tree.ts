@@ -36,7 +36,7 @@ export default class Tree<T extends any = any> extends CustomElement
 
     protected nodeById: Dictionary<T> = {};
     protected idByNode: Map<T, string> = new Map();
-
+    protected treeId = uniqueId(4);
 
     constructor(root?: T)
     {
@@ -117,23 +117,18 @@ export default class Tree<T extends any = any> extends CustomElement
         this.classList.add("ff-tree");
     }
 
-    protected update(changedProperties: PropertyValues): void
+    protected render()
     {
         this.nodeById = {};
         this.idByNode.clear();
 
-        super.update(changedProperties);
-    }
-
-    protected render()
-    {
         const root = this.root;
         if (!root) {
-            return;
+            return html``;
         }
 
         if (this.includeRoot) {
-            const id = this.getId(root);
+            const id = this.getId(root) + this.treeId;
             return this.renderNode(root, id);
         }
         else {
@@ -185,7 +180,8 @@ export default class Tree<T extends any = any> extends CustomElement
         let id;
 
         return html`
-            ${repeat(children, child => (id = this.getId(child)), child => this.renderNode(child, id))}
+            ${repeat(children, child => (
+                id = this.getId(child) + this.treeId), child => this.renderNode(child, id))}
         `;
     }
 
