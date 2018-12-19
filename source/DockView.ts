@@ -12,6 +12,8 @@ import DockPanel from "./DockPanel";
 
 ////////////////////////////////////////////////////////////////////////////////
 
+export { IDockElementLayout };
+
 export type DockContentRegistry = Map<string, () => HTMLElement>;
 
 @customElement("ff-dock-view")

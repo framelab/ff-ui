@@ -89,7 +89,9 @@ export default class DockPanel extends CustomElement
             console.warn(`failed to create content element for id: ${layout.contentId}`);
         }
         else {
-            this.appendChild(factory());
+            const contentElement = factory();
+            contentElement.classList.add("ff-fullsize");
+            this.appendChild(contentElement);
         }
     }
 
