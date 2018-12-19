@@ -51,7 +51,6 @@ export default class PropertyField extends CustomElement
         this.onPointerDown = this.onPointerDown.bind(this);
         this.onPointerMove = this.onPointerMove.bind(this);
         this.onPointerUp = this.onPointerUp.bind(this);
-        this.onPropertyValue = this.onPropertyValue.bind(this);
         this.onSelectOption = this.onSelectOption.bind(this);
 
         this.addEventListener("focus", this.onFocus);
@@ -131,12 +130,14 @@ export default class PropertyField extends CustomElement
 
     protected connected()
     {
-        this.property.on("value", this.onPropertyValue);
+        this.property.on("value", this.onPropertyValue, this);
+        this.property.on("update", this.onPropertyUpdate, this);
     }
 
     protected disconnected()
     {
-        this.property.off("value", this.onPropertyValue);
+        this.property.off("value", this.onPropertyValue, this);
+        this.property.off("update", this.onPropertyUpdate, this);
     }
 
     protected onFocus(event: FocusEvent)
@@ -185,7 +186,6 @@ export default class PropertyField extends CustomElement
             return;
         }
 
-        this.isActive = true;
         this.isDragging = false;
 
         const property = this.property;
@@ -193,6 +193,7 @@ export default class PropertyField extends CustomElement
             return;
         }
 
+        this.isActive = true;
         this.startX = event.clientX;
         this.startY = event.clientY;
     }
@@ -210,6 +211,7 @@ export default class PropertyField extends CustomElement
             if (delta > 2) {
                 this.setPointerCapture(event.pointerId);
                 this.isDragging = true;
+                console.log(delta, "dragging true");
             }
         }
 
@@ -317,6 +319,11 @@ export default class PropertyField extends CustomElement
     }
 
     protected onPropertyValue()
+    {
+        this.updateElement();
+    }
+
+    protected onPropertyUpdate()
     {
         this.updateElement();
     }
