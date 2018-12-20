@@ -11,7 +11,12 @@
 .ff-hierarchy-tree {
   .ff-tree-node {
     &.ff-node {
-      background-color: darken($color-background, 6%);
+      &.ff-even {
+        background-color: darken($color-background, 8%);
+      }
+      &.ff-odd {
+        background-color: darken($color-background, 5%);
+      }
 
       & > .ff-content {
         margin-left: 9px;
@@ -25,7 +30,7 @@
       }
     }
     &[selected] {
-      background-color: $color-primary;
+      background-color: $color-primary !important;
     }
   }
 }

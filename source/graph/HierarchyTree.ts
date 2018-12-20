@@ -118,10 +118,12 @@ export default class HierarchyTree extends Tree<NCS>
     protected getChildren(node: NCS)
     {
         if (node instanceof Node) {
-            return node.components.getArray();
-        }
-        if (node instanceof Hierarchy) {
-            return node.children.map(child => child.node);
+            let children: any = node.components.getArray();
+            const hierarchy = node.hierarchy;
+            if (hierarchy) {
+                children = children.concat(hierarchy.children.map(child => child.node));
+            }
+            return children;
         }
         if (node instanceof System) {
             return node.graph.nodes.findRoots();

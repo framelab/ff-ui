@@ -129,10 +129,10 @@ export default class Tree<T extends any = any> extends CustomElement
 
         if (this.includeRoot) {
             const id = this.getId(root) + this.treeId;
-            return this.renderNode(root, id);
+            return this.renderNode(root, id, 0);
         }
         else {
-            return this.renderNodeChildren(root, this.getChildren(root));
+            return this.renderNodeChildren(root, this.getChildren(root), 0);
         }
     }
 
@@ -166,12 +166,12 @@ export default class Tree<T extends any = any> extends CustomElement
         return treeNode.toString();
     }
 
-    protected renderNodeContent(treeNode: T, children: T[] | null): TemplateResult | string
+    protected renderNodeContent(treeNode: T, children: T[] | null, level: number): TemplateResult | string
     {
-        return this.renderNodeChildren(treeNode, children);
+        return this.renderNodeChildren(treeNode, children, level);
     }
 
-    protected renderNodeChildren(treeNode: T, children: T[] | null): TemplateResult
+    protected renderNodeChildren(treeNode: T, children: T[] | null, level: number): TemplateResult
     {
         if (!children || children.length === 0) {
             return null;
@@ -181,11 +181,11 @@ export default class Tree<T extends any = any> extends CustomElement
 
         return html`
             ${repeat(children, child => (
-                id = this.getId(child) + this.treeId), child => this.renderNode(child, id))}
+                id = this.getId(child) + this.treeId), child => this.renderNode(child, id, level))}
         `;
     }
 
-    protected renderNode(treeNode: T, id: string): TemplateResult
+    protected renderNode(treeNode: T, id: string, level: number): TemplateResult
     {
         this.nodeById[id] = treeNode;
         this.idByNode.set(treeNode, id);
@@ -196,10 +196,11 @@ export default class Tree<T extends any = any> extends CustomElement
         const expanded = this.isNodeExpanded(treeNode);
 
         const typeClass = children && children.length > 0 ? "ff-inner " : "ff-leaf ";
-        let classes = "ff-tree-node " + typeClass + this.getClasses(treeNode);
+        const levelClass = level % 2 === 0 ? "ff-even " : "ff-odd ";
+        let classes = "ff-tree-node " + typeClass + levelClass + this.getClasses(treeNode);
 
         const header = this.renderNodeHeader(treeNode);
-        const content = this.renderNodeContent(treeNode, children);
+        const content = this.renderNodeContent(treeNode, children, level + 1);
 
 
         return html`
