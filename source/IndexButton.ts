@@ -5,10 +5,12 @@
  * License: MIT
  */
 
-import Button from "./Button";
+import Button, { IButtonClickEvent } from "./Button";
 import { customElement, property, PropertyValues } from "./CustomElement";
 
 ////////////////////////////////////////////////////////////////////////////////
+
+export { IButtonClickEvent };
 
 @customElement("ff-index-button")
 export default class IndexButton extends Button

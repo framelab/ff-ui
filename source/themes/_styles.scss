@@ -39,6 +39,8 @@ $color-secondary-light: lighten($color-secondary, 15%) !default;
 $color-secondary-dark: darken($color-secondary, 15%) !default;
 
 $color-text: #c8c8c8 !default;
+$color-text-light: #e8e8e8 !default;
+$color-text-dark: #a0a0a0 !default;
 $color-text-disabled: #808080 !default;
 $color-icon: #a0a0a0 !default;
 $color-icon-disabled: #606060 !default;
@@ -139,7 +141,7 @@ button, input {
 ////////////////////////////////////////////////////////////////////////////////
 // SEMANTIC ELEMENTS
 
-.ff-text {
+.ff-disabled {
   user-select: none;
   pointer-events: none;
 }

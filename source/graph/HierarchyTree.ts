@@ -64,12 +64,6 @@ export default class HierarchyTree extends Tree<NCS>
         this.controller.system.off(Hierarchy.hierarchyEvent, this.onUpdate, this);
     }
 
-    protected render()
-    {
-        console.log("HierarchyTree.render");
-        return super.render();
-    }
-
     protected renderNodeHeader(treeNode: NCS)
     {
         let text;

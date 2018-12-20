@@ -45,8 +45,8 @@ export default class Button extends CustomElement
 
     protected render()
     {
-        const icon = this.icon ? html`<div class=${"ff-icon " + this.icon}></div>` : null;
-        const text = this.text ? html`<div class="ff-text">${this.text}</div>` : null;
+        const icon = this.icon ? html`<div class=${"ff-disabled ff-icon " + this.icon}></div>` : null;
+        const text = this.text ? html`<div class="ff-disabled ff-text">${this.text}</div>` : null;
 
         return html`${icon}${text}`;
     }

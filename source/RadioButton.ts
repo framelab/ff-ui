@@ -17,12 +17,6 @@ export default class RadioButton extends CustomElement
     @property({ type: Boolean })
     checked = false;
 
-    constructor()
-    {
-        super();
-        console.log("Checkbox.constructor");
-    }
-
     protected render()
     {
         return html`

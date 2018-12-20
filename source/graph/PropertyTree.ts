@@ -56,6 +56,15 @@ export default class PropertyTree extends Tree<ITreeNode>
 
         this.controller.on("node", this.onSelectNode, this);
         this.controller.on("component", this.onSelectComponent, this);
+
+        const node = this.controller.getFirstSelectedNode();
+        if (node) {
+            this.root = this.createNodeTreeNode(node);
+        }
+        else {
+            const component = this.controller.getFirstSelectedComponent();
+            this.root = component ? this.createComponentTreeNode(component) : null;
+        }
     }
 
     protected disconnected()

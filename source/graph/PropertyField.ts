@@ -211,7 +211,6 @@ export default class PropertyField extends CustomElement
             if (delta > 2) {
                 this.setPointerCapture(event.pointerId);
                 this.isDragging = true;
-                console.log(delta, "dragging true");
             }
         }
 
@@ -301,11 +300,18 @@ export default class PropertyField extends CustomElement
             const property = this.property;
             const schema = property.schema;
 
-            let value: any = editElement.value;
+            const text = editElement.value;
+            let value: any = text;
+
             if (this.property.type === "number") {
-                value = parseFloat(value) || 0;
-                value = schema.min !== undefined ? Math.max(value, schema.min) : value;
-                value = schema.max !== undefined ? Math.min(value, schema.max) : value;
+                if (text.toLowerCase() === "nan") {
+                    value = NaN;
+                }
+                else {
+                    value = parseFloat(value) || 0;
+                    value = schema.min !== undefined ? Math.max(value, schema.min) : value;
+                    value = schema.max !== undefined ? Math.min(value, schema.max) : value;
+                }
             }
 
             this.updateProperty(value);
