@@ -7,10 +7,8 @@
 
 import math from "@ff/core/math";
 
-import {
-    Property,
-    types
-} from "@ff/graph";
+import Property from "@ff/graph/Property";
+import { types } from "@ff/graph/propertyTypes";
 
 import PopupOptions, { IPopupMenuSelectEvent } from "../PopupOptions";
 import CustomElement, { customElement, property, PropertyValues } from "../CustomElement";

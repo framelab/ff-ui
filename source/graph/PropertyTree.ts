@@ -5,7 +5,10 @@
  * License: MIT
  */
 
-import { Node, Component, Property, PropertySet } from "@ff/graph";
+import Node from "@ff/graph/Node";
+import Component from "@ff/graph/Component";
+import Property from "@ff/graph/Property";
+import PropertySet from "@ff/graph/PropertySet";
 
 import SelectionController, {
     ISelectComponentEvent,

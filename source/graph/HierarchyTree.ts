@@ -6,7 +6,11 @@
  */
 
 import uniqueId from "@ff/core/uniqueId";
-import { Node, Component, Hierarchy, System } from "@ff/graph";
+
+import Node from "@ff/graph/Node";
+import Component from "@ff/graph/Component";
+import Hierarchy from "@ff/graph/Hierarchy";
+import System from "@ff/graph/System";
 
 import SelectionController, {
     ISelectComponentEvent,
