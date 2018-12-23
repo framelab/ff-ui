@@ -17,7 +17,7 @@ import SelectionController, {
 
 import "./PropertyView";
 import Tree from "../Tree";
-import { customElement, property, PropertyValues, html } from "../CustomElement";
+import { customElement, property, html } from "../CustomElement";
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -57,8 +57,8 @@ export default class PropertyTree extends Tree<ITreeNode>
     {
         super.connected();
 
-        this.controller.on("node", this.onSelectNode, this);
-        this.controller.on("component", this.onSelectComponent, this);
+        this.controller.on("select-node", this.onSelectNode, this);
+        this.controller.on("select-component", this.onSelectComponent, this);
 
         const node = this.controller.getFirstSelectedNode();
         if (node) {
@@ -74,8 +74,8 @@ export default class PropertyTree extends Tree<ITreeNode>
     {
         super.disconnected();
 
-        this.controller.off("node", this.onSelectNode, this);
-        this.controller.off("component", this.onSelectComponent, this);
+        this.controller.off("select-node", this.onSelectNode, this);
+        this.controller.off("select-component", this.onSelectComponent, this);
     }
 
     protected getClasses(node: ITreeNode)

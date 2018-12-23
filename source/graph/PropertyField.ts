@@ -12,6 +12,7 @@ import { types } from "@ff/graph/propertyTypes";
 
 import PopupOptions, { IPopupMenuSelectEvent } from "../PopupOptions";
 import CustomElement, { customElement, property, PropertyValues } from "../CustomElement";
+import { IPropertyChangeEvent } from "../../../ff-graph/source/Property";
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -129,13 +130,13 @@ export default class PropertyField extends CustomElement
     protected connected()
     {
         this.property.on("value", this.onPropertyValue, this);
-        this.property.on("update", this.onPropertyUpdate, this);
+        this.property.on<IPropertyChangeEvent>("change", this.onPropertyChange, this);
     }
 
     protected disconnected()
     {
         this.property.off("value", this.onPropertyValue, this);
-        this.property.off("update", this.onPropertyUpdate, this);
+        this.property.off<IPropertyChangeEvent>("change", this.onPropertyChange, this);
     }
 
     protected onFocus(event: FocusEvent)
@@ -327,7 +328,7 @@ export default class PropertyField extends CustomElement
         this.updateElement();
     }
 
-    protected onPropertyUpdate()
+    protected onPropertyChange()
     {
         this.updateElement();
     }

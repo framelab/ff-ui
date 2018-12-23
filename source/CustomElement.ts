@@ -5,7 +5,7 @@
  * License: MIT
  */
 
-import { TypeOf, Partial, Dictionary } from "@ff/core/types";
+import { TypeOf, Dictionary } from "@ff/core/types";
 import { LitElement } from "@polymer/lit-element";
 
 ////////////////////////////////////////////////////////////////////////////////

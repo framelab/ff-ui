@@ -52,20 +52,20 @@ export default class HierarchyTree extends Tree<NCS>
     {
         super.connected();
 
-        this.controller.on(SelectionController.selectNodeEvent, this.onSelectNode, this);
-        this.controller.on(SelectionController.selectComponentEvent, this.onSelectComponent, this);
-        this.controller.on(SelectionController.updateEvent, this.onUpdate, this);
-        this.controller.system.on(Hierarchy.hierarchyEvent, this.onUpdate, this);
+        this.controller.on("select-node", this.onSelectNode, this);
+        this.controller.on("select-component", this.onSelectComponent, this);
+        this.controller.on("update", this.onUpdate, this);
+        this.controller.system.on("hierarchy", this.onUpdate, this);
     }
 
     protected disconnected()
     {
         super.disconnected();
 
-        this.controller.off(SelectionController.selectNodeEvent, this.onSelectNode, this);
-        this.controller.off(SelectionController.selectComponentEvent, this.onSelectComponent, this);
-        this.controller.off(SelectionController.updateEvent, this.onUpdate, this);
-        this.controller.system.off(Hierarchy.hierarchyEvent, this.onUpdate, this);
+        this.controller.off("select-node", this.onSelectNode, this);
+        this.controller.off("select-component", this.onSelectComponent, this);
+        this.controller.off("update", this.onUpdate, this);
+        this.controller.system.off("hierarchy", this.onUpdate, this);
     }
 
     protected renderNodeHeader(treeNode: NCS)
