@@ -3,10 +3,15 @@
         "composite": true,
         "target": "ES6",
         "module": "commonjs",
-        "declaration": true,
-        "sourceMap": true,
         "experimentalDecorators": true,
 
-        "outDir": "../node_modules/@ff/ui"
-    }
+        "declaration": true,
+        "sourceMap": true,
+
+        "rootDir": "source",
+        "outDir": "../../node_modules/@ff/ui"
+    },
+    "include": [
+        "source/**/*"
+    ]
 }
