@@ -7,12 +7,11 @@
 
 import math from "@ff/core/math";
 
-import Property from "@ff/graph/Property";
+import Property, { IPropertyChangeEvent } from "@ff/graph/Property";
 import { types } from "@ff/graph/propertyTypes";
 
 import PopupOptions, { IPopupMenuSelectEvent } from "../PopupOptions";
 import CustomElement, { customElement, property, PropertyValues } from "../CustomElement";
-import { IPropertyChangeEvent } from "../../../ff-graph/source/Property";
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -21,7 +20,7 @@ export { Property };
 @customElement("ff-property-field")
 export default class PropertyField extends CustomElement
 {
-    static readonly defaultPrecision = 3;
+    static readonly defaultPrecision = 2;
     static readonly defaultStep = 0.1;
 
     @property({ attribute: false })
@@ -261,7 +260,12 @@ export default class PropertyField extends CustomElement
         const property = this.property;
         let text = this.value;
         if (property.type === "number") {
-            text = this.value.toFixed(5);
+            if (isFinite(text)) {
+                text = this.value.toFixed(5);
+            }
+            else {
+                text = this.value === -Infinity ? "-inf" : "inf";
+            }
         }
 
         const editElement = this.editElement = document.createElement("input");
@@ -303,8 +307,8 @@ export default class PropertyField extends CustomElement
             let value: any = text;
 
             if (this.property.type === "number") {
-                if (text.toLowerCase() === "nan") {
-                    value = NaN;
+                if (text.toLowerCase().indexOf("inf") >= 0) {
+                    value = text[0] === "-" ? -Infinity : Infinity;
                 }
                 else {
                     value = parseFloat(value) || 0;
@@ -352,14 +356,22 @@ export default class PropertyField extends CustomElement
                     text = types.getOptionValue(schema.options, value);
                 }
                 else {
-                    const precision = schema.precision !== undefined
-                        ? schema.precision : PropertyField.defaultPrecision;
+                    if (isFinite(value)) {
+                        const precision = schema.precision !== undefined
+                            ? schema.precision : PropertyField.defaultPrecision;
 
-                    text = value.toFixed(precision);
+                        text = value.toFixed(precision);
 
-                    if (this.barElement) {
-                        this.barElement.style.width
-                            = math.scaleLimit(value, schema.min, schema.max, 0, 100) + "%";
+                        if (this.barElement) {
+                            this.barElement.style.width
+                                = math.scaleLimit(value, schema.min, schema.max, 0, 100) + "%";
+                        }
+                    }
+                    else {
+                        text = value === -Infinity ? "-inf" : "inf";
+                        if (this.barElement) {
+                            this.barElement.style.width = "0";
+                        }
                     }
                 }
                 break;
