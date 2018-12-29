@@ -10,14 +10,11 @@ import Component from "@ff/graph/Component";
 import Property from "@ff/graph/Property";
 import PropertySet from "@ff/graph/PropertySet";
 
-import SelectionController, {
-    ISelectComponentEvent,
-    ISelectNodeEvent
-} from "@ff/graph/SelectionController";
+import Selection, { INodeEvent, IComponentEvent } from "@ff/graph/Selection";
 
 import "./PropertyView";
-import Tree from "../Tree";
-import { customElement, property, html } from "../CustomElement";
+
+import Tree, { customElement, property, html } from "../Tree";
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -34,12 +31,12 @@ interface ITreeNode
 export default class PropertyTree extends Tree<ITreeNode>
 {
     @property({ attribute: false })
-    controller: SelectionController;
+    selection: Selection;
 
-    constructor(controller?: SelectionController)
+    constructor(selection?: Selection)
     {
         super();
-        this.controller = controller;
+        this.selection = selection;
         this.includeRoot = true;
     }
 
@@ -48,8 +45,8 @@ export default class PropertyTree extends Tree<ITreeNode>
         super.firstConnected();
         this.classList.add("ff-property-tree");
 
-        if (!this.controller) {
-            throw new Error("missing controller");
+        if (!this.selection) {
+            throw new Error("missing selection controller");
         }
     }
 
@@ -57,15 +54,15 @@ export default class PropertyTree extends Tree<ITreeNode>
     {
         super.connected();
 
-        this.controller.on("select-node", this.onSelectNode, this);
-        this.controller.on("select-component", this.onSelectComponent, this);
+        this.selection.nodes.on<INodeEvent>("node", this.onSelectNode, this);
+        this.selection.components.on<IComponentEvent>("component", this.onSelectComponent, this);
 
-        const node = this.controller.getFirstSelectedNode();
+        const node = this.selection.nodes.getFirst();
         if (node) {
             this.root = this.createNodeTreeNode(node);
         }
         else {
-            const component = this.controller.getFirstSelectedComponent();
+            const component = this.selection.components.getFirst();
             this.root = component ? this.createComponentTreeNode(component) : null;
         }
     }
@@ -74,8 +71,8 @@ export default class PropertyTree extends Tree<ITreeNode>
     {
         super.disconnected();
 
-        this.controller.off("select-node", this.onSelectNode, this);
-        this.controller.off("select-component", this.onSelectComponent, this);
+        this.selection.nodes.off<INodeEvent>("node", this.onSelectNode, this);
+        this.selection.components.off<IComponentEvent>("component", this.onSelectComponent, this);
     }
 
     protected getClasses(node: ITreeNode)
@@ -91,9 +88,9 @@ export default class PropertyTree extends Tree<ITreeNode>
         `;
     }
 
-    protected onSelectNode(event: ISelectNodeEvent)
+    protected onSelectNode(event: INodeEvent)
     {
-        if (event.selected) {
+        if (event.add) {
             this.root = this.createNodeTreeNode(event.node);
         }
         else {
@@ -101,9 +98,9 @@ export default class PropertyTree extends Tree<ITreeNode>
         }
     }
 
-    protected onSelectComponent(event: ISelectComponentEvent)
+    protected onSelectComponent(event: IComponentEvent)
     {
-        if (event.selected) {
+        if (event.add) {
             this.root = this.createComponentTreeNode(event.component);
         }
         else {

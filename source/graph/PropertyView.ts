@@ -20,6 +20,16 @@ export default class PropertyView extends CustomElement
     @property({ attribute: false })
     property: Property = null;
 
+    protected firstConnected()
+    {
+        this.setStyle({
+            display: "flex",
+            overflow: "hidden"
+        });
+
+        this.classList.add("ff-property-view");
+    }
+
     protected render()
     {
         const property = this.property;
@@ -41,15 +51,5 @@ export default class PropertyView extends CustomElement
         }
 
         return html`<ff-property-field .property=${property}></ff-property-field>`;
-    }
-
-    protected firstConnected()
-    {
-        this.setStyle({
-            display: "flex",
-            overflow: "hidden"
-        });
-
-        this.classList.add("ff-property-view");
     }
 }

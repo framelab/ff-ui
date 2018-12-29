@@ -77,7 +77,7 @@ export default class PropertyField extends CustomElement
         // create content element
         this.contentElement = this.appendElement("div", {
             position: "absolute", top: "0", bottom: "0", left: "0", right: "0",
-            userSelect: "none", pointerEvents: "none"
+            userSelect: "none", pointerEvents: "none", zIndex: "1"
         });
         this.contentElement.classList.add("ff-content");
 
@@ -101,7 +101,8 @@ export default class PropertyField extends CustomElement
         const { min, max, bar } = schema;
         if (!schema.options && min !== undefined && max !== undefined && bar !== undefined) {
             this.barElement = this.appendElement("div", {
-                position: "absolute", top: "0", bottom: "0", left: "0"
+                position: "absolute", top: "0", bottom: "0", left: "0",
+                userSelect: "none", pointerEvents: "none", zIndex: "0"
             });
 
             this.barElement.classList.add("ff-bar");

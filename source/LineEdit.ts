@@ -26,7 +26,7 @@ export default class LineEdit extends CustomElement
         this.classList.add("ff-control", "ff-line-edit");
     }
 
-    render()
+    protected render()
     {
         return html`
             <input
