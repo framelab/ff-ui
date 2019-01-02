@@ -26,4 +26,11 @@ export default class IndexButton extends Button
 
         return true;
     }
+
+    protected firstConnected()
+    {
+        super.firstConnected();
+
+        this.classList.add("ff-index-button");
+    }
 }

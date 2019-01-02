@@ -51,7 +51,7 @@ export default class Button extends CustomElement
         return html`${icon}${text}`;
     }
 
-    protected firstUpdated()
+    protected firstConnected()
     {
         this.setStyle({
             flex: "1 1 auto",
