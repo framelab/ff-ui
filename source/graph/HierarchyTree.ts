@@ -13,7 +13,7 @@ import Component from "@ff/graph/Component";
 import System from "@ff/graph/System";
 import { IHierarchyEvent } from "@ff/graph/Hierarchy";
 
-import Selection, { INodeEvent, IComponentEvent } from "@ff/graph/Selection";
+import SelectionController, { INodeEvent, IComponentEvent } from "@ff/graph/SelectionController";
 
 import Tree, { customElement, html, property } from "../Tree";
 
@@ -25,14 +25,14 @@ type NCS = Node | Component | System;
 export default class HierarchyTree extends Tree<NCS>
 {
     @property({ attribute: false })
-    selection: Selection;
+    selectionController: SelectionController;
 
     protected rootId = uniqueId();
 
-    constructor(selection: Selection)
+    constructor(selectionController: SelectionController)
     {
-        super(selection.system);
-        this.selection = selection;
+        super(selectionController.system);
+        this.selectionController = selectionController;
     }
 
     protected firstConnected()
@@ -40,7 +40,7 @@ export default class HierarchyTree extends Tree<NCS>
         super.firstConnected();
         this.classList.add("ff-hierarchy-tree");
 
-        if (!this.selection) {
+        if (!this.selectionController) {
             throw new Error("missing selection controller");
         }
     }
@@ -49,24 +49,28 @@ export default class HierarchyTree extends Tree<NCS>
     {
         super.connected();
 
-        this.selection.nodes.on<INodeEvent>("node", this.onSelectNode, this);
-        this.selection.components.on<IComponentEvent>("component", this.onSelectComponent, this);
+        const controller = this.selectionController;
 
-        this.selection.system.nodes.on<INodeEvent>("node", this.onUpdate, this);
-        this.selection.system.components.on<IComponentEvent>("component", this.onUpdate, this);
-        this.selection.system.on<IHierarchyEvent>("hierarchy", this.onUpdate, this);
+        controller.nodes.on<INodeEvent>("node", this.onSelectNode, this);
+        controller.components.on<IComponentEvent>("component", this.onSelectComponent, this);
+
+        controller.system.nodes.on<INodeEvent>("node", this.onUpdate, this);
+        controller.system.components.on<IComponentEvent>("component", this.onUpdate, this);
+        controller.system.on<IHierarchyEvent>("hierarchy", this.onUpdate, this);
     }
 
     protected disconnected()
     {
         super.disconnected();
 
-        this.selection.nodes.off<INodeEvent>("node", this.onSelectNode, this);
-        this.selection.components.off<IComponentEvent>("component", this.onSelectComponent, this);
+        const controller = this.selectionController;
 
-        this.selection.system.nodes.off<INodeEvent>("node", this.onUpdate, this);
-        this.selection.system.components.off<IComponentEvent>("component", this.onUpdate, this);
-        this.selection.system.off<IHierarchyEvent>("hierarchy", this.onUpdate, this);
+        controller.nodes.off<INodeEvent>("node", this.onSelectNode, this);
+        controller.components.off<IComponentEvent>("component", this.onSelectComponent, this);
+
+        controller.system.nodes.off<INodeEvent>("node", this.onUpdate, this);
+        controller.system.components.off<IComponentEvent>("component", this.onUpdate, this);
+        controller.system.off<IHierarchyEvent>("hierarchy", this.onUpdate, this);
     }
 
     protected renderNodeHeader(treeNode: NCS)
@@ -91,7 +95,7 @@ export default class HierarchyTree extends Tree<NCS>
 
     protected isNodeSelected(treeNode: NCS)
     {
-        const selection = this.selection;
+        const selection = this.selectionController;
         if (treeNode instanceof Component) {
             return selection.components.contains(treeNode);
         }
@@ -142,10 +146,10 @@ export default class HierarchyTree extends Tree<NCS>
             this.toggleExpanded(node);
         }
         else if (node instanceof Node) {
-            this.selection.selectNode(node, event.ctrlKey);
+            this.selectionController.selectNode(node, event.ctrlKey);
         }
         else if (node instanceof Component) {
-            this.selection.selectComponent(node, event.ctrlKey);
+            this.selectionController.selectComponent(node, event.ctrlKey);
         }
     }
 

@@ -51,7 +51,7 @@ export default class QuadSplitter extends CustomElement
         const layout = this.layout;
 
         if (layout === EQuadViewLayout.Single) {
-            return;
+            return html``;
         }
 
         const elements = [];
