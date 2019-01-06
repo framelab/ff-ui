@@ -86,10 +86,14 @@
   }
 }
 
+@keyframes ff-event-flash {
+  from { background-color: #ccff33; }
+  to { background-color: auto; }
+}
 
 .ff-property-field {
   box-sizing: border-box;
-  background: $color-background-dark;
+  background-color: $color-background-dark;
   //height: 18px;
   //font-size: 14px;
   cursor: pointer;
@@ -97,14 +101,34 @@
   &:focus {
     outline: none;
   }
+  &:hover .ff-event-button {
+    background-color: $color-background-lighter;
+  }
 
   .ff-bar {
     margin: 2px 0;
-    background: $color-background-light;
+    background-color: $color-background-light;
   }
   .ff-content {
     margin: -2px 2px 0 2px;
     text-align: end;
+  }
+  .ff-event-button {
+    box-sizing: border-box;
+    top: 1px; bottom: 1px; right: 1px;
+    width: 33%;
+    min-width: 30px;
+    max-width: 100px;
+    background-color: $color-background-light;
+    border-top: 1px solid $color-background-lighter;
+    border-left: 1px solid $color-background-lighter;
+    border-bottom: 1px solid $color-background-darker;
+    border-right: 1px solid $color-background-darker;
+
+    &.ff-event-flash {
+      animation-name: ff-event-flash;
+      animation-duration: 0.7s;
+    }
   }
 
   &.ff-input {

@@ -144,7 +144,7 @@ export default class PropertyTree extends Tree<ITreeNode>
         const root: ITreeNode = {
             id,
             text,
-            classes: set.isInput() ? "ff-inputs" : "ff-outputs",
+            classes: set.isInputSet() ? "ff-inputs" : "ff-outputs",
             children: []
         };
 

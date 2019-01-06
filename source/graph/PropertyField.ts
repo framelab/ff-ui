@@ -21,7 +21,8 @@ export { Property };
 export default class PropertyField extends CustomElement
 {
     static readonly defaultPrecision = 2;
-    static readonly defaultStep = 0.1;
+    static readonly defaultEditPrecision = 5;
+    static readonly defaultSpeed = 0.1;
 
     @property({ attribute: false })
     property: Property;
@@ -32,13 +33,16 @@ export default class PropertyField extends CustomElement
     protected value: any = undefined;
     protected isActive: boolean = false;
     protected isDragging: boolean = false;
+    protected startValue: number = 0;
     protected startX: number = 0;
     protected startY: number = 0;
     protected lastX: number = 0;
     protected lastY: number = 0;
+
     protected editElement: HTMLInputElement = null;
     protected barElement: HTMLDivElement = null;
-    protected contentElement: HTMLDivElement;
+    protected buttonElement: HTMLDivElement = null;
+    protected contentElement: HTMLDivElement = null;
 
     constructor(property?: Property)
     {
@@ -46,6 +50,7 @@ export default class PropertyField extends CustomElement
 
         this.onFocus = this.onFocus.bind(this);
         this.onClick = this.onClick.bind(this);
+        this.onContextMenu = this.onContextMenu.bind(this);
         this.onPointerDown = this.onPointerDown.bind(this);
         this.onPointerMove = this.onPointerMove.bind(this);
         this.onPointerUp = this.onPointerUp.bind(this);
@@ -53,6 +58,7 @@ export default class PropertyField extends CustomElement
 
         this.addEventListener("focus", this.onFocus);
         this.addEventListener("click", this.onClick);
+        this.addEventListener("contextmenu", this.onContextMenu);
         this.addEventListener("pointerdown", this.onPointerDown);
         this.addEventListener("pointermove", this.onPointerMove);
         this.addEventListener("pointerup", this.onPointerUp);
@@ -66,21 +72,49 @@ export default class PropertyField extends CustomElement
         // remove child elements
         if (this.contentElement) {
             this.contentElement.remove();
-            if (this.barElement) {
-                this.barElement.remove();
-            }
+            this.contentElement = null;
+        }
+        if (this.barElement) {
+            this.barElement.remove();
+            this.barElement = null;
+        }
+        if (this.buttonElement) {
+            this.buttonElement.remove();
+            this.buttonElement = null;
         }
 
         const property = this.property;
         const schema = property.schema;
 
         // create content element
-        this.contentElement = this.appendElement("div", {
-            position: "absolute", top: "0", bottom: "0", left: "0", right: "0",
-            userSelect: "none", pointerEvents: "none", zIndex: "1"
-        });
-        this.contentElement.classList.add("ff-content");
+        if (schema.event) {
+            this.buttonElement = this.appendElement("div", {
+                position: "absolute",
+                userSelect: "none", pointerEvents: "none", zIndex: "1"
+            });
+            this.buttonElement.classList.add("ff-event-button");
+        }
+        else {
+            // create content (text) element
+            this.contentElement = this.appendElement("div", {
+                position: "absolute", top: "0", bottom: "0", left: "0", right: "0",
+                userSelect: "none", pointerEvents: "none", zIndex: "1"
+            });
+            this.contentElement.classList.add("ff-content");
 
+            // create bar element
+            const { min, max, bar } = schema;
+            if (!schema.options && min !== undefined && max !== undefined && bar !== undefined) {
+                this.barElement = this.appendElement("div", {
+                    position: "absolute", top: "0", bottom: "0", left: "0",
+                    userSelect: "none", pointerEvents: "none", zIndex: "0"
+                });
+
+                this.barElement.classList.add("ff-bar");
+            }
+        }
+
+        // set css classes based on property/schema traits
         const classList = this.classList;
         const isInput = property.isInput();
         if (isInput) {
@@ -97,16 +131,8 @@ export default class PropertyField extends CustomElement
         schema.event ? classList.add("ff-event") : classList.remove("ff-event");
         schema.options ? classList.add("ff-option") : classList.remove("ff-option");
 
-        // create bar element
-        const { min, max, bar } = schema;
-        if (!schema.options && min !== undefined && max !== undefined && bar !== undefined) {
-            this.barElement = this.appendElement("div", {
-                position: "absolute", top: "0", bottom: "0", left: "0",
-                userSelect: "none", pointerEvents: "none", zIndex: "0"
-            });
-
-            this.barElement.classList.add("ff-bar");
-        }
+        // set title attribute to provide information about the property
+        this.setAttribute("title", property.toString() + (this.index >= 0 ? `[${this.index}]` : ""));
 
         this.updateElement();
     }
@@ -145,12 +171,17 @@ export default class PropertyField extends CustomElement
 
     protected onClick(event: MouseEvent)
     {
-        if (this.isDragging) {
+        const property = this.property;
+        const schema = property.schema;
+
+        if (schema.event) {
+            property.set();
             return;
         }
 
-        const property = this.property;
-        const schema = property.schema;
+        if (this.isDragging) {
+            return;
+        }
 
         if (schema.options) {
             const popup = new PopupOptions();
@@ -179,9 +210,15 @@ export default class PropertyField extends CustomElement
         }
     }
 
+    protected onContextMenu(event: MouseEvent)
+    {
+        this.property.reset();
+        event.preventDefault();
+    }
+
     protected onPointerDown(event: PointerEvent)
     {
-        if (!event.isPrimary) {
+        if (!event.isPrimary || event.button !== 0) {
             return;
         }
 
@@ -210,27 +247,33 @@ export default class PropertyField extends CustomElement
             if (delta > 2) {
                 this.setPointerCapture(event.pointerId);
                 this.isDragging = true;
+                this.startX = event.clientX;
+                this.startY = event.clientY;
+                this.startValue = this.value;
             }
         }
 
         if (this.isDragging) {
-            const dx = event.clientX - this.lastX;
-            const dy = event.clientY - this.lastY;
+            const dx = event.clientX - this.startX;
+            const dy = event.clientY - this.startY;
             const delta = dx - dy;
 
             const property = this.property;
             const schema = property.schema;
-            let step = PropertyField.defaultStep;
-            if (schema.step) {
-                step = schema.step;
+            let speed = PropertyField.defaultSpeed;
+            if (schema.speed) {
+                speed = schema.speed;
             }
             else if (schema.min !== undefined && schema.max !== undefined) {
-                step = (schema.max - schema.min) / this.clientWidth;
+                speed = (schema.max - schema.min) / this.clientWidth;
             }
 
-            step = event.ctrlKey ? step * 0.1 : step;
-            step = event.shiftKey ? step * 10 : step;
-            let value = this.value + delta * step;
+            speed = event.ctrlKey ? speed * 0.1 : speed;
+            speed = event.shiftKey ? speed * 10 : speed;
+            let value = this.startValue + delta * speed;
+
+            value = schema.step !== undefined ? Math.trunc(value / schema.step) * schema.step: value;
+
             value = schema.min !== undefined ? Math.max(value, schema.min) : value;
             value = schema.max !== undefined ? Math.min(value, schema.max) : value;
 
@@ -259,10 +302,15 @@ export default class PropertyField extends CustomElement
     protected startEditing()
     {
         const property = this.property;
+        const schema = property.schema;
         let text = this.value;
+
         if (property.type === "number") {
             if (isFinite(text)) {
-                text = this.value.toFixed(5);
+                const precision = schema.precision !== undefined
+                    ? schema.precision : PropertyField.defaultEditPrecision;
+
+                text = this.value.toFixed(precision);
             }
             else {
                 text = this.value === -Infinity ? "-inf" : "inf";
@@ -313,6 +361,11 @@ export default class PropertyField extends CustomElement
                 }
                 else {
                     value = parseFloat(value) || 0;
+                    if (schema.precision) {
+                        const factor = Math.pow(10, schema.precision);
+                        value = Math.round(value * factor) / factor;
+                    }
+
                     value = schema.min !== undefined ? Math.max(value, schema.min) : value;
                     value = schema.max !== undefined ? Math.min(value, schema.max) : value;
                 }
@@ -342,6 +395,16 @@ export default class PropertyField extends CustomElement
     {
         const property = this.property;
         const schema = property.schema;
+
+        if (schema.event) {
+            if (property.changed) {
+                this.buttonElement.classList.remove("ff-event-flash");
+                setTimeout(() => this.buttonElement.classList.add("ff-event-flash"), 0);
+            }
+
+            return;
+        }
+
         let value: any = property.value;
         let text = "";
 

@@ -96,9 +96,12 @@ export default class Popup extends CustomElement
         }
         else {
             portalRect = {
-                left: 0, top: 0,
-                right: window.innerWidth, bottom: window.innerHeight,
-                width: window.innerWidth, height: window.innerHeight
+                left: 0,
+                top: 0,
+                right: window.innerWidth,
+                bottom: window.innerHeight,
+                width: window.innerWidth,
+                height: window.innerHeight
             };
         }
 
@@ -204,7 +207,7 @@ export default class Popup extends CustomElement
         else if (position.y < portalRect.top + offsetY) {
             position.y = portalRect.top + offsetY;
         }
-        else if (position.y + thisRect.width + offsetY > portalRect.bottom) {
+        else if (position.y + thisRect.height + offsetY > portalRect.bottom) {
             position.y = portalRect.bottom - thisRect.height - offsetY;
         }
 
