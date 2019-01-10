@@ -64,7 +64,7 @@ export default class PropertyTree extends Tree<ITreeNode>
             this.root = this.createNodeTreeNode(node);
         }
         else {
-            const component = controller.components.getFirst();
+            const component = controller.components.get();
             this.root = component ? this.createComponentTreeNode(component) : null;
         }
     }
