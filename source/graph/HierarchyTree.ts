@@ -11,7 +11,7 @@ import Component from "@ff/graph/Component";
 import Node from "@ff/graph/Node";
 import System from "@ff/graph/System";
 
-import { IHierarchyEvent } from "@ff/graph/Hierarchy";
+import { IHierarchyEvent } from "@ff/graph/components/CHierarchy";
 import CSelection, { INodeEvent, IComponentEvent } from "@ff/graph/components/CSelection";
 
 import Tree, { customElement, html, property } from "../Tree";
@@ -78,12 +78,18 @@ export default class HierarchyTree extends Tree<NCS>
 
         if (treeNode instanceof Component) {
             const name = treeNode.name;
-            text = name ? `${name} [${treeNode.type}]` : treeNode.type;
+            const type = treeNode.type.substr(1);
+            text = name ? `${name} [${type}]` : type;
         }
         else if (treeNode instanceof Node) {
             const name = treeNode.name;
             const type = treeNode.type;
-            text = name ? (type !== "Node" ? `${name} [${type}]` : name) : treeNode.type;
+            if (type === "Node") {
+                text = name ? name : type;
+            }
+            else {
+                text = name ? `${name} [${type.substr(1)}]` : type.substr(1);
+            }
         }
         else {
             text = "System";
