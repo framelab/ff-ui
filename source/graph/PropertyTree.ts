@@ -59,7 +59,7 @@ export default class PropertyTree extends Tree<ITreeNode>
         controller.nodes.on<INodeEvent>("node", this.onSelectNode, this);
         controller.components.on<IComponentEvent>("component", this.onSelectComponent, this);
 
-        const node = controller.nodes.getFirst();
+        const node = controller.nodes.get();
         if (node) {
             this.root = this.createNodeTreeNode(node);
         }

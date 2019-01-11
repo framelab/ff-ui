@@ -79,12 +79,12 @@ export default class HierarchyTree extends Tree<NCS>
 
         if (treeNode instanceof Component) {
             const name = treeNode.name;
-            text = name ? `${name} [${treeNode.type}]` : `[${treeNode.type}]`;
+            text = name ? `${name} [${treeNode.type}]` : treeNode.type;
         }
         else if (treeNode instanceof Node) {
             const name = treeNode.name;
             const type = treeNode.type;
-            text = name ? (type !== "Node" ? `${name} [${type}]` : name) : `[${treeNode.type}]`;
+            text = name ? (type !== "Node" ? `${name} [${type}]` : name) : treeNode.type;
         }
         else {
             text = "System";

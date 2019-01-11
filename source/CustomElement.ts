@@ -111,14 +111,14 @@ export default class CustomElement extends LitElement
 
     connectedCallback()
     {
-        super.connectedCallback();
-
         if (!this._isFirstConnected) {
             this._isFirstConnected = true;
             this.firstConnected();
         }
 
         this.connected();
+
+        super.connectedCallback();
     }
 
     disconnectedCallback()
