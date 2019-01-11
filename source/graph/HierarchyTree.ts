@@ -7,13 +7,12 @@
 
 import uniqueId from "@ff/core/uniqueId";
 
-import Node from "@ff/graph/Node";
 import Component from "@ff/graph/Component";
-
+import Node from "@ff/graph/Node";
 import System from "@ff/graph/System";
-import { IHierarchyEvent } from "@ff/graph/Hierarchy";
 
-import SelectionController, { INodeEvent, IComponentEvent } from "@ff/graph/SelectionController";
+import { IHierarchyEvent } from "@ff/graph/Hierarchy";
+import CSelection, { INodeEvent, IComponentEvent } from "@ff/graph/components/CSelection";
 
 import Tree, { customElement, html, property } from "../Tree";
 
@@ -25,52 +24,52 @@ type NCS = Node | Component | System;
 export default class HierarchyTree extends Tree<NCS>
 {
     @property({ attribute: false })
-    selectionController: SelectionController;
+    system: System;
 
+    protected selection: CSelection = null;
     protected rootId = uniqueId();
 
-    constructor(selectionController: SelectionController)
+
+    constructor(system?: System)
     {
-        super(selectionController.system);
-        this.selectionController = selectionController;
+        super(system);
+
+        this.system = system;
+        this.selection = system.components.safeGet(CSelection);
     }
 
     protected firstConnected()
     {
         super.firstConnected();
         this.classList.add("ff-hierarchy-tree");
-
-        if (!this.selectionController) {
-            throw new Error("missing selection controller");
-        }
     }
 
     protected connected()
     {
         super.connected();
 
-        const controller = this.selectionController;
+        const selection = this.selection;
 
-        controller.nodes.on<INodeEvent>("node", this.onSelectNode, this);
-        controller.components.on<IComponentEvent>("component", this.onSelectComponent, this);
+        selection.selectedNodes.on<INodeEvent>("node", this.onSelectNode, this);
+        selection.selectedComponents.on<IComponentEvent>("component", this.onSelectComponent, this);
 
-        controller.system.nodes.on<INodeEvent>("node", this.onUpdate, this);
-        controller.system.components.on<IComponentEvent>("component", this.onUpdate, this);
-        controller.system.on<IHierarchyEvent>("hierarchy", this.onUpdate, this);
+        selection.system.nodes.on<INodeEvent>("node", this.onUpdate, this);
+        selection.system.components.on<IComponentEvent>("component", this.onUpdate, this);
+        selection.system.on<IHierarchyEvent>("hierarchy", this.onUpdate, this);
     }
 
     protected disconnected()
     {
         super.disconnected();
 
-        const controller = this.selectionController;
+        const selection = this.selection;
 
-        controller.nodes.off<INodeEvent>("node", this.onSelectNode, this);
-        controller.components.off<IComponentEvent>("component", this.onSelectComponent, this);
+        selection.selectedNodes.off<INodeEvent>("node", this.onSelectNode, this);
+        selection.selectedComponents.off<IComponentEvent>("component", this.onSelectComponent, this);
 
-        controller.system.nodes.off<INodeEvent>("node", this.onUpdate, this);
-        controller.system.components.off<IComponentEvent>("component", this.onUpdate, this);
-        controller.system.off<IHierarchyEvent>("hierarchy", this.onUpdate, this);
+        selection.system.nodes.off<INodeEvent>("node", this.onUpdate, this);
+        selection.system.components.off<IComponentEvent>("component", this.onUpdate, this);
+        selection.system.off<IHierarchyEvent>("hierarchy", this.onUpdate, this);
     }
 
     protected renderNodeHeader(treeNode: NCS)
@@ -95,12 +94,12 @@ export default class HierarchyTree extends Tree<NCS>
 
     protected isNodeSelected(treeNode: NCS)
     {
-        const selection = this.selectionController;
+        const selection = this.selection;
         if (treeNode instanceof Component) {
-            return selection.components.contains(treeNode);
+            return selection.selectedComponents.contains(treeNode);
         }
         else if (treeNode instanceof Node) {
-            return selection.nodes.contains(treeNode);
+            return selection.selectedNodes.contains(treeNode);
         }
     }
 
@@ -146,10 +145,10 @@ export default class HierarchyTree extends Tree<NCS>
             this.toggleExpanded(node);
         }
         else if (node instanceof Node) {
-            this.selectionController.selectNode(node, event.ctrlKey);
+            this.selection.selectNode(node, event.ctrlKey);
         }
         else if (node instanceof Component) {
-            this.selectionController.selectComponent(node, event.ctrlKey);
+            this.selection.selectComponent(node, event.ctrlKey);
         }
     }
 
