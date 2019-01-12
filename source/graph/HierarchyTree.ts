@@ -33,15 +33,15 @@ export default class HierarchyTree extends Tree<NCS>
     constructor(system?: System)
     {
         super(system);
-
         this.system = system;
-        this.selection = system.components.safeGet(CSelection);
     }
 
     protected firstConnected()
     {
         super.firstConnected();
         this.classList.add("ff-hierarchy-tree");
+
+        this.selection = this.system.components.safeGet(CSelection);
     }
 
     protected connected()
