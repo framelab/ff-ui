@@ -8,7 +8,6 @@
 import math from "@ff/core/math";
 
 import Property, { IPropertyChangeEvent } from "@ff/graph/Property";
-import { types } from "@ff/graph/propertyTypes";
 
 import PopupOptions, { IPopupMenuSelectEvent } from "../PopupOptions";
 import CustomElement, { customElement, property, PropertyValues } from "../CustomElement";
@@ -186,7 +185,7 @@ export default class PropertyField extends CustomElement
         if (schema.options) {
             const popup = new PopupOptions();
             popup.options = schema.options;
-            popup.selectionIndex = types.getOptionIndex(schema.options, property.value);
+            popup.selectionIndex = property.getValidatedValue();
             popup.position = "anchor";
             popup.anchor = this;
             popup.align = "fixed";
@@ -417,7 +416,7 @@ export default class PropertyField extends CustomElement
         switch(property.type) {
             case "number":
                 if (schema.options) {
-                    text = types.getOptionValue(schema.options, value);
+                    text = property.getOptionText();
                 }
                 else {
                     if (isFinite(value)) {
