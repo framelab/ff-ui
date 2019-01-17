@@ -5,8 +5,7 @@
  * License: MIT
  */
 
-import CustomElement, { customElement, property } from "./CustomElement";
-import { PropertyValues } from "@polymer/lit-element";
+import CustomElement, { customElement, property, PropertyValues } from "./CustomElement";
 
 ////////////////////////////////////////////////////////////////////////////////
 

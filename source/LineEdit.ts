@@ -9,6 +9,9 @@ import CustomElement, { customElement, property, html } from "./CustomElement";
 
 ////////////////////////////////////////////////////////////////////////////////
 
+/**
+ * Custom element displaying a single line text edit.
+ */
 @customElement("ff-line-edit")
 export default class LineEdit extends CustomElement
 {
@@ -20,9 +23,8 @@ export default class LineEdit extends CustomElement
 
     protected initialValue: string = "";
 
-    protected firstUpdated()
+    protected firstConnected()
     {
-        this.style.display = "block";
         this.classList.add("ff-control", "ff-line-edit");
     }
 
@@ -30,9 +32,10 @@ export default class LineEdit extends CustomElement
     {
         return html`
             <input
-             type="text" value=${this.text} placeholder=${this.placeholder}
-             @keydown=${this.onKeyDown} @change=${this.onChange} @input=${this.onInput} @focus=${this.onFocus} @blur=${this.onBlur}
-             style="box-sizing: border-box; width:100%;">
+                type="text" value=${this.text} placeholder=${this.placeholder}
+                @keydown=${this.onKeyDown} @change=${this.onChange} @input=${this.onInput}
+                @focus=${this.onFocus} @blur=${this.onBlur}
+                style="box-sizing: border-box; width:100%;">
         `;
     }
 

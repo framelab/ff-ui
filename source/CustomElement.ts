@@ -6,14 +6,15 @@
  */
 
 import { TypeOf, Dictionary } from "@ff/core/types";
-import { LitElement } from "@polymer/lit-element";
+import { LitElement } from "lit-element";
 
 ////////////////////////////////////////////////////////////////////////////////
 
-export { property, PropertyValues } from "@polymer/lit-element";
+export { property, PropertyValues } from "lit-element";
 export { html, svg, render, TemplateResult } from "lit-html";
 export { repeat } from "lit-html/directives/repeat";
 
+@customElement("ff-custom-element")
 export default class CustomElement extends LitElement
 {
     static readonly tagName: string = "ff-custom-element";
@@ -47,6 +48,30 @@ export default class CustomElement extends LitElement
     setAttribs(attribs: Dictionary<string>): this
     {
         CustomElement.setAttribs(this, attribs);
+        return this;
+    }
+
+    addClass(...classes: string[]): this
+    {
+        classes.forEach(klass => this.classList.add(klass));
+        return this;
+    }
+
+    removeClass(...classes: string[]): this
+    {
+        classes.forEach(klass => this.classList.remove(klass));
+        return this;
+    }
+
+    setClass(name: string, state: boolean): this
+    {
+        if (state) {
+            this.classList.add(name);
+        }
+        else {
+            this.classList.remove(name);
+        }
+
         return this;
     }
 
