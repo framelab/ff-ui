@@ -36,14 +36,14 @@ export default class VectorSlider extends SliderElement
         super();
 
         this._knob = new CustomElement()
-            .addClass("ff-knob")
-            .setStyle({ position: "absolute", visibility: "hidden" });
+        .addClass("ff-knob")
+        .setStyle({ display: "block", position: "relative "});
     }
 
     setXY(x: number, y: number)
     {
         this.value.set(x, y);
-        this.updated();
+        this.requestUpdate();
     }
 
     protected firstConnected()
@@ -58,39 +58,29 @@ export default class VectorSlider extends SliderElement
 
         this.classList.add("ff-control", "ff-vector-slider");
 
-        setTimeout(() => {
-            this._knob.style.visibility = "visible";
-            this.updated();
-        });
+        this.appendChild(this._knob);
     }
 
-    protected render()
+    protected update(changedProperties: PropertyValues): void
     {
-        return html`${this._knob}`;
-    }
+        const x = this.value.x * 100;
+        const y = (1 - this.value.y) * 100;
+        this._knob.style.left = `${x.toFixed(3)}%`;
+        this._knob.style.top = `${y.toFixed(3)}%`;
 
-    protected updated()
-    {
-        const cr = this.getBoundingClientRect();
-        const knob = this._knob;
-        const left = this.value.x * (cr.width - knob.clientWidth);
-        const top = (1 - this.value.y) * (cr.height - knob.clientHeight);
-        this._knob.style.left = `${left}px`;
-        this._knob.style.top = `${top}px`;
+        super.update(changedProperties);
     }
 
     protected drag(event: PointerEvent)
     {
-        const cr = this.getBoundingClientRect();
         const knob = this._knob;
-        let x = (event.clientX - cr.left - knob.clientWidth * 0.8) / (cr.width - knob.clientWidth);
+        let x = (event.clientX - this.offsetLeft - knob.offsetWidth * 0.8) / (this.offsetWidth - knob.offsetWidth);
         x = math.limit(x, 0, 1);
-        let y = 1 - (event.clientY - cr.top - knob.clientHeight * 0.8) / (cr.height - knob.clientHeight);
+        let y = 1 - (event.clientY - this.offsetTop - knob.offsetHeight * 0.8) / (this.offsetHeight - knob.offsetHeight);
         y = math.limit(y, 0, 1);
 
         if (x !== this.value.x || y !== this.value.y) {
-            this.value.set(x, y);
-            this.updated();
+            this.value = this.value.set(x, y);
             this.emitChangeEvent(true);
         }
     }
