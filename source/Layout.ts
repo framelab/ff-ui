@@ -46,6 +46,8 @@ export class FlexRow extends FlexContainer
     {
         this.style.display = "flex";
         this.style.flexDirection = "row";
+
+        this.classList.add("ff-flex-row");
     }
 }
 
@@ -59,6 +61,8 @@ export class FlexColumn extends FlexContainer
     {
         this.style.display = "flex";
         this.style.flexDirection = "column";
+
+        this.classList.add("ff-flex-column");
     }
 }
 
@@ -165,5 +169,7 @@ export class Grid extends CustomElement
     protected firstUpdated()
     {
         this.style.display = "grid";
+
+        this.classList.add("ff-grid");
     }
 }

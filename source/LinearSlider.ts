@@ -10,31 +10,31 @@ import math from "@ff/core/math";
 import CustomElement, { property, PropertyValues, customElement, html } from "./CustomElement";
 import SliderElement from "./SliderElement";
 
-import VectorSlider from "./VectorSlider";
-
 ////////////////////////////////////////////////////////////////////////////////
 
 export type SliderDirection = "horizontal" | "vertical";
 
-export interface ILinearSliderValueEvent
+export interface ILinearSliderChangeEvent extends CustomEvent
 {
-    type: "value";
-    target: VectorSlider;
+    type: "change";
+    target: LinearSlider;
     detail: {
         value: number;
-        dragging: boolean;
+        isDragging: boolean;
     }
 }
 
 @customElement("ff-linear-slider")
-export default class Slider extends SliderElement
+export default class LinearSlider extends SliderElement
 {
     @property({ type: String })
     direction: SliderDirection = "horizontal";
 
+    @property({ type: Number })
+    value = 0;
+
     private _isVertical = false;
     private _knob: CustomElement;
-    private _value = 0;
 
     constructor()
     {
@@ -42,21 +42,25 @@ export default class Slider extends SliderElement
 
         this._knob = new CustomElement()
             .addClass("ff-knob")
-            .setStyle({ position: "absolute" });
-    }
-
-    set value(value: number) {
-        this._value = value;
-        this.updateKnob();
-    }
-    get value() {
-        return this._value;
+            .setStyle({ position: "absolute", visibility: "hidden" });
     }
 
     protected firstConnected()
     {
-        this.classList.add("ff-control", "ff-slider");
-        this.updateKnob();
+        this.setStyle({
+            position: "relative",
+            touchAction: "none"
+        });
+
+        this.setAttribute("touch-action", "none");
+        this.setAttribute("tabindex", "0");
+
+        this.classList.add("ff-control", "ff-linear-slider");
+
+        setTimeout(() => {
+            this._knob.style.visibility = "visible";
+            this.updated();
+        });
     }
 
     protected update(changedProperties: PropertyValues): void
@@ -70,12 +74,17 @@ export default class Slider extends SliderElement
         super.update(changedProperties);
     }
 
-    protected updateKnob()
+    protected render()
+    {
+        return html`${this._knob}`;
+    }
+
+    protected updated()
     {
         const cr = this.getBoundingClientRect();
         const knob = this._knob;
-        const x = this._isVertical ? 0 : this._value * (cr.width - knob.clientWidth);
-        const y = this._isVertical ? this._value * (cr.height - knob.clientHeight) : 0;
+        const x = this._isVertical ? 0 : this.value * (cr.width - knob.clientWidth);
+        const y = this._isVertical ? (1 - this.value) * (cr.height - knob.clientHeight) : 0;
         this._knob.style.left = `${x}px`;
         this._knob.style.top = `${y}px`;
     }
@@ -84,26 +93,28 @@ export default class Slider extends SliderElement
     {
         const cr = this.getBoundingClientRect();
         const knob = this._knob;
-        const v = this._isVertical
-            ? (event.clientY - cr.top - knob.clientHeight * 0.8) / (cr.height - knob.clientHeight)
+        let v = this._isVertical
+            ? 1 - (event.clientY - cr.top - knob.clientHeight * 0.8) / (cr.height - knob.clientHeight)
             : (event.clientX - cr.left - knob.clientWidth * 0.8) / (cr.width - knob.clientWidth);
-        this.value = math.limit(v, 0, 1);
+        v = math.limit(v, 0, 1);
 
-        this.dispatchEvent(new CustomEvent("value", {
-            detail: {
-                value: this.value,
-                dragging: true
-            },
-            bubbles: true
-        }));
+        if (v !== this.value) {
+            this.value = v;
+            this.emitChangeEvent(true);
+        }
     }
 
     protected commit()
     {
-        this.dispatchEvent(new CustomEvent("value", {
+        this.emitChangeEvent(false);
+    }
+
+    protected emitChangeEvent(isDragging: boolean)
+    {
+        this.dispatchEvent(new CustomEvent("change", {
             detail: {
-                value: this._value,
-                dragging: false
+                value: this.value,
+                isDragging
             },
             bubbles: true
         }));

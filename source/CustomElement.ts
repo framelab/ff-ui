@@ -39,42 +39,6 @@ export default class CustomElement extends LitElement
         return (this.constructor as typeof CustomElement).shady;
     }
 
-    setStyle(style: Partial<CSSStyleDeclaration>): this
-    {
-        CustomElement.setStyle(this, style);
-        return this;
-    }
-
-    setAttribs(attribs: Dictionary<string>): this
-    {
-        CustomElement.setAttribs(this, attribs);
-        return this;
-    }
-
-    addClass(...classes: string[]): this
-    {
-        classes.forEach(klass => this.classList.add(klass));
-        return this;
-    }
-
-    removeClass(...classes: string[]): this
-    {
-        classes.forEach(klass => this.classList.remove(klass));
-        return this;
-    }
-
-    setClass(name: string, state: boolean): this
-    {
-        if (state) {
-            this.classList.add(name);
-        }
-        else {
-            this.classList.remove(name);
-        }
-
-        return this;
-    }
-
     appendTo(parent: Element): this
     {
         parent.appendChild(this);
@@ -132,6 +96,65 @@ export default class CustomElement extends LitElement
         }
 
         return element;
+    }
+
+    setStyle(style: Partial<CSSStyleDeclaration>): this
+    {
+        CustomElement.setStyle(this, style);
+        return this;
+    }
+
+    setAttribute(name: string, value: string)
+    {
+        super.setAttribute(name, value);
+        return this;
+    }
+
+    setAttributes(attribs: Dictionary<string>): this
+    {
+        CustomElement.setAttribs(this, attribs);
+        return this;
+    }
+
+    addClass(...classes: string[]): this
+    {
+        classes.forEach(klass => this.classList.add(klass));
+        return this;
+    }
+
+    removeClass(...classes: string[]): this
+    {
+        classes.forEach(klass => this.classList.remove(klass));
+        return this;
+    }
+
+    setClass(name: string, state: boolean): this
+    {
+        if (state) {
+            this.classList.add(name);
+        }
+        else {
+            this.classList.remove(name);
+        }
+
+        return this;
+    }
+
+    hasFocus()
+    {
+        return document.activeElement === this;
+    }
+
+    on<T extends Event>(type: string, listener: (event: T) => any, options?: boolean | AddEventListenerOptions)
+    {
+        this.addEventListener(type, listener, options);
+        return this;
+    }
+
+    off<T extends Event>(type: string, listener: (event: T) => any, options?: boolean | AddEventListenerOptions)
+    {
+        this.removeEventListener(type, listener, options);
+        return this;
     }
 
     connectedCallback()

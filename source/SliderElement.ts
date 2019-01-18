@@ -29,6 +29,8 @@ export default class SliderElement extends CustomElement
 
     protected onPointerDown(event: PointerEvent)
     {
+        this.focus();
+
         if (event.isPrimary) {
             this.isActive = true;
             this.setPointerCapture(event.pointerId);

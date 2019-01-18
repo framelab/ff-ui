@@ -6,28 +6,30 @@
  */
 
 import math from "@ff/core/math";
-import Vector2, { IVector2 } from "@ff/core/Vector2";
+import Vector2 from "@ff/core/Vector2";
 
-import CustomElement, { customElement, html } from "./CustomElement";
+import CustomElement, { customElement, html, property, PropertyValues } from "./CustomElement";
 import SliderElement from "./SliderElement";
 
 ////////////////////////////////////////////////////////////////////////////////
 
-export interface IVectorSliderValueEvent
+export interface IVectorSliderChangeEvent extends CustomEvent
 {
-    type: "value";
+    type: "change";
     target: VectorSlider;
     detail: {
         value: Vector2;
-        dragging: boolean;
+        isDragging: boolean;
     }
 }
 
 @customElement("ff-vector-slider")
 export default class VectorSlider extends SliderElement
 {
-    private _knob;
-    private _value = new Vector2();
+    @property({ attribute: false })
+    value = new Vector2();
+
+    private _knob: CustomElement;
 
     constructor()
     {
@@ -35,68 +37,78 @@ export default class VectorSlider extends SliderElement
 
         this._knob = new CustomElement()
             .addClass("ff-knob")
-            .setStyle({ position: "absolute" });
+            .setStyle({ position: "absolute", visibility: "hidden" });
     }
 
-    set value(value: Vector2) {
-        this._value.copy(value);
-        this.updateKnob();
-    }
-    get value() {
-        return this._value;
+    setXY(x: number, y: number)
+    {
+        this.value.set(x, y);
+        this.updated();
     }
 
     protected firstConnected()
     {
+        this.setStyle({
+            position: "relative",
+            touchAction: "none"
+        });
+
+        this.setAttribute("touch-action", "none");
+        this.setAttribute("tabindex", "0");
+
         this.classList.add("ff-control", "ff-vector-slider");
+
+        setTimeout(() => {
+            this._knob.style.visibility = "visible";
+            this.updated();
+        });
     }
 
     protected render()
     {
-        return html`<img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">
-            ${this._knob}`;
+        return html`${this._knob}`;
     }
 
-    protected updated(): void
-    {
-        this.updateKnob();
-    }
-
-    protected updateKnob()
+    protected updated()
     {
         const cr = this.getBoundingClientRect();
         const knob = this._knob;
-        const x = this._value.x * (cr.width - knob.clientWidth);
-        const y = (1 - this._value.y) * (cr.height - knob.clientHeight);
-        this._knob.style.left = `${x}px`;
-        this._knob.style.top = `${y}px`;
+        const left = this.value.x * (cr.width - knob.clientWidth);
+        const top = (1 - this.value.y) * (cr.height - knob.clientHeight);
+        this._knob.style.left = `${left}px`;
+        this._knob.style.top = `${top}px`;
     }
 
     protected drag(event: PointerEvent)
     {
         const cr = this.getBoundingClientRect();
         const knob = this._knob;
-        const x = (event.clientX - cr.left - knob.clientWidth * 0.8) / (cr.width - knob.clientWidth);
-        const y = 1 - (event.clientY - cr.top - knob.clientHeight * 0.8) / (cr.height - knob.clientHeight);
-        this.value = this.value.set(math.limit(x, 0, 1), math.limit(y, 0, 1));
+        let x = (event.clientX - cr.left - knob.clientWidth * 0.8) / (cr.width - knob.clientWidth);
+        x = math.limit(x, 0, 1);
+        let y = 1 - (event.clientY - cr.top - knob.clientHeight * 0.8) / (cr.height - knob.clientHeight);
+        y = math.limit(y, 0, 1);
 
-        this.dispatchEvent(new CustomEvent("value", {
-            detail: {
-                value: this.value,
-                dragging: true
-            },
-            bubbles: true
-        }));
+        if (x !== this.value.x || y !== this.value.y) {
+            this.value.set(x, y);
+            this.updated();
+            this.emitChangeEvent(true);
+        }
     }
 
     protected commit()
     {
-        this.dispatchEvent(new CustomEvent("value", {
+        this.emitChangeEvent(false);
+    }
+
+    protected emitChangeEvent(isDragging: boolean)
+    {
+        this.dispatchEvent(new CustomEvent("change", {
             detail: {
-                value: this._value,
-                dragging: false
+                value: this.value,
+                isDragging
             },
             bubbles: true
         }));
+
     }
 }

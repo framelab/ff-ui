@@ -122,6 +122,10 @@ $tx-medium: 0.3s;
   background: linear-gradient(to $to, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00);
 }
 
+@mixin diagonal-stripes($color0, $color1) {
+  background-image: repeating-linear-gradient(-45deg, $color0, $color0 8px, $color1 8px, $color1 16px);
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // UTILITY CLASSES
 
@@ -299,6 +303,7 @@ ff-popup-button {
 
 .ff-menu {
   background-color: $color-background-light;
+  z-index: 100;
 
   & > ul {
     list-style-type: none;
@@ -344,33 +349,42 @@ ff-popup-button {
 }
 
 .ff-slider {
-  background-color: green;
-  width: 100%;
-  height: 100%;
-
-  &.ff-horizontal {
-  }
-  &.ff-vertical {
-  }
 }
 
 .ff-vector-slider {
-  position: relative;
-  height: 100%;
-
-  & > img {
-    height: 100%;
-  }
 }
 
-
 .ff-color-edit {
-  position: relative;
+  display: flex;
+  flex-direction: column;
+  font-size: 0.8rem;
+
+  .ff-control {
+    margin: 0;
+  }
+
+  .ff-slider-controls {
+    flex: 1 1 auto;
+  }
+
+  .ff-numeric-controls {
+    flex: 0 0 auto;
+    align-items: center;
+    margin-top: 6px;
+  }
+  .ff-text {
+    color: $color-icon;
+    margin: 0 3px;
+  }
+  .ff-line-edit {
+    flex: 4 5 auto;
+    &.ff-wide {
+      flex: 5 4 auto;
+    }
+  }
 
   .ff-vector-slider {
-    position: absolute;
-    left: 0; top: 0; bottom: 0; right: 32px;
-
+    flex: 1 0 auto;
     background-image:
       linear-gradient(to bottom, transparent, black),
       linear-gradient(to right, white, red);
@@ -380,20 +394,28 @@ ff-popup-button {
       height: 10px;
       margin: -2px 0 0 -2px;
       border: 2px solid white;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
     }
   }
 
-  .ff-slider {
-    position: absolute;
-    right: 0; top: 0; bottom: 0; width: 24px;
-    @include hue-gradient(bottom);
+  .ff-linear-slider {
+    flex: 0 0 24px;
+    margin-left: 6px;
 
     .ff-knob {
       width: 100%;
       height: 10px;
       margin: -2px 0 0 -2px;
       border: 2px solid white;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
     }
+  }
+
+  .ff-hue-slider {
+    @include hue-gradient(bottom);
+  }
+  .ff-alpha-slider {
+    color: $color-background-light;
   }
 }
 
