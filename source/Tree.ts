@@ -201,7 +201,7 @@ export default class Tree<T extends any = any> extends CustomElement
         return html`
             <div class="ff-tree-node-container">
                 <div class=${classes} id=${id} ?selected=${selected} ?expanded=${expanded}>
-                    <div class="ff-header" @click=${this.onClick}>${header}</div>
+                    <div class="ff-header" @click=${this.onClick} @dblclick=${this.onDblClick}>${header}</div>
                     <div class="ff-content">${content}</div>
                 </div>
             </div>
@@ -210,9 +210,7 @@ export default class Tree<T extends any = any> extends CustomElement
 
     protected onClick(event: MouseEvent)
     {
-        const headerElement = event.currentTarget as HTMLDivElement;
-        const id = headerElement.parentElement.id; // node element
-        const treeNode = this._nodeById[id];
+        const treeNode = this.getNodeFromEvent(event);
 
         if (treeNode) {
             this.onClickNode(event, treeNode);
@@ -221,8 +219,30 @@ export default class Tree<T extends any = any> extends CustomElement
         event.stopPropagation();
     }
 
+    protected onDblClick(event: MouseEvent)
+    {
+        const treeNode = this.getNodeFromEvent(event);
+
+        if (treeNode) {
+            this.onDblClickNode(event, treeNode);
+        }
+
+        event.stopPropagation();
+    }
+
     protected onClickNode(event: MouseEvent, treeNode: T)
     {
         this.toggleExpanded(treeNode);
+    }
+
+    protected onDblClickNode(event: MouseEvent, treeNode: T)
+    {
+    }
+
+    protected getNodeFromEvent(event: MouseEvent)
+    {
+        const headerElement = event.currentTarget as HTMLDivElement;
+        const id = headerElement.parentElement.id; // node element
+        return this._nodeById[id];
     }
 }

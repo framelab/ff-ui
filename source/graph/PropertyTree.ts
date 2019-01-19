@@ -6,7 +6,7 @@
  */
 
 import Property from "@ff/graph/Property";
-import PropertySet from "@ff/graph/PropertySet";
+import PropertyGroup from "@ff/graph/PropertyGroup";
 import Component from "@ff/graph/Component";
 import Node from "@ff/graph/Node";
 import System from "@ff/graph/System";
@@ -133,19 +133,19 @@ export default class PropertyTree extends Tree<ITreeNode>
             classes: "ff-component",
             property: null,
             children: [
-                this.createSetNode(inputsId, "Inputs", component.ins),
-                this.createSetNode(outputsId, "Outputs", component.outs)
+                this.createGroupNode(inputsId, "Inputs", component.ins),
+                this.createGroupNode(outputsId, "Outputs", component.outs)
             ]
         };
     }
 
-    protected createSetNode(id: string, text: string, set: PropertySet): ITreeNode
+    protected createGroupNode(id: string, text: string, group: PropertyGroup): ITreeNode
     {
-        const properties = set.properties;
+        const properties = group.properties;
         const root: ITreeNode = {
             id,
             text,
-            classes: set.isInputSet() ? "ff-inputs" : "ff-outputs",
+            classes: group.isInputGroup() ? "ff-inputs" : "ff-outputs",
             children: []
         };
 

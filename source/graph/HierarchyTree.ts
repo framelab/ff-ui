@@ -8,7 +8,9 @@
 import uniqueId from "@ff/core/uniqueId";
 
 import Component from "@ff/graph/Component";
+import CGraph from "@ff/graph/components/CGraph";
 import Node from "@ff/graph/Node";
+import Graph from "@ff/graph/Graph";
 import System from "@ff/graph/System";
 
 import { IHierarchyEvent } from "@ff/graph/components/CHierarchy";
@@ -18,10 +20,10 @@ import Tree, { customElement, html, property } from "../Tree";
 
 ////////////////////////////////////////////////////////////////////////////////
 
-type NCS = Node | Component | System;
+type NCG = Node | Component | Graph;
 
 @customElement("ff-hierarchy-tree")
-export default class HierarchyTree extends Tree<NCS>
+export default class HierarchyTree extends Tree<NCG>
 {
     @property({ attribute: false })
     system: System;
@@ -30,10 +32,11 @@ export default class HierarchyTree extends Tree<NCS>
     protected rootId = uniqueId();
 
 
-    constructor(system?: System)
+    constructor(system?: System, graph?: Graph)
     {
-        super(system);
+        super();
         this.system = system;
+        this.root = graph;
     }
 
     protected firstConnected()
@@ -72,14 +75,21 @@ export default class HierarchyTree extends Tree<NCS>
         selection.system.off<IHierarchyEvent>("hierarchy", this.onUpdate, this);
     }
 
-    protected renderNodeHeader(treeNode: NCS)
+    protected renderNodeHeader(treeNode: NCG)
     {
         let text;
 
         if (treeNode instanceof Component) {
             const name = treeNode.name;
             const type = treeNode.type.substr(1);
-            text = name ? `${name} [${type}]` : type;
+            const text = name ? `${name} [${type}]` : type;
+
+            if (treeNode instanceof CGraph) {
+                return html`<div class="ff-text"><b>${text}</b></div>`;
+            }
+
+            return html`<div class="ff-text">${text}</div>`;
+
         }
         else if (treeNode instanceof Node) {
             const name = treeNode.name;
@@ -90,15 +100,16 @@ export default class HierarchyTree extends Tree<NCS>
             else {
                 text = name ? `${name} [${type.substr(1)}]` : type.substr(1);
             }
+
+            return html`<div class="ff-text">${text}</div>`;
         }
         else {
-            text = "System";
+            const text = treeNode.parent ? treeNode.parent.type : "System";
+            return html`<div class="ff-text">${text}</div>`;
         }
-
-        return html`<div class="ff-text">${text}</div>`
     }
 
-    protected isNodeSelected(treeNode: NCS)
+    protected isNodeSelected(treeNode: NCG)
     {
         const selection = this.selection;
         if (treeNode instanceof Component) {
@@ -107,14 +118,15 @@ export default class HierarchyTree extends Tree<NCS>
         else if (treeNode instanceof Node) {
             return selection.selectedNodes.contains(treeNode);
         }
+        return false;
     }
 
-    protected getId(node: NCS)
+    protected getId(node: NCG)
     {
-        return node instanceof System ? this.rootId : node.id;
+        return node instanceof Graph ? this.rootId : node.id;
     }
 
-    protected getClasses(node: NCS)
+    protected getClasses(node: NCG)
     {
         if (node instanceof Node) {
             return "ff-node";
@@ -126,7 +138,7 @@ export default class HierarchyTree extends Tree<NCS>
         return "ff-system";
     }
 
-    protected getChildren(node: NCS)
+    protected getChildren(node: NCG)
     {
         if (node instanceof Node) {
             let children: any = node.components.getArray();
@@ -136,14 +148,14 @@ export default class HierarchyTree extends Tree<NCS>
             }
             return children;
         }
-        if (node instanceof System) {
-            return node.graph.nodes.findRoots();
+        if (node instanceof Graph) {
+            return node.nodes.findRoots();
         }
 
         return null;
     }
 
-    protected onClickNode(event: MouseEvent, node: NCS)
+    protected onClickNode(event: MouseEvent, node: NCG)
     {
         const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
 
@@ -155,6 +167,14 @@ export default class HierarchyTree extends Tree<NCS>
         }
         else if (node instanceof Component) {
             this.selection.selectComponent(node, event.ctrlKey);
+        }
+    }
+
+    protected onDblClickNode(event: MouseEvent, treeNode: NCG)
+    {
+        if (treeNode instanceof CGraph) {
+            this.selection.clearSelection();
+            this.root = treeNode.innerGraph;
         }
     }
 
