@@ -5,11 +5,14 @@
  * License: MIT
  */
 
+import "./Button";
+import { IButtonClickEvent, IButtonKeyboardEvent } from "./Button";
+
 import CustomElement, { customElement, property, html } from "./CustomElement";
 
 ////////////////////////////////////////////////////////////////////////////////
 
-export interface IMenuEntry
+export interface IMenuItem
 {
     index?: number;
     name?: string;
@@ -27,7 +30,7 @@ export interface IMenuSelectEvent extends CustomEvent
     type: "select";
     target: Menu;
     detail: {
-        entry: IMenuEntry;
+        item: IMenuItem;
     }
 }
 
@@ -46,42 +49,88 @@ export default class Menu extends CustomElement
 
     /** Entries to be displayed in the dropdown menu. */
     @property({ attribute: false })
-    entries: IMenuEntry[] = null;
+    items: Array<IMenuItem | string> = null;
+
+    @property({ type: Number })
+    itemIndex = -1;
+
+    @property({ type: Boolean })
+    setFocus = false;
+
 
     protected firstConnected()
     {
+        this.setAttribute("role", "menu");
         this.classList.add("ff-menu");
     }
 
     protected render()
     {
-        const entries = this.entries || [];
-        const listElements = entries.map((entry, index) => {
-            if (entry.divider) {
-                return html`<li class="ff-divider"></li>`;
-            }
+        if (!this.items) {
+            return html``;
+        }
 
-            return html`<li tabindex="0" data-index=${index} @click=${this.onClick}>
-                <div class=${"ff-icon " + (entry.icon ? entry.icon : (entry.checked ? Menu.iconChecked : ""))}></div>
-                <div role="menuitem" class="ff-text">${entry.text}</div>
-            </li>`;
-        });
-
-        return html`<ul role="menu">${listElements}</ul>`;
+       return html`${this.items.map((item, index) => this.renderItem(item, index))}`;
     }
 
-    protected onClick(event: MouseEvent)
+    protected renderItem(item: IMenuItem | string, index: number)
     {
-        const element = event.target as HTMLElement;
-        const entry = this.entries[element.getAttribute("data-index")];
+        if (typeof item === "string") {
+            return html`<ff-button index=${index} selectedIndex=${this.itemIndex} icon="empty" text=${item} @click=${this.onClick} @keydown=${this.onKeyDown}></ff-button>`;
+        }
 
-        if (!entry) {
+        if (item.divider) {
+            return html`<div class="ff-divider"></div>`;
+        }
+
+        const icon = item.icon || (item.checked ? "check" : "empty");
+        return html`<ff-button index=${index} selectedIndex=${this.itemIndex} icon=${icon} text=${item.text} @click=${this.onClick} @keydown=${this.onKeyDown}></ff-button>`;
+    }
+
+    updated()
+    {
+        if (this.setFocus) {
+            const index = this.itemIndex >= 0 ? this.itemIndex : 0;
+            this.focusItem(index);
+        }
+    }
+
+    protected focusItem(index: number)
+    {
+        const child = this.children.item(index);
+
+        if (child instanceof HTMLElement) {
+            child.focus();
+        }
+    }
+
+    protected onClick(event: IButtonClickEvent)
+    {
+        const item = this.items[event.target.index];
+
+        if (!item) {
             return;
         }
 
         this.dispatchEvent(new CustomEvent("select", {
-            detail: { entry },
+            detail: { item },
             bubbles: true
         }) as IMenuSelectEvent);
+    }
+
+    protected onKeyDown(event: IButtonKeyboardEvent)
+    {
+        const items = this.items;
+
+        if (event.code === "ArrowDown") {
+            let index = event.target.index;
+            do { index = (index + 1) % items.length } while (items[index]["divider"]);
+            this.focusItem(index);
+        }
+        else if (event.code === "ArrowUp") {
+            let index = event.target.index;
+            do { index = (index + items.length - 1) % items.length } while (items[index]["divider"]);
+            this.focusItem(index);
+        }
     }
 }

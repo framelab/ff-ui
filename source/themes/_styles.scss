@@ -189,11 +189,13 @@ button, input {
 
 .ff-off {
   user-select: none;
+  -webkit-user-select: none;
   pointer-events: none;
 }
 
 .ff-on {
   user-select: auto;
+  -webkit-user-select: none;
   pointer-events: auto;
 }
 
@@ -265,6 +267,14 @@ button, input {
 ////////////////////////////////////////////////////////////////////////////////
 // CONTROLS
 
+.ff-frame {
+  padding: 4px;
+
+  .ff-control {
+    margin: 4px;
+  }
+}
+
 .ff-icon {
   display: inline-block;
   position: relative;
@@ -278,10 +288,6 @@ button, input {
 }
 
 .ff-button {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex: 1 1 auto;
   position: relative;
   cursor: pointer;
 
@@ -295,33 +301,68 @@ button, input {
 }
 
 .ff-button.ff-control {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 1 1 auto;
   flex-wrap: wrap;
   padding: 5px;
   background: $color-background-light;
   transition: background-color 0.2s;
 
-  &:hover {
+  &:hover, &:focus {
     background-color: $color-background-lighter;
   }
   &[selected] {
     background-color: $color-primary;
 
-    &:hover {
+    &:hover, &:focus {
       background-color: $color-primary-light;
     }
   }
-  .ff-text {
+
+  & > .ff-text {
     margin: 3px;
     white-space: nowrap;
   }
-  .ff-icon {
+  & > .ff-icon {
     margin: 3px;
     height: 1.3em;
-    fill: $color-text;
+    fill: $color-icon;
   }
-  .ff-caret-down {
+  & > .ff-caret-down {
     margin: 3px;
   }
+}
+
+.ff-menu {
+  background-color: $color-background-light;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+
+  .ff-divider {
+    height: 1px;
+    padding: 0;
+    background: $color-icon;
+  }
+
+  .ff-button {
+    justify-content: flex-start;
+    margin: 0;
+    padding: 4px 4px;
+
+    .ff-icon {
+      height: 1.2em;
+      width: 2.2em;
+      margin-right: 4px;
+    }
+  }
+}
+
+.ff-dropdown .ff-menu {
+  min-width: 100%;
+  margin-top: 3px;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -334,14 +375,6 @@ button, input {
 
 ff-dialog {
   @include window;
-}
-
-.ff-frame {
-  padding: 4px;
-
-  .ff-control {
-    margin: 4px;
-  }
 }
 
 ff-title-bar {
@@ -361,44 +394,6 @@ ff-popup-button {
   .ff-content {
     transition: opacity $tx-short;
   }
-}
-
-.ff-menu {
-  background-color: $color-background-light;
-  z-index: 100;
-
-  & > ul {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-
-    li {
-      margin: 0;
-      padding: 3px 6px;
-      display: flex;
-      align-items: center;
-
-      &:hover {
-        background-color: $color-background-lighter;
-      }
-
-      &.ff-divider {
-        height: 1px;
-        padding: 0;
-        background: $color-icon;
-      }
-
-      .ff-icon {
-        font-size: 1em;
-        min-width: 1.3em;
-      }
-    }
-  }
-}
-
-.ff-dropdown .ff-menu {
-  min-width: 100%;
-  margin-top: 3px;
 }
 
 .ff-line-edit {

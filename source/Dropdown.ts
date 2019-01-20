@@ -5,11 +5,11 @@
  * License: MIT
  */
 
-import { customElement, property, html } from "./CustomElement";
+import { customElement, property, html, PropertyValues } from "./CustomElement";
 
-import Button, { IButtonClickEvent } from "./Button";
+import Button from "./Button";
 import "./Menu";
-import { IMenuEntry } from "./Menu";
+import { IMenuItem } from "./Menu";
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -26,16 +26,21 @@ export default class Dropdown extends Button
     @property({ type: String })
     align: DropdownAlign = "left";
 
-    /** Entries to be displayed in the dropdown menu. */
+    /** Items to be displayed in the dropdown menu. */
     @property({ attribute: false })
-    entries: IMenuEntry[] = [];
+    items: Array<IMenuItem | string> = [];
+
+    @property({ type: Number })
+    itemIndex = -1;
+
 
     constructor()
     {
         super();
         this.caret = true;
-        this.onPointerDown = this.onPointerDown.bind(this);
 
+        this.onKeyOrPointer = this.onKeyOrPointer.bind(this);
+        this.onKeyDown = this.onKeyDown.bind(this);
     }
 
     protected firstConnected()
@@ -47,13 +52,15 @@ export default class Dropdown extends Button
     protected connected()
     {
         super.connected();
-        document.addEventListener("pointerdown", this.onPointerDown, { capture: true, passive: true });
+        document.addEventListener("pointerdown", this.onKeyOrPointer, { capture: true, passive: true });
+        document.addEventListener("keyup", this.onKeyOrPointer, { capture: true, passive: true });
     }
 
     protected disconnected()
     {
         super.disconnected();
-        document.removeEventListener("pointerdown", this.onPointerDown);
+        document.removeEventListener("pointerdown", this.onKeyOrPointer);
+        document.removeEventListener("keyup", this.onKeyOrPointer);
     }
 
     protected render()
@@ -61,17 +68,32 @@ export default class Dropdown extends Button
         const classes = (this.direction === "up" ? "ff-position-above " : "ff-position-below ")
             + (this.align === "right" ? "ff-align-right" : "ff-align-left");
 
-        const menu = this.selected ? html`<ff-menu class=${classes} .entries=${this.entries}></ff-menu>` : null;
+        const menu = this.selected ? html`<ff-menu class=${classes} .items=${this.items} itemIndex=${this.itemIndex} setFocus></ff-menu>` : null;
         return html`${super.render()}${menu}`;
     }
 
     protected onClick(event: MouseEvent)
     {
         this.selected = !this.selected;
+
+        if (!this.selected) {
+            setTimeout(() => this.focus(), 0);
+        }
     }
 
-    protected onPointerDown(event: PointerEvent)
+    protected onKeyDown(event: KeyboardEvent)
     {
+        super.onKeyDown(event);
+
+        // on escape key close the dropdown menu
+        if (event.code === "Escape" && this.selected) {
+            this.selected = false;
+        }
+    }
+
+    protected onKeyOrPointer(event: UIEvent)
+    {
+        // if pointer goes down outside this close the dropdown menu
         if (this.selected && !(event.target instanceof Node && this.contains(event.target))) {
             this.selected = false;
         }

@@ -5,14 +5,14 @@
  * License: MIT
  */
 
-import DragHelper from "./DragHelper";
 import "./Button";
+import DragHelper, { IDragTarget } from "./DragHelper";
 import CustomElement, { customElement, property, html, PropertyValues } from "./CustomElement";
 
 ////////////////////////////////////////////////////////////////////////////////
 
 @customElement("ff-title-bar")
-export default class TitleBar extends CustomElement
+export default class TitleBar extends CustomElement implements IDragTarget
 {
     @property({ type: String })
     title = "";
@@ -23,22 +23,38 @@ export default class TitleBar extends CustomElement
     @property({ type: Boolean })
     closable = false;
 
-    private dragHelper: DragHelper;
+    private _dragHelper: DragHelper;
+
 
     constructor()
     {
         super();
 
-        this.dragHelper = new DragHelper(this.parentElement);
+        this._dragHelper = new DragHelper(this);
+    }
 
-        this.addEventListener("pointerdown", (e) => this.dragHelper.onPointerDown(e));
-        this.addEventListener("pointermove", (e) => this.dragHelper.onPointerMove(e));
-        this.addEventListener("pointerup", (e) => this.dragHelper.onPointerUp(e));
+    dragStart()
+    {
+    }
+
+    dragMove(event: PointerEvent, dx: number, dy: number)
+    {
+        const parent = this.parentElement;
+
+        const x = parent.offsetLeft;
+        parent.style.left = `${x + dx}px`;
+
+        const y = parent.offsetTop;
+        parent.style.top = `${y + dy}px`;
+    }
+
+    dragEnd()
+    {
     }
 
     protected update(changedProperties: PropertyValues)
     {
-        this.dragHelper.enabled = this.draggable;
+        this._dragHelper.isEnabled = this.draggable;
         this.style.cursor = this.draggable ? "pointer" : "default";
 
         super.update(changedProperties);

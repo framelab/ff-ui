@@ -5,6 +5,8 @@
  * License: MIT
  */
 
+import "./Icon";
+
 import CustomElement, { customElement, property, html, PropertyValues } from "./CustomElement";
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -14,6 +16,12 @@ import CustomElement, { customElement, property, html, PropertyValues } from "./
  * @event
  */
 export interface IButtonClickEvent extends MouseEvent
+{
+    type: "click";
+    target: Button;
+}
+
+export interface IButtonKeyboardEvent extends KeyboardEvent
 {
     type: "click";
     target: Button;
@@ -34,6 +42,9 @@ export default class Button extends CustomElement
     /** Optional index to identify the button. */
     @property({ type: Number })
     index = 0;
+
+    @property({ type: Number })
+    selectedIndex = -1;
 
     /** If true, adds "ff-selected" class to element. */
     @property({ type: Boolean, reflect: true })
@@ -63,7 +74,7 @@ export default class Button extends CustomElement
         super();
 
         this.addEventListener("click", (e) => this.onClick(e));
-        this.addEventListener("keydown", (e) => this.onKeyPress(e));
+        this.addEventListener("keydown", (e) => this.onKeyDown(e));
     }
 
     protected firstConnected()
@@ -76,6 +87,15 @@ export default class Button extends CustomElement
         }
 
         this.tabIndex = 0;
+    }
+
+    protected shouldUpdate(changedProperties: PropertyValues)
+    {
+        if (changedProperties.has("selectedIndex") || changedProperties.has("index")) {
+            this.selected = this.index === this.selectedIndex;
+        }
+
+        return true;
     }
 
     protected render()
@@ -95,7 +115,7 @@ export default class Button extends CustomElement
 
     protected renderCaret()
     {
-        return this.caret ? html`<div class="ff-caret-down"></div>` : null;
+        return this.caret ? html`<div class="ff-caret-down ff-off"></div>` : null;
     }
 
     protected onClick(event: MouseEvent)
@@ -105,9 +125,9 @@ export default class Button extends CustomElement
         }
     }
 
-    protected onKeyPress(event: KeyboardEvent)
+    protected onKeyDown(event: KeyboardEvent)
     {
-        if (document.activeElement === this && event.code === "Space") {
+        if (document.activeElement === this && (event.code === "Space" || event.code === "Enter")) {
             this.dispatchEvent(new MouseEvent("click", { bubbles: true }));
         }
     }

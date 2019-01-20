@@ -5,65 +5,93 @@
  * License: MIT
  */
 
+export interface IDragTarget extends HTMLElement
+{
+    dragStart: (event: PointerEvent) => void;
+    dragMove: (event: PointerEvent, dx: number, dy: number) => void;
+    dragEnd: (event: PointerEvent) => void;
+}
+
 export default class DragHelper
 {
-    readonly element: HTMLElement;
-    enabled = true;
+    readonly target: IDragTarget;
 
-    protected isActive = false;
-    protected offsetX = 0;
-    protected offsetY = 0;
+    isEnabled = true;
 
-    constructor(element: HTMLElement)
+    private _isDragging = false;
+
+    private _startX = 0;
+    private _startY = 0;
+
+    private _lastX = 0;
+    private _lastY = 0;
+
+    constructor(target: IDragTarget)
     {
-        if (!element) {
-            throw new Error("missing element");
-        }
+        this.target = target;
 
-        this.element = element;
+        this.onPointerDown = this.onPointerDown.bind(this);
+        this.onPointerMove = this.onPointerMove.bind(this);
+        this.onPointerUp = this.onPointerUp.bind(this);
+
+        target.addEventListener("pointerdown", this.onPointerDown);
+        target.addEventListener("pointermove", this.onPointerMove);
+        target.addEventListener("pointerup", this.onPointerUp);
+        target.addEventListener("pointercancel", this.onPointerUp);
+    }
+
+    get isDragging() {
+        return this._isDragging;
+    }
+    get startX() {
+        return this._startX;
+    }
+    get startY() {
+        return this._startY;
     }
 
     onPointerDown(event: PointerEvent)
     {
-        if (event.isPrimary && this.enabled) {
-            this.isActive = true;
-            console.log("DragHelper.onPointerDown");
+        if (event.isPrimary && this.isEnabled) {
+            this._isDragging = true;
 
-            const rect = this.element.getBoundingClientRect();
-            this.offsetX = rect.left - event.clientX;
-            this.offsetY = rect.top - event.clientY;
+            this._startX = this._lastX = event.clientX;
+            this._startY = this._lastY = event.clientY;
 
-            (event.currentTarget as HTMLElement).setPointerCapture(event.pointerId);
+            this.target.setPointerCapture(event.pointerId);
+            this.target.dragStart(event);
         }
+
+        event.stopPropagation();
+        event.preventDefault();
     }
 
     onPointerMove(event: PointerEvent)
     {
-        if (event.isPrimary && this.isActive) {
-            console.log("DragHelper.onPointerMove");
+        if (event.isPrimary && this._isDragging) {
 
-            const element = this.element;
-            const parent = element.parentElement;
-             if (!parent) {
-                 return;
-             }
+            const dx = event.clientX - this._lastX;
+            this._lastX = event.clientX;
 
-             const parentRect = parent.getBoundingClientRect();
-             element.style.left = (event.clientX + this.offsetX - parentRect.left) + "px";
-             element.style.top = (event.clientY + this.offsetY - parentRect.top) + "px";
+            const dy = event.clientY - this._lastY;
+            this._lastY = event.clientY;
 
-             //event.stopPropagation();
-             //event.preventDefault();
+            this.target.dragMove(event, dx, dy);
         }
+
+        event.stopPropagation();
+        event.preventDefault();
     }
 
     onPointerUp(event: PointerEvent)
     {
-        if (event.isPrimary && this.isActive) {
-            console.log("DragHelper.onPointerUp");
-            this.isActive = false;
-            //event.stopPropagation();
-            //event.preventDefault();
+        if (this._isDragging && event.isPrimary) {
+            this.target.dragEnd(event);
+            this.target.releasePointerCapture(event.pointerId);
+            this._isDragging = false;
         }
+
+        event.stopPropagation();
+        event.preventDefault();
     }
 }

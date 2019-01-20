@@ -8,7 +8,7 @@
 import math from "@ff/core/math";
 
 import CustomElement, { property, PropertyValues, customElement, html } from "./CustomElement";
-import SliderElement from "./SliderElement";
+import DragHelper, { IDragTarget } from "./DragHelper";
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -25,7 +25,7 @@ export interface ILinearSliderChangeEvent extends CustomEvent
 }
 
 @customElement("ff-linear-slider")
-export default class LinearSlider extends SliderElement
+export default class LinearSlider extends CustomElement implements IDragTarget
 {
     @property({ type: String })
     direction: SliderDirection = "horizontal";
@@ -36,6 +36,9 @@ export default class LinearSlider extends SliderElement
     private _isVertical = false;
     private _knob: CustomElement;
 
+    private _offsetX = 0;
+    private _offsetY = 0;
+
     constructor()
     {
         super();
@@ -43,6 +46,48 @@ export default class LinearSlider extends SliderElement
         this._knob = new CustomElement()
             .addClass("ff-knob")
             .setStyle({ display: "block", position: "relative "});
+
+        new DragHelper(this);
+    }
+
+    dragStart(event: PointerEvent)
+    {
+        const knob = this._knob;
+        const track = this.getBoundingClientRect();
+
+        if (event.target === this._knob) {
+            this._offsetX = event.clientX - knob.offsetLeft + (knob.clientWidth - knob.offsetWidth) * 0.5;
+            this._offsetY = event.clientY - knob.offsetTop + (knob.clientHeight - knob.offsetHeight) * 0.5;
+        }
+        else {
+            this._offsetX = track.left + knob.clientWidth * 0.8;
+            this._offsetY = track.top + knob.clientHeight * 0.8;
+        }
+
+        this.dragMove(event);
+    }
+
+    dragMove(event: PointerEvent)
+    {
+        const knob = this._knob;
+        const px = event.clientX - this._offsetX;
+        const py = event.clientY - this._offsetY;
+
+        let v = this._isVertical
+            ? 1 - py / (this.clientHeight - knob.clientHeight)
+            : px / (this.clientWidth - knob.clientWidth);
+
+        v = math.limit(v, 0, 1);
+
+        if (v !== this.value) {
+            this.value = v;
+            this.emitChangeEvent(true);
+        }
+    }
+
+    dragEnd()
+    {
+        this.emitChangeEvent(false);
     }
 
     protected firstConnected()
@@ -76,29 +121,6 @@ export default class LinearSlider extends SliderElement
         }
 
         super.update(changedProperties);
-    }
-
-    protected drag(event: PointerEvent)
-    {
-        const knob = this._knob;
-        const px = event.clientX - this.offsetLeft - knob.offsetWidth * 0.8;
-        const py = event.clientY - this.offsetTop - knob.offsetHeight * 0.8;
-
-        let v = this._isVertical
-            ? 1 - py / (this.offsetHeight - knob.offsetHeight)
-            : px / (this.offsetWidth - knob.offsetWidth);
-
-        v = math.limit(v, 0, 1);
-
-        if (v !== this.value) {
-            this.value = v;
-            this.emitChangeEvent(true);
-        }
-    }
-
-    protected commit()
-    {
-        this.emitChangeEvent(false);
     }
 
     protected emitChangeEvent(isDragging: boolean)
