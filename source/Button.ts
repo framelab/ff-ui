@@ -92,7 +92,9 @@ export default class Button extends CustomElement
     protected shouldUpdate(changedProperties: PropertyValues)
     {
         if (changedProperties.has("selectedIndex") || changedProperties.has("index")) {
-            this.selected = this.index === this.selectedIndex;
+            if (this.selectedIndex >= 0) {
+                this.selected = this.index === this.selectedIndex;
+            }
         }
 
         return true;

@@ -6,6 +6,8 @@
  */
 
 import "./Icon";
+import "./Button";
+
 import DockPanel from "./DockPanel";
 import DockStack from "./DockStack";
 import DockView from "./DockView";
@@ -75,8 +77,8 @@ export default class DockPanelHeader extends CustomElement
         } = this.panel;
 
         let icon = closable
-            ? html`<button class="ff-button ff-icon fas fa-times" @click=${this.onClickButton}></button>`
-            : (movable ? html`<ff-icon type="grip"></ff-icon>` : null);
+            ? html`<ff-button inline icon="close" @click=${this.onClickButton}></ff-button>`
+            : (movable ? html`<ff-icon name="grip"></ff-icon>` : null);
 
         return html`
             <label class="ff-text">${text}</label>
