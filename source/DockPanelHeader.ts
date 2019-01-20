@@ -5,10 +5,12 @@
  * License: MIT
  */
 
-import CustomElement, { customElement, html, property, PropertyValues } from "./CustomElement";
+import "./Icon";
 import DockPanel from "./DockPanel";
 import DockStack from "./DockStack";
 import DockView from "./DockView";
+
+import CustomElement, { customElement, html, property, PropertyValues } from "./CustomElement";
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -74,7 +76,7 @@ export default class DockPanelHeader extends CustomElement
 
         let icon = closable
             ? html`<button class="ff-button ff-icon fas fa-times" @click=${this.onClickButton}></button>`
-            : (movable ? html`<label class="ff-icon fas fa-th"></label>` : null);
+            : (movable ? html`<ff-icon type="grip"></ff-icon>` : null);
 
         return html`
             <label class="ff-text">${text}</label>

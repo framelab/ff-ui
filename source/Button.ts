@@ -47,13 +47,16 @@ export default class Button extends CustomElement
     @property()
     text: string;
 
-    /** Optional icon to be displayed on the button. The given string is interpreted as a list of classes. */
+    /** Optional name of the icon to be displayed on the button. */
     @property()
     icon = "";
 
     /** If true, displays a downward facing triangle at the right side. */
     @property({ type: Boolean })
     caret = false;
+
+    @property({ type: Boolean })
+    inline = false;
 
     constructor()
     {
@@ -65,7 +68,13 @@ export default class Button extends CustomElement
 
     protected firstConnected()
     {
-        this.classList.add("ff-control", "ff-button");
+        if (this.inline) {
+            this.classList.add("ff-inline", "ff-button");
+        }
+        else {
+            this.classList.add("ff-control", "ff-button");
+        }
+
         this.tabIndex = 0;
     }
 
@@ -76,12 +85,12 @@ export default class Button extends CustomElement
 
     protected renderIcon()
     {
-        return this.icon ? html`<div class=${"ff-icon " + this.icon}></div>` : null;
+        return this.icon ? html`<ff-icon class="ff-off" name=${this.icon}></ff-icon>` : null;
     }
 
     protected renderText()
     {
-        return this.text ? html`<div class="ff-text">${this.text}</div>` : null;
+        return this.text ? html`<div class="ff-text ff-off">${this.text}</div>` : null;
     }
 
     protected renderCaret()

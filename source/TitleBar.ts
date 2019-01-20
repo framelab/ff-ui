@@ -6,6 +6,7 @@
  */
 
 import DragHelper from "./DragHelper";
+import "./Button";
 import CustomElement, { customElement, property, html, PropertyValues } from "./CustomElement";
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -13,8 +14,6 @@ import CustomElement, { customElement, property, html, PropertyValues } from "./
 @customElement("ff-title-bar")
 export default class TitleBar extends CustomElement
 {
-    protected static readonly closeIcon: string = "ff-icon fa fas fa-times";
-
     @property({ type: String })
     title = "";
 
@@ -48,21 +47,14 @@ export default class TitleBar extends CustomElement
     protected render()
     {
         const title = this.title || " ";
-        const closeIcon = this.closable ? html`<button class=${TitleBar.closeIcon}></button>` : null;
+        const closeIcon = this.closable ? html`<ff-button inline icon="close"></ff-button>` : null;
 
-        return html`
-            <div class="ff-text">${title}</div>
-            ${closeIcon}
-        `;
+        return html`<div class="ff-text ff-ellipsis">${title}</div>${closeIcon}`;
     }
 
     protected firstUpdated()
     {
-        this.setStyle({
-            flex: "0 0 auto",
-            display: "flex",
-            alignItems: "center"
-        });
+        this.classList.add("ff-flex-row", "ff-title-bar");
     }
 
 }

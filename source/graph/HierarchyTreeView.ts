@@ -14,16 +14,101 @@ import Graph from "@ff/graph/Graph";
 import System from "@ff/graph/System";
 
 import { IHierarchyEvent } from "@ff/graph/components/CHierarchy";
-import CSelection, { INodeEvent, IComponentEvent } from "@ff/graph/components/CSelection";
+import CSelection, { INodeEvent, IComponentEvent, IActiveGraphEvent } from "@ff/graph/components/CSelection";
 
-import Tree, { customElement, html, property } from "../Tree";
+import SelectionView, { customElement, html, property } from "./SelectionView";
+
+import "../Button";
+import Tree from "../Tree";
+
+////////////////////////////////////////////////////////////////////////////////
+
+@customElement("ff-hierarchy-tree-view")
+export default class HierarchyTreeView extends SelectionView
+{
+    protected tree: HierarchyTree = null;
+
+    constructor(system?: System)
+    {
+        super(system);
+
+        this.addEventListener("click", this.onClick.bind(this));
+        this.addEventListener("contextmenu", this.onContextMenu.bind(this));
+    }
+
+    protected firstConnected()
+    {
+        super.firstConnected();
+        this.classList.add("ff-hierarchy-tree-view");
+        this.tree = new HierarchyTree(this.system);
+    }
+
+    protected connected()
+    {
+        super.connected();
+        this.selection.selectedComponents.on(CGraph, this.onSelectGraph, this);
+        this.selection.on<IActiveGraphEvent>("active-graph", this.onActiveGraph, this);
+    }
+
+    protected disconnected()
+    {
+        super.disconnected();
+        this.selection.selectedComponents.off(CGraph, this.onSelectGraph, this);
+        this.selection.off<IActiveGraphEvent>("active-graph", this.onActiveGraph, this);
+    }
+
+    protected render()
+    {
+        const selection = this.selection;
+        const activeGraphComponent = selection.activeGraph && selection.activeGraph.parent;
+        const text = activeGraphComponent ? activeGraphComponent.name || activeGraphComponent.type : "System";
+
+        const down = selection.hasChildGraph() ? html`<ff-button text="down" @click=${this.onClickDown}></ff-button>` : null;
+        const up = selection.hasParentGraph() ? html`<ff-button text="up" @click=${this.onClickUp}></ff-button>` : null;
+
+        return html`<div class="ff-flex-row ff-header"><div class="ff-text">${text}</div>${down}${up}</div>
+            <div class="ff-scroll-y">${this.tree}</div>`;
+    }
+
+    protected onClick()
+    {
+        this.selection.clearSelection();
+    }
+
+    protected onClickUp(event: MouseEvent)
+    {
+        event.stopPropagation();
+        this.selection.activateParentGraph();
+    }
+
+    protected onClickDown(event: MouseEvent)
+    {
+        event.stopPropagation();
+        this.selection.activateChildGraph();
+    }
+
+    protected onContextMenu()
+    {
+
+    }
+
+    protected onSelectGraph(event: IComponentEvent)
+    {
+        this.requestUpdate();
+    }
+
+    protected onActiveGraph(event: IActiveGraphEvent)
+    {
+        this.requestUpdate();
+    }
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 
 type NCG = Node | Component | Graph;
 
 @customElement("ff-hierarchy-tree")
-export default class HierarchyTree extends Tree<NCG>
+export class HierarchyTree extends Tree<NCG>
 {
     @property({ attribute: false })
     system: System;
@@ -32,11 +117,10 @@ export default class HierarchyTree extends Tree<NCG>
     protected rootId = uniqueId();
 
 
-    constructor(system?: System, graph?: Graph)
+    constructor(system?: System)
     {
         super();
         this.system = system;
-        this.root = graph;
     }
 
     protected firstConnected()
@@ -45,6 +129,7 @@ export default class HierarchyTree extends Tree<NCG>
         this.classList.add("ff-hierarchy-tree");
 
         this.selection = this.system.components.safeGet(CSelection);
+        this.root = this.selection.activeGraph;
     }
 
     protected connected()
@@ -55,6 +140,7 @@ export default class HierarchyTree extends Tree<NCG>
 
         selection.selectedNodes.on<INodeEvent>("node", this.onSelectNode, this);
         selection.selectedComponents.on<IComponentEvent>("component", this.onSelectComponent, this);
+        selection.on("active-graph", this.onActiveGraph, this);
 
         selection.system.nodes.on<INodeEvent>("node", this.onUpdate, this);
         selection.system.components.on<IComponentEvent>("component", this.onUpdate, this);
@@ -69,6 +155,7 @@ export default class HierarchyTree extends Tree<NCG>
 
         selection.selectedNodes.off<INodeEvent>("node", this.onSelectNode, this);
         selection.selectedComponents.off<IComponentEvent>("component", this.onSelectComponent, this);
+        selection.off("active-graph", this.onActiveGraph, this);
 
         selection.system.nodes.off<INodeEvent>("node", this.onUpdate, this);
         selection.system.components.off<IComponentEvent>("component", this.onUpdate, this);
@@ -173,8 +260,7 @@ export default class HierarchyTree extends Tree<NCG>
     protected onDblClickNode(event: MouseEvent, treeNode: NCG)
     {
         if (treeNode instanceof CGraph) {
-            this.selection.clearSelection();
-            this.root = treeNode.innerGraph;
+            this.selection.activeGraph = treeNode.innerGraph;
         }
     }
 
@@ -186,6 +272,11 @@ export default class HierarchyTree extends Tree<NCG>
     protected onSelectComponent(event: IComponentEvent)
     {
         this.setSelected(event.component, event.add);
+    }
+
+    protected onActiveGraph(event: IActiveGraphEvent)
+    {
+        this.root = this.selection.activeGraph;
     }
 
     protected onUpdate()

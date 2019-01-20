@@ -8,6 +8,27 @@
 ////////////////////////////////////////////////////////////////////////////////
 // NODE GRAPH SYSTEM
 
+.ff-hierarchy-tree-view {
+  @include full-size;
+  display: flex;
+  flex-direction: column;
+
+  & > .ff-header {
+    height: 24px;
+    padding: 4px;
+
+    .ff-text {
+      flex: 1 1 auto;
+      align-self: center;
+      color: $color-icon;
+    }
+    .ff-button {
+      flex: 0 1 auto;
+      color: $color-text;
+    }
+  }
+}
+
 .ff-hierarchy-tree {
   .ff-tree-node {
     &.ff-node {

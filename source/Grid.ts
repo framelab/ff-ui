@@ -9,70 +9,13 @@ import CustomElement, { customElement, property, PropertyValues } from "./Custom
 
 ////////////////////////////////////////////////////////////////////////////////
 
-class FlexContainer extends CustomElement
-{
-    @property({ type: Boolean })
-    wrap = false;
-
-    @property({ type: String })
-    justify: "flex-start";
-
-    @property({ type: String })
-    align: "stretch";
-
-    protected update(changedProperties: PropertyValues)
-    {
-        if (changedProperties.has("wrap")) {
-            this.style.flexWrap = this.wrap ? "wrap" : "nowrap";
-        }
-        if (changedProperties.has("justify")) {
-            this.style.justifyContent = this.justify;
-        }
-        if (changedProperties.has("align")) {
-            this.style.alignItems = this.align;
-        }
-
-        super.update(changedProperties);
-    }
-}
-
-/**
- * Container element with a flexbox row layout.
- */
-@customElement("ff-flex-row")
-export class FlexRow extends FlexContainer
-{
-    protected firstUpdated()
-    {
-        this.style.display = "flex";
-        this.style.flexDirection = "row";
-
-        this.classList.add("ff-flex-row");
-    }
-}
-
-/**
- * Container element with a flexbox column layout.
- */
-@customElement("ff-flex-column")
-export class FlexColumn extends FlexContainer
-{
-    protected firstUpdated()
-    {
-        this.style.display = "flex";
-        this.style.flexDirection = "column";
-
-        this.classList.add("ff-flex-column");
-    }
-}
-
 export type GridJustifyItems = "start" | "end" | "center" | "stretch";
 export type GridAlignItems = GridJustifyItems;
 export type GridJustifyContent = "start" | "end" | "center" | "stretch" | "space-around" | "space-between" | "space-evenly";
 export type GridAlignContent = GridJustifyContent;
 
 @customElement("ff-grid")
-export class Grid extends CustomElement
+export default class Grid extends CustomElement
 {
     /** How the container is positioned with respect to its parent. Default is "relative". */
     @property({ type: String })

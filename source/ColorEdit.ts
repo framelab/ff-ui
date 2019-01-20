@@ -8,7 +8,6 @@
 import math from "@ff/core/math";
 import Color, { Vector3 } from "@ff/core/Color";
 
-import "./Layout";
 import "./LineEdit";
 import { ILineEditChangeEvent } from "./LineEdit";
 import LinearSlider, { ILinearSliderChangeEvent} from "./LinearSlider";
@@ -63,7 +62,7 @@ export default class ColorEdit extends CustomElement
 
     protected firstConnected()
     {
-        this.classList.add("ff-control", "ff-color-edit");
+        this.classList.add("ff-flex-column", "ff-control", "ff-color-edit");
     }
 
     protected update(changedProperties: PropertyValues): void
@@ -96,19 +95,19 @@ export default class ColorEdit extends CustomElement
                 <div class="ff-text">A</div><ff-line-edit name="alphaByte" text=${color.alphaByte} align="center" @change=${this.onNumericEdit}></ff-line-edit>
             ` : null;
 
-            numericControls = html`<ff-flex-row class="ff-numeric-controls">
+            numericControls = html`<div class="ff-flex-row ff-numeric-controls">
                 <div class="ff-text">R</div><ff-line-edit name="redByte" text=${color.redByte} align="center" @change=${this.onNumericEdit}></ff-line-edit>
                 <div class="ff-text">G</div><ff-line-edit name="greenByte" text=${color.greenByte} align="center" @change=${this.onNumericEdit}></ff-line-edit>
                 <div class="ff-text">B</div><ff-line-edit name="blueByte" text=${color.blueByte} align="center" @change=${this.onNumericEdit}></ff-line-edit>
                 ${alphaControl}
                 <div class="ff-text">#</div><ff-line-edit name="string" text=${hex} class="ff-wide" align="center" @change=${this.onNumericEdit}></ff-line-edit>
-            </ff-flex-row>`;
+            </div>`;
         }
 
 
-        return html`<ff-flex-row class="ff-slider-controls">
+        return html`<div class="ff-flex-row ff-slider-controls">
                 ${this._lumSatSlider}${this._hueSlider}${this._alphaSlider}
-            </ff-flex-row>${numericControls}`;
+            </div>${numericControls}`;
     }
 
     protected updated()

@@ -8,7 +8,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 // FONTS
 
-$font-ui: "Segoe UI", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
+$font-ui: "Segoe UI", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif !default;
 
 @mixin font-ui-normal {
   font-family: $font-ui;
@@ -174,9 +174,35 @@ button, input {
 ////////////////////////////////////////////////////////////////////////////////
 // SEMANTIC ELEMENTS
 
-.ff-text, .ff-icon {
+.ff-off {
   user-select: none;
   pointer-events: none;
+}
+
+.ff-on {
+  user-select: auto;
+  pointer-events: auto;
+}
+
+.ff-focusable {
+  tab-index: 0;
+}
+
+.ff-flex-row {
+  display: flex;
+  align-items: center;
+}
+
+.ff-flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.ff-scroll-y {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  overflow-y: auto;
 }
 
 .ff-position-above {
@@ -217,8 +243,73 @@ button, input {
   }
 }
 
+.ff-ellipsis {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // CONTROLS
+
+.ff-icon {
+  display: inline-block;
+  position: relative;
+  height: 1rem;
+  fill: $color-icon;
+
+  svg {
+    width: inherit;
+    height: inherit;
+  }
+}
+
+.ff-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 1 1 auto;
+  position: relative;
+  cursor: pointer;
+
+  &[vertical] {
+    flex-direction: column;
+  }
+}
+
+.ff-button.ff-inline {
+
+}
+
+.ff-button.ff-control {
+  flex-wrap: wrap;
+  padding: 5px;
+  background: $color-background-light;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: $color-background-lighter;
+  }
+  &[selected] {
+    background-color: $color-primary;
+
+    &:hover {
+      background-color: $color-primary-light;
+    }
+  }
+  .ff-text {
+    margin: 3px;
+    white-space: nowrap;
+  }
+  .ff-icon {
+    margin: 3px;
+    height: 1.3em;
+    fill: $color-text;
+  }
+  .ff-caret-down {
+    margin: 3px;
+  }
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // COMPONENTS
@@ -246,52 +337,10 @@ ff-title-bar {
 
   .ff-text {
     flex: 1 1 auto;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
     padding-right: 8px;
   }
   .ff-icon {
     padding: 2px;
-  }
-}
-
-.ff-button {
-  flex: 1 1 auto;
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-wrap: wrap;
-  padding: 5px;
-  background: $color-background-light;
-  transition: background-color 0.2s;
-  cursor: pointer;
-
-  &[vertical] {
-    flex-direction: column;
-  }
-  &:hover {
-    background-color: $color-background-lighter;
-  }
-  &[selected] {
-    background-color: $color-primary;
-
-    &:hover {
-      background-color: $color-primary-light;
-    }
-  }
-
-  .ff-text {
-    margin: 3px;
-    white-space: nowrap;
-  }
-  .ff-icon {
-    margin: 3px;
-    font-size: 1.3em;
-  }
-  .ff-caret-down {
-    margin: 3px;
   }
 }
 
@@ -349,8 +398,6 @@ ff-popup-button {
 }
 
 .ff-color-edit {
-  display: flex;
-  flex-direction: column;
   font-size: 0.8rem;
 
   .ff-control {
@@ -358,6 +405,7 @@ ff-popup-button {
   }
 
   .ff-slider-controls {
+    align-items: stretch;
     flex: 1 1 auto;
   }
 
@@ -538,9 +586,9 @@ ff-tab-container, ff-dock-stack {
 }
 
 ff-tab-header, ff-dock-panel-header {
+  padding: 0 2px 2px 0;
   background: $color-dock-frame;
   color: $color-text;
-  padding: 0 2px 2px 0;
 
   &[active] {
     background: linear-gradient(lighten($color-dock-background, 15%), $color-dock-background);
@@ -551,12 +599,13 @@ ff-tab-header, ff-dock-panel-header {
     pointer-events: none;
   }
   .ff-text {
-    padding: 0 3px;
+    padding: 0 2px;
   }
   .ff-icon {
-    font-size: 0.8rem;
-    padding: 0 3px;
-    color: $color-text-disabled;
+    top: 1px;
+    height: 0.8rem;
+    padding: 2px 4px 3px 2px;
+    fill: $color-text-disabled;
   }
 }
 
