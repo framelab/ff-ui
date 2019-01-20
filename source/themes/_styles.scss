@@ -47,6 +47,19 @@ $color-icon-disabled: #606060 !default;
 
 $color-focus: $color-secondary-light;
 
+$color-info: #73adff !default;
+$color-success: #8ae65c !default;
+$color-warning: #e6b045 !default;
+$color-error: #e64545 !default;
+
+////////////////////////////////////////////////////////////////////////////////
+// TRANSITIONS
+
+@mixin slide-out-right($duration, $curve) {
+  transition: left $duration $curve;
+  left: 100%;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // MIXINS
 
@@ -472,6 +485,52 @@ ff-quad-splitter {
   .ff-top {
     box-sizing: border-box;
     border-bottom: 1px solid $color-background;
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// NOTIFICATIONS
+
+#ff-notification-stack {
+  position: fixed;
+  z-index: 100;
+  bottom: 0;
+  right: 0;
+  width: 30%;
+  min-width: 250px;
+  max-width: 400px;
+}
+
+.ff-notification {
+  position: relative;
+  left: 0;
+  margin: 8px;
+  padding: 4px;
+  background: $color-background-light;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.35);
+
+  &.ff-info > .ff-icon { fill: $color-info; }
+  &.ff-success > .ff-icon { fill: $color-success; }
+  &.ff-warning > .ff-icon { fill: $color-warning; }
+  &.ff-error > .ff-icon { fill: $color-error; }
+
+  & > .ff-icon {
+    height: 2em;
+    padding: 8px;
+  }
+
+  &.ff-out {
+    transition: left 0.5s ease-in;
+    left: 100%;
+  }
+
+  .ff-text {
+    flex: 1;
+    padding: 8px;
+  }
+  .ff-button {
+    flex: 0;
+    padding: 8px;
   }
 }
 

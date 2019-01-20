@@ -5,7 +5,7 @@
  * License: MIT
  */
 
-import CustomElement, { customElement, property, html, PropertyValues } from "./CustomElement";
+import CustomElement, { customElement, property, html } from "./CustomElement";
 
 ////////////////////////////////////////////////////////////////////////////////
 
