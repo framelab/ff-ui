@@ -13,7 +13,7 @@ import Node from "@ff/graph/Node";
 import Graph from "@ff/graph/Graph";
 import System from "@ff/graph/System";
 
-import { IHierarchyEvent } from "@ff/graph/components/CHierarchy";
+import CHierarchy, { IHierarchyEvent } from "@ff/graph/components/CHierarchy";
 import CSelection, { INodeEvent, IComponentEvent, IActiveGraphEvent } from "@ff/graph/components/CSelection";
 
 import SelectionView, { customElement, html, property } from "./SelectionView";
@@ -229,7 +229,8 @@ export class HierarchyTree extends Tree<NCG>
     {
         if (node instanceof Node) {
             let children: any = node.components.getArray();
-            const hierarchy = node.hierarchy;
+
+            const hierarchy = node.components.get(CHierarchy);
             if (hierarchy) {
                 children = children.concat(hierarchy.children.map(child => child.node));
             }
