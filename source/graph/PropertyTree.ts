@@ -57,8 +57,8 @@ export default class PropertyTree extends Tree<ITreeNode>
 
         const selection = this.selection;
 
-        selection.selectedNodes.on<INodeEvent>("node", this.onSelectNode, this);
-        selection.selectedComponents.on<IComponentEvent>("component", this.onSelectComponent, this);
+        selection.selectedNodes.on(Node, this.onSelectNode, this);
+        selection.selectedComponents.on(Component, this.onSelectComponent, this);
 
         const node = selection.selectedNodes.get();
         if (node) {
@@ -74,8 +74,8 @@ export default class PropertyTree extends Tree<ITreeNode>
     {
         super.disconnected();
 
-        this.selection.selectedNodes.off<INodeEvent>("node", this.onSelectNode, this);
-        this.selection.selectedComponents.off<IComponentEvent>("component", this.onSelectComponent, this);
+        this.selection.selectedNodes.off(Node, this.onSelectNode, this);
+        this.selection.selectedComponents.off(Component, this.onSelectComponent, this);
     }
 
     protected getClasses(node: ITreeNode)

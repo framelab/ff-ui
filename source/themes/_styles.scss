@@ -24,7 +24,7 @@ $font-ui: "Segoe UI", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-
 // COLORS
 
 $color-background: #343434 !default;
-$color-background-dark: darken($color-background, 4%) !default;
+$color-background-dark: darken($color-background, 5%) !default;
 $color-background-darker: darken($color-background, 10%) !default;
 $color-background-light: lighten($color-background, 10%) !default;
 $color-background-lighter: lighten($color-background, 20%) !default;
@@ -211,6 +211,10 @@ button, input {
 .ff-flex-column {
   display: flex;
   flex-direction: column;
+}
+
+.ff-flex-wrap {
+  flex-wrap: wrap;
 }
 
 .ff-scroll-y {
@@ -556,7 +560,29 @@ ff-quad-splitter {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// TREE
+// LIST, TREE
+
+.ff-list {
+  flex: 1 1 auto;
+  background-color: $color-background-dark;
+
+  .ff-list-item {
+    cursor: pointer;
+    user-select: none;
+    padding: 2px;
+
+    &:hover {
+      background-color: $color-background;
+    }
+    &[selected] {
+      background-color: $color-primary;
+    }
+  }
+
+  .ff-list-item + .ff-list-item {
+    border-bottom: 1px solid $color-background;
+  }
+}
 
 .ff-tree {
   .ff-tree-node-container {
@@ -628,10 +654,9 @@ ff-tab-header {
 // DOCK VIEW
 
 $color-dock-frame: $color-background-darker;
-$color-dock-background: $color-background-dark;
 
 ff-tab-container, ff-dock-stack {
-  background: $color-dock-background;
+  background: $color-background-dark;
   border: 1px solid $color-dock-frame;
 
   & header {
@@ -645,7 +670,7 @@ ff-tab-header, ff-dock-panel-header {
   color: $color-text;
 
   &[active] {
-    background: linear-gradient(lighten($color-dock-background, 15%), $color-dock-background);
+    background: linear-gradient(lighten($color-background, 18%), $color-background);
     color: $color-text;
   }
 

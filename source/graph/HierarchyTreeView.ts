@@ -7,12 +7,12 @@
 
 import uniqueId from "@ff/core/uniqueId";
 
-import Component from "@ff/graph/Component";
-import CGraph from "@ff/graph/components/CGraph";
-import Node from "@ff/graph/Node";
-import Graph from "@ff/graph/Graph";
 import System from "@ff/graph/System";
+import Graph from "@ff/graph/Graph";
+import Node from "@ff/graph/Node";
+import Component from "@ff/graph/Component";
 
+import CGraph from "@ff/graph/components/CGraph";
 import CHierarchy, { IHierarchyEvent } from "@ff/graph/components/CHierarchy";
 import CSelection, { INodeEvent, IComponentEvent, IActiveGraphEvent } from "@ff/graph/components/CSelection";
 
@@ -138,12 +138,12 @@ export class HierarchyTree extends Tree<NCG>
 
         const selection = this.selection;
 
-        selection.selectedNodes.on<INodeEvent>("node", this.onSelectNode, this);
-        selection.selectedComponents.on<IComponentEvent>("component", this.onSelectComponent, this);
+        selection.selectedNodes.on(Node, this.onSelectNode, this);
+        selection.selectedComponents.on(Component, this.onSelectComponent, this);
         selection.on("active-graph", this.onActiveGraph, this);
 
-        selection.system.nodes.on<INodeEvent>("node", this.onUpdate, this);
-        selection.system.components.on<IComponentEvent>("component", this.onUpdate, this);
+        selection.system.nodes.on(Node, this.onUpdate, this);
+        selection.system.components.on(Component, this.onUpdate, this);
         selection.system.on<IHierarchyEvent>("hierarchy", this.onUpdate, this);
     }
 
@@ -153,12 +153,12 @@ export class HierarchyTree extends Tree<NCG>
 
         const selection = this.selection;
 
-        selection.selectedNodes.off<INodeEvent>("node", this.onSelectNode, this);
-        selection.selectedComponents.off<IComponentEvent>("component", this.onSelectComponent, this);
+        selection.selectedNodes.off(Node, this.onSelectNode, this);
+        selection.selectedComponents.off(Component, this.onSelectComponent, this);
         selection.off("active-graph", this.onActiveGraph, this);
 
-        selection.system.nodes.off<INodeEvent>("node", this.onUpdate, this);
-        selection.system.components.off<IComponentEvent>("component", this.onUpdate, this);
+        selection.system.nodes.off(Node, this.onUpdate, this);
+        selection.system.components.off(Component, this.onUpdate, this);
         selection.system.off<IHierarchyEvent>("hierarchy", this.onUpdate, this);
     }
 
