@@ -69,7 +69,7 @@ $tx-short: 0.15s;
 $tx-medium: 0.3s;
 
 
-@mixin full-size {
+@mixin fullsize {
   position: absolute;
   left: 0;
   right: 0;
@@ -77,12 +77,20 @@ $tx-medium: 0.3s;
   bottom: 0;
 }
 
-@mixin full-screen {
+.ff-fullsize {
+  @include fullsize;
+}
+
+@mixin fullscreen {
   position: fixed;
   left: 0;
   right: 0;
   top: 0;
   bottom: 0;
+}
+
+.ff-fullscreen {
+  @include fullscreen;
 }
 
 @mixin triangle($color, $size, $angle) {
@@ -144,7 +152,7 @@ $tx-medium: 0.3s;
 
 // expands the element to match the size of the parent element
 .ff-fullsize {
-  @include full-size;
+  @include fullsize;
 }
 
 // displays a little downward facing triangle
@@ -373,7 +381,7 @@ button, input {
 // COMPONENTS
 
 .ff-modal-plane {
-  @include full-screen;
+  @include fullscreen;
   background: transparentize(red, 0.6);
 }
 

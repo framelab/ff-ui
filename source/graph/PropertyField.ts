@@ -87,29 +87,19 @@ export default class PropertyField extends CustomElement
 
         // create content element
         if (schema.event) {
-            this.buttonElement = this.appendElement("div", {
-                position: "absolute",
-                userSelect: "none", pointerEvents: "none", zIndex: "1"
-            });
-            this.buttonElement.classList.add("ff-event-button");
+            this.buttonElement = this.appendElement("div");
+            this.buttonElement.classList.add("ff-off", "ff-event-button");
         }
         else {
             // create content (text) element
-            this.contentElement = this.appendElement("div", {
-                position: "absolute", top: "0", bottom: "0", left: "0", right: "0",
-                userSelect: "none", pointerEvents: "none", zIndex: "1"
-            });
-            this.contentElement.classList.add("ff-content");
+            this.contentElement = this.appendElement("div");
+            this.contentElement.classList.add("ff-off", "ff-content");
 
             // create bar element
             const { min, max, bar } = schema;
             if (!schema.options && min !== undefined && max !== undefined && bar !== undefined) {
-                this.barElement = this.appendElement("div", {
-                    position: "absolute", top: "0", bottom: "0", left: "0",
-                    userSelect: "none", pointerEvents: "none", zIndex: "0"
-                });
-
-                this.barElement.classList.add("ff-bar");
+                this.barElement = this.appendElement("div");
+                this.barElement.classList.add("ff-fullsize", "ff-off", "ff-bar");
             }
         }
 
@@ -316,8 +306,7 @@ export default class PropertyField extends CustomElement
             }
         }
 
-        const editElement = this.editElement = document.createElement("input");
-        this.appendChild(editElement);
+        const editElement = this.editElement = this.appendElement("input");
         editElement.setAttribute("type", "text");
         editElement.value = text;
         editElement.focus();
