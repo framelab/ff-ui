@@ -37,6 +37,8 @@ const _levelTimeouts = {
 @customElement("ff-notification")
 export default class Notification extends CustomElement
 {
+    static readonly stackId: string = "ff-notification-stack";
+
     @property({ type: String })
     message: string;
 
@@ -58,12 +60,12 @@ export default class Notification extends CustomElement
         this.level = level || "info";
         this.timeout = timeout !== undefined ? timeout : _levelTimeouts[this.level];
 
-        const stack = document.getElementById("ff-notification-stack");
+        const stack = document.getElementById(Notification.stackId);
         if (stack) {
             stack.appendChild(this);
         }
         else {
-            console.warn("element '#ff-notification-stack' not found");
+            console.warn(`element '#${Notification.stackId}' not found`);
         }
     }
 

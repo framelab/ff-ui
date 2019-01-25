@@ -85,10 +85,12 @@ export default class PropertyTree extends Tree<ITreeNode>
 
     protected renderNodeHeader(node: ITreeNode)
     {
-        return html`
-            <div class="ff-text">${node.text}</div>
-            ${node.property ? html`<ff-property-view .property=${node.property}></ff-property-view>` : null}
-        `;
+        if (node.property) {
+            return html`<div class="ff-text ff-label ff-ellipsis">${node.text}</div>
+                <ff-property-view .property=${node.property}></ff-property-view>`;
+        }
+
+        return html`<div class="ff-text ff-ellipsis">${node.text}</div>`;
     }
 
     protected onSelectNode(event: INodeEvent)
@@ -115,7 +117,7 @@ export default class PropertyTree extends Tree<ITreeNode>
     {
         return {
             id: node.id,
-            text: node.name || "Node",
+            text: node.name || node.type,
             classes: "ff-node",
             children: node.components.getArray().map(component => this.createComponentTreeNode(component))
         };

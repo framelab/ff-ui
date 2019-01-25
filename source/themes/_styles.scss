@@ -215,12 +215,10 @@ button, input {
   display: flex;
   align-items: center;
 }
-
 .ff-flex-column {
   display: flex;
   flex-direction: column;
 }
-
 .ff-flex-wrap {
   flex-wrap: wrap;
 }
@@ -340,10 +338,20 @@ button, input {
   & > .ff-icon {
     margin: 3px;
     height: 1.3em;
-    fill: $color-icon;
   }
   & > .ff-caret-down {
     margin: 3px;
+  }
+
+  &.ff-disabled {
+    color: $color-text-disabled;
+    fill: $color-icon-disabled;
+    user-select: none;
+    pointer-events: none;
+
+    & > .ff-icon {
+      fill: $color-icon-disabled;
+    }
   }
 }
 

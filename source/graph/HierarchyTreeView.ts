@@ -172,10 +172,10 @@ export class HierarchyTree extends Tree<NCG>
             const text = name ? `${name} [${type}]` : type;
 
             if (treeNode instanceof CGraph) {
-                return html`<div class="ff-text"><b>${text}</b></div>`;
+                return html`<div class="ff-text ff-ellipsis"><b>${text}</b></div>`;
             }
 
-            return html`<div class="ff-text">${text}</div>`;
+            return html`<div class="ff-text ff-ellipsis">${text}</div>`;
 
         }
         else if (treeNode instanceof Node) {

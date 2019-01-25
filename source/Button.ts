@@ -54,6 +54,9 @@ export default class Button extends CustomElement
     @property({ type: Boolean })
     selectable = false;
 
+    @property({ type: Boolean })
+    disabled = false;
+
     /** Optional text to be displayed on the button. */
     @property()
     text: string;
@@ -95,6 +98,10 @@ export default class Button extends CustomElement
             if (this.selectedIndex >= 0) {
                 this.selected = this.index === this.selectedIndex;
             }
+        }
+
+        if (changedProperties.has("disabled")) {
+            this.setClass("ff-disabled", this.disabled);
         }
 
         return true;
