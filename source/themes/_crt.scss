@@ -35,7 +35,7 @@ $color-icon-disabled: #7db386 !default;
 
 @font-face {
   font-family: 'C64';
-  src: url('/fonts/C64.woff') format('woff');
+  src: url('/fonts/C64_Pro-STYLE.woff') format('woff');
 }
 $font-ui: "C64", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
 
@@ -46,7 +46,7 @@ $font-ui: "C64", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif
 
 body {
   @include font-ui-normal;
-  font-size: 1rem;
+  font-size: 0.85rem;
   background-color: $color-background;
   color: $color-text;
 }
