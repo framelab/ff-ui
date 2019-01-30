@@ -61,7 +61,7 @@ export default class HierarchyTreeView extends SelectionView
     {
         const selection = this.selection;
         const activeGraphComponent = selection.activeGraph && selection.activeGraph.parent;
-        const text = activeGraphComponent ? activeGraphComponent.name || activeGraphComponent.type : "System";
+        const text = activeGraphComponent ? activeGraphComponent.displayName : "System";
 
         const down = selection.hasChildGraph() ? html`<ff-button text="down" @click=${this.onClickDown}></ff-button>` : null;
         const up = selection.hasParentGraph() ? html`<ff-button text="up" @click=${this.onClickUp}></ff-button>` : null;
@@ -128,7 +128,7 @@ export class HierarchyTree extends Tree<NCG>
         super.firstConnected();
         this.classList.add("ff-hierarchy-tree");
 
-        this.selection = this.system.components.safeGet(CSelection);
+        this.selection = this.system.getComponent(CSelection, true);
         this.root = this.selection.activeGraph;
     }
 
@@ -168,7 +168,7 @@ export class HierarchyTree extends Tree<NCG>
 
         if (treeNode instanceof Component) {
             const name = treeNode.name;
-            const type = treeNode.type.substr(1);
+            const type = treeNode.className.substr(1);
             const text = name ? `${name} [${type}]` : type;
 
             if (treeNode instanceof CGraph) {
@@ -180,18 +180,18 @@ export class HierarchyTree extends Tree<NCG>
         }
         else if (treeNode instanceof Node) {
             const name = treeNode.name;
-            const type = treeNode.type;
-            if (type === "Node") {
-                text = name ? name : type;
+            const className = treeNode.className;
+            if (className === "Node") {
+                text = name ? name : className;
             }
             else {
-                text = name ? `${name} [${type.substr(1)}]` : type.substr(1);
+                text = name ? `${name} [${className.substr(1)}]` : className.substr(1);
             }
 
             return html`<div class="ff-text">${text}</div>`;
         }
         else {
-            const text = treeNode.parent ? treeNode.parent.type : "System";
+            const text = treeNode.parent ? treeNode.parent.className : "System";
             return html`<div class="ff-text">${text}</div>`;
         }
     }
@@ -237,7 +237,7 @@ export class HierarchyTree extends Tree<NCG>
             return children;
         }
         if (node instanceof Graph) {
-            return node.nodes.findRoots();
+            return node.findRootNodes();
         }
 
         return null;
@@ -267,12 +267,12 @@ export class HierarchyTree extends Tree<NCG>
 
     protected onSelectNode(event: INodeEvent)
     {
-        this.setSelected(event.node, event.add);
+        this.setSelected(event.object, event.add);
     }
 
     protected onSelectComponent(event: IComponentEvent)
     {
-        this.setSelected(event.component, event.add);
+        this.setSelected(event.object, event.add);
     }
 
     protected onActiveGraph(event: IActiveGraphEvent)

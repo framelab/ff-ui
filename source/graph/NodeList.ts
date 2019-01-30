@@ -5,8 +5,8 @@
  * License: MIT
  */
 
-import Component, { ComponentOrType } from "@ff/graph/Component";
-import Node, { NodeOrType } from "@ff/graph/Node";
+import Component, { ComponentOrClass } from "@ff/graph/Component";
+import Node, { NodeOrClass } from "@ff/graph/Node";
 import Graph, { INodeEvent, IComponentEvent } from "@ff/graph/Graph";
 import CSelection from "@ff/graph/components/CSelection";
 
@@ -28,14 +28,14 @@ class NodeList<N extends Node = Node, C extends Component = Component> extends L
     graph: Graph = null;
 
     @property({ attribute: false })
-    node: NodeOrType<N> = null;
+    node: NodeOrClass<N> = null;
 
     @property({ attribute: false })
-    component: ComponentOrType<C> = null;
+    component: ComponentOrClass<C> = null;
 
     private _graph: Graph = null;
-    private _nodeType: NodeOrType<N> = null;
-    private _componentType: ComponentOrType<C> = null;
+    private _nodeType: NodeOrClass<N> = null;
+    private _componentType: ComponentOrClass<C> = null;
 
     private get _selection() {
         return this._graph.system.components.safeGet(CSelection);

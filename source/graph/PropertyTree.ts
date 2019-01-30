@@ -42,7 +42,7 @@ export default class PropertyTree extends Tree<ITreeNode>
         this.includeRoot = true;
 
         this.system = system;
-        this.selection = system.components.safeGet(CSelection);
+        this.selection = system.getComponent(CSelection, true);
     }
 
     protected firstConnected()
@@ -96,7 +96,7 @@ export default class PropertyTree extends Tree<ITreeNode>
     protected onSelectNode(event: INodeEvent)
     {
         if (event.add) {
-            this.root = this.createNodeTreeNode(event.node);
+            this.root = this.createNodeTreeNode(event.object);
         }
         else {
             this.root = null;
@@ -106,7 +106,7 @@ export default class PropertyTree extends Tree<ITreeNode>
     protected onSelectComponent(event: IComponentEvent)
     {
         if (event.add) {
-            this.root = this.createComponentTreeNode(event.component);
+            this.root = this.createComponentTreeNode(event.object);
         }
         else {
             this.root = null;
@@ -117,7 +117,7 @@ export default class PropertyTree extends Tree<ITreeNode>
     {
         return {
             id: node.id,
-            text: node.name || node.type,
+            text: node.displayName,
             classes: "ff-node",
             children: node.components.getArray().map(component => this.createComponentTreeNode(component))
         };
@@ -131,7 +131,7 @@ export default class PropertyTree extends Tree<ITreeNode>
 
         return {
             id,
-            text: component.name || component.type,
+            text: component.displayName,
             classes: "ff-component",
             property: null,
             children: [

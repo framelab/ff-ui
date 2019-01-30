@@ -5,7 +5,7 @@
  * License: MIT
  */
 
-import Component, { ComponentOrType } from "@ff/graph/Component";
+import Component, { ComponentOrClass } from "@ff/graph/Component";
 import Node from "@ff/graph/Node";
 import Graph, { IComponentEvent } from "@ff/graph/Graph";
 import CSelection from "@ff/graph/components/CSelection";
@@ -24,10 +24,10 @@ class ComponentList<C extends Component = Component> extends List<C>
     scope: GraphOrNode = null;
 
     @property({ attribute: false })
-    component: ComponentOrType<C> = null;
+    component: ComponentOrClass<C> = null;
 
     private _scope: GraphOrNode = null;
-    private _componentType: ComponentOrType<C> = null;
+    private _componentType: ComponentOrClass<C> = null;
 
     private get _selection() {
         return this._scope.system.components.safeGet(CSelection);
