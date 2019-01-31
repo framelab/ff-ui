@@ -61,12 +61,12 @@ export default class HierarchyTreeView extends SelectionView
     {
         const selection = this.selection;
         const activeGraphComponent = selection.activeGraph && selection.activeGraph.parent;
-        const text = activeGraphComponent ? activeGraphComponent.displayName : "System";
+        const text = activeGraphComponent ? activeGraphComponent.displayName : "Main";
 
-        const down = selection.hasChildGraph() ? html`<ff-button text="down" @click=${this.onClickDown}></ff-button>` : null;
-        const up = selection.hasParentGraph() ? html`<ff-button text="up" @click=${this.onClickUp}></ff-button>` : null;
+        const down = selection.hasChildGraph() ? html`<ff-button icon="down" @click=${this.onClickDown}></ff-button>` : null;
+        const up = selection.hasParentGraph() ? html`<ff-button icon="up" @click=${this.onClickUp}></ff-button>` : null;
 
-        return html`<div class="ff-flex-row ff-header"><div class="ff-text">${text}</div>${down}${up}</div>
+        return html`<div class="ff-flex-row ff-header">${up}<div class="ff-text">${text}</div>${down}</div>
             <div class="ff-scroll-y">${this.tree}</div>`;
     }
 
@@ -162,36 +162,17 @@ export class HierarchyTree extends Tree<NCG>
         selection.system.off<IHierarchyEvent>("hierarchy", this.onUpdate, this);
     }
 
-    protected renderNodeHeader(treeNode: NCG)
+    protected renderNodeHeader(item: NCG)
     {
-        let text;
-
-        if (treeNode instanceof Component) {
-            const name = treeNode.name;
-            const type = treeNode.className.substr(1);
-            const text = name ? `${name} [${type}]` : type;
-
-            if (treeNode instanceof CGraph) {
-                return html`<div class="ff-text ff-ellipsis"><b>${text}</b></div>`;
+        if (item instanceof Component || item instanceof Node) {
+            if (item instanceof CGraph) {
+                return html`<div class="ff-text ff-ellipsis"><b>${item.displayName}</b></div>`;
             }
 
-            return html`<div class="ff-text ff-ellipsis">${text}</div>`;
-
-        }
-        else if (treeNode instanceof Node) {
-            const name = treeNode.name;
-            const className = treeNode.className;
-            if (className === "Node") {
-                text = name ? name : className;
-            }
-            else {
-                text = name ? `${name} [${className.substr(1)}]` : className.substr(1);
-            }
-
-            return html`<div class="ff-text">${text}</div>`;
+            return html`<div class="ff-text ff-ellipsis">${item.displayName}</div>`;
         }
         else {
-            const text = treeNode.parent ? treeNode.parent.className : "System";
+            const text = item.parent ? item.parent.displayName : "Main";
             return html`<div class="ff-text">${text}</div>`;
         }
     }

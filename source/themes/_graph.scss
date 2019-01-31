@@ -14,8 +14,10 @@
   flex-direction: column;
 
   & > .ff-header {
-    height: 24px;
+    flex: 0 0 auto;
+    height: 22px;
     padding: 4px;
+    background-color: $color-background;
 
     .ff-text {
       flex: 1 1 auto;
@@ -23,28 +25,46 @@
       color: $color-icon;
     }
     .ff-button {
-      flex: 0 1 auto;
+      flex: 0 1 32px;
       color: $color-text;
+      padding: 0;
+    }
+    .ff-button + .ff-text {
+      padding-left: 8px;
     }
   }
 }
 
 .ff-hierarchy-tree {
+  font-size: 0.9rem;
+
+  .ff-tree-node-container {
+    border-top: 1px solid #40464d;
+    border-bottom: 1px solid #40464d;
+  }
+
   .ff-tree-node {
+    .ff-header {
+      height: 17px;
+    }
+
     &.ff-node {
-      &.ff-even {
-        background-color: darken($color-background, 8%);
-      }
       &.ff-odd {
-        background-color: darken($color-background, 5%);
+        background-color: #0e1421;
+      }
+      &.ff-even {
+        background-color: #131c2e;
       }
 
+      & > .ff-header .ff-text {
+        color: #b8c8d9;
+      }
       & > .ff-content {
         margin-left: 9px;
       }
     }
     &.ff-component {
-      background-color: lighten($color-background, 3%);
+      background-color: #24272b;
 
       & > .ff-content {
         margin-left: 11px;
@@ -71,20 +91,33 @@
     }
     &.ff-inputs {
       background-color: #2e231e; //darken($color-background, 6%);
+      & > .ff-header .ff-text {
+        color: #d9ccc7;
+      }
 
       .ff-inner {
         background-color: #382c24;
+        & > .ff-header .ff-text {
+          color: #d9ccc7;
+        }
       }
     }
     &.ff-outputs {
       background-color: #1e292e;
-
+      & > .ff-header .ff-text {
+        color: #c7d4d9;
+      }
       .ff-inner {
         background-color: #243338;
+        & > .ff-header .ff-text {
+          color: #c7d4d9;
+        }
       }
     }
 
     .ff-header {
+      height: 17px;
+
       & > .ff-label {
         width: 27%;
       }

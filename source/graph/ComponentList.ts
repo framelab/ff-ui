@@ -5,13 +5,13 @@
  * License: MIT
  */
 
-import Component, { ComponentOrClass } from "@ff/graph/Component";
+import Component, { ComponentOrClass, IComponentEvent } from "@ff/graph/Component";
 import Node from "@ff/graph/Node";
-import Graph, { IComponentEvent } from "@ff/graph/Graph";
+import Graph from "@ff/graph/Graph";
 import CSelection from "@ff/graph/components/CSelection";
 
-import { customElement, property, PropertyValues } from "@ff/ui/CustomElement";
-import List from "@ff/ui/List";
+import { customElement, property, PropertyValues } from "../CustomElement";
+import List from "../List";
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -30,7 +30,7 @@ class ComponentList<C extends Component = Component> extends List<C>
     private _componentType: ComponentOrClass<C> = null;
 
     private get _selection() {
-        return this._scope.system.components.safeGet(CSelection);
+        return this._scope.system.getMainComponent(CSelection, true);
     }
 
     protected firstConnected()
@@ -109,6 +109,6 @@ class ComponentList<C extends Component = Component> extends List<C>
 
     protected onSelectComponent(event: IComponentEvent<C>)
     {
-        this.setSelected(event.component, event.add);
+        this.setSelected(event.object, event.add);
     }
 }

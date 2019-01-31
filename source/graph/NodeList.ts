@@ -5,13 +5,13 @@
  * License: MIT
  */
 
-import Component, { ComponentOrClass } from "@ff/graph/Component";
-import Node, { NodeOrClass } from "@ff/graph/Node";
-import Graph, { INodeEvent, IComponentEvent } from "@ff/graph/Graph";
+import Component, { ComponentOrClass, IComponentEvent } from "@ff/graph/Component";
+import Node, { NodeOrClass, INodeEvent } from "@ff/graph/Node";
+import Graph from "@ff/graph/Graph";
 import CSelection from "@ff/graph/components/CSelection";
 
-import { customElement, property, PropertyValues } from "@ff/ui/CustomElement";
-import List from "@ff/ui/List";
+import { customElement, property, PropertyValues } from "../CustomElement";
+import List from "../List";
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -38,7 +38,7 @@ class NodeList<N extends Node = Node, C extends Component = Component> extends L
     private _componentType: ComponentOrClass<C> = null;
 
     private get _selection() {
-        return this._graph.system.components.safeGet(CSelection);
+        return this._graph.system.getMainComponent(CSelection, true);
     }
 
     protected firstConnected()
@@ -153,12 +153,12 @@ class NodeList<N extends Node = Node, C extends Component = Component> extends L
 
     protected onSelectNode(event: INodeEvent<N>)
     {
-        this.setSelected(event.node, event.add);
+        this.setSelected(event.object, event.add);
     }
 
     protected onSelectComponent(event: IComponentEvent<C>)
     {
-        const component = event.component;
+        const component = event.object;
         const node = component.node;
 
         if (node.is(this._nodeType) && component.is(this._componentType)) {
