@@ -211,7 +211,7 @@ export class HierarchyTree extends Tree<NCG>
         if (node instanceof Node) {
             let children: any = node.components.getArray();
 
-            const hierarchy = node.components.get(CHierarchy);
+            const hierarchy = node.components.get(CHierarchy, true);
             if (hierarchy) {
                 children = children.concat(hierarchy.children.map(child => child.node));
             }
