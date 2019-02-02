@@ -437,7 +437,7 @@ export default class PropertyField extends CustomElement
                 break;
 
             case "object":
-                text = value.toString();
+                text = value ? schema.objectType.name : "---";
                 break;
         }
 
