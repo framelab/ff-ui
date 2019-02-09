@@ -67,15 +67,20 @@ export default class TextEdit extends CustomElement
     protected render()
     {
         return html`<textarea
-            placeholder=${this.placeholder}
+            .value=${this.text} placeholder=${this.placeholder}
             @keydown=${this.onKeyDown} @change=${this.onChange} @input=${this.onInput}
             @focus=${this.onFocus} @blur=${this.onBlur}
-            style="text-align: ${this.align};">${this.text}</textarea>`;
+            style="text-align: ${this.align};"></textarea>`;
     }
 
     protected onKeyDown(event: KeyboardEvent)
     {
+        const target = event.target as HTMLTextAreaElement;
 
+        if (event.key === "Escape") {
+            this.revert(target);
+            target.blur();
+        }
     }
 
     protected onChange(event)
@@ -101,19 +106,18 @@ export default class TextEdit extends CustomElement
 
     protected onBlur(event)
     {
+        this.commit(event.target);
     }
 
-    protected revert(element: HTMLInputElement)
+    protected revert(element: HTMLTextAreaElement)
     {
         element.value = this.initialValue;
-
         this.dispatchChangeEvent(element.value, false);
     }
 
     protected commit(element: HTMLInputElement)
     {
         this.initialValue = element.value;
-
         this.dispatchChangeEvent(element.value, false);
     }
 

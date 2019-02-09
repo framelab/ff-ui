@@ -82,13 +82,6 @@ export default class Button extends CustomElement
 
     protected firstConnected()
     {
-        if (this.inline) {
-            this.classList.add("ff-inline", "ff-button");
-        }
-        else {
-            this.classList.add("ff-control", "ff-button");
-        }
-
         this.tabIndex = 0;
     }
 
@@ -105,6 +98,18 @@ export default class Button extends CustomElement
         }
 
         return true;
+    }
+
+    protected update(changedProperties: PropertyValues)
+    {
+        if (this.inline) {
+            this.classList.add("ff-inline", "ff-button");
+        }
+        else {
+            this.classList.add("ff-control", "ff-button");
+        }
+
+        super.update(changedProperties);
     }
 
     protected render()

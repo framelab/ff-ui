@@ -11,18 +11,27 @@ import CustomElement, { customElement, property, html, PropertyValues } from "./
 
 export type TextAlign = "left" | "right" | "center";
 
+/**
+ * Emitted by [[LineEdit]] when the control's text is edited.
+ * @event
+ */
 export interface ILineEditChangeEvent extends CustomEvent
 {
     type: "change";
     target: LineEdit;
     detail: {
+        /** The current text. */
         text: string;
+        /** True if the editing is ongoing, false if the edit is committed. */
         isEditing: boolean;
     }
 }
 
 /**
  * Custom element displaying a single line text edit.
+ *
+ * ### Events
+ * - *"change"* - [[ILineEditChangeEvent]] emitted when the control's text is edited.
  */
 @customElement("ff-line-edit")
 export default class LineEdit extends CustomElement
@@ -69,13 +78,11 @@ export default class LineEdit extends CustomElement
 
     protected render()
     {
-        return html`
-            <input
-                type="text" .value=${this.text} placeholder=${this.placeholder}
-                @keydown=${this.onKeyDown} @change=${this.onChange} @input=${this.onInput}
-                @focus=${this.onFocus} @blur=${this.onBlur}
-                style="box-sizing: border-box; width:100%; text-align: ${this.align};">
-        `;
+        return html`<input
+            type="text" .value=${this.text} placeholder=${this.placeholder}
+            @keydown=${this.onKeyDown} @change=${this.onChange} @input=${this.onInput}
+            @focus=${this.onFocus} @blur=${this.onBlur}
+            style="box-sizing: border-box; width:100%; text-align: ${this.align};">`;
     }
 
     protected onKeyDown(event: KeyboardEvent)
@@ -116,20 +123,18 @@ export default class LineEdit extends CustomElement
 
     protected onBlur(event)
     {
-
+        this.commit(event.target);
     }
 
     protected revert(element: HTMLInputElement)
     {
         element.value = this.initialValue;
-
         this.dispatchChangeEvent(element.value, false);
     }
 
     protected commit(element: HTMLInputElement)
     {
         this.initialValue = element.value;
-
         this.dispatchChangeEvent(element.value, false);
     }
 
