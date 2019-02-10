@@ -46,6 +46,11 @@ export default class QuadSplitter extends CustomElement
 
     onChange: (message: IQuadSplitterChangeMessage) => void;
 
+    protected firstConnected()
+    {
+        this.classList.add("ff-quad-splitter");
+    }
+
     protected render()
     {
         const layout = this.layout;

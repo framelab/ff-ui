@@ -513,7 +513,7 @@ ff-popup-button {
   }
 }
 
-ff-quad-splitter {
+.ff-quad-splitter {
   .ff-left {
     box-sizing: border-box;
     border-right: 1px solid $color-background;
@@ -522,6 +522,15 @@ ff-quad-splitter {
     box-sizing: border-box;
     border-bottom: 1px solid $color-background;
   }
+}
+
+.ff-viewport-text {
+  position: absolute;
+  right: 8px;
+  top: 8px;
+  padding: 2px 8px;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 2em;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
