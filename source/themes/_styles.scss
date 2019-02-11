@@ -224,6 +224,14 @@ button, input {
 .ff-flex-wrap {
   flex-wrap: wrap;
 }
+.ff-flex-item-fix {
+  flex: 0 0 auto;
+  position: relative;
+}
+.ff-flex-item-stretch {
+  flex: 1 1 auto;
+  position: relative;
+}
 
 .ff-scroll-y {
   display: flex;
