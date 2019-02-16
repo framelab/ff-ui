@@ -149,6 +149,12 @@ $tx-medium: 0.3s;
   background-image: repeating-linear-gradient(-45deg, $color0, $color0 8px, $color1 8px, $color1 16px);
 }
 
+@mixin ellipsis {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // UTILITY CLASSES
 
@@ -279,9 +285,7 @@ button, input {
 }
 
 .ff-ellipsis {
-  text-overflow: ellipsis;
-  overflow: hidden;
-  white-space: nowrap;
+  @include ellipsis;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -614,7 +618,7 @@ ff-popup-button {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// LIST, TREE
+// LIST, TABLE, TREE
 
 .ff-list {
   flex: 1 1 auto;
@@ -635,6 +639,40 @@ ff-popup-button {
 
   .ff-list-item + .ff-list-item {
     border-top: 1px solid $color-background;
+  }
+}
+
+.ff-table {
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
+
+  table {
+    width: 100%;
+    box-sizing: border-box;
+    table-layout: fixed;
+    border-collapse: collapse;
+    border-spacing: 0;
+  }
+  tr:nth-child(2) {
+    background-color: $color-background-darker;
+  }
+  tr[selected] {
+    background-color: $color-primary;
+  }
+  th, td {
+    padding: 4px;
+  }
+  th {
+    background-color: $color-background;
+    color: $color-text-dark;
+    text-align: start;
+  }
+  .ff-placeholder {
+    @include fullsize;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 }
 
