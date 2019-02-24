@@ -12,7 +12,7 @@ import CustomElement, { customElement, property, html, TemplateResult } from "./
 
 ////////////////////////////////////////////////////////////////////////////////
 
-export type RenderHeaderFunction<T> = (column: ITableColumn<T>, clickHandler: (event: MouseEvent, column: ITableColumn<T>) => void) => TemplateResult;
+export type RenderHeaderFunction<T> = (column: ITableColumn<T>, clickHandler: (event: MouseEvent, column: ITableColumn<T>, index: number) => void) => TemplateResult;
 export type RenderCellFunction<T> = (row: T) => string | TemplateResult;
 export type SortFunction<T> = (row0: T, row1: T) => number;
 
@@ -26,15 +26,46 @@ export interface ITableColumn<T>
     className?: string;
 }
 
-export interface ITableRowSelectEvent<T> extends CustomEvent
+/**
+ * Emitted when the user clicks a table row.
+ * @event rowclick
+ */
+export interface ITableRowClickEvent<T> extends CustomEvent
 {
+    type: "rowclick";
     target: Table<T>;
     detail: {
         row: T;
-        selected: boolean;
     };
 }
 
+/**
+ * Emitted when the user clicks a table column header.
+ * @event colclick
+ */
+export interface ITableColumnClickEvent<T> extends CustomEvent
+{
+    type: "colclick";
+    target: Table<T>;
+    detail: {
+        column: T;
+    };
+}
+
+/**
+ * Custom element rendering a table.
+ *
+ * ### Properties
+ * - *rows* - Table row data
+ * - *selectedRows* - Single selected row or set of selected rows or null
+ * - *columns* - Table column definitions
+ * - *placeholder* - Text to display if table is empty (contains no row data)
+ * - *resizable* - Table column size can be changed by user if true
+ *
+ * ### Events
+ * - *"rowclick"* - Emits [[ITableRowClickEvent]] when the user clicks on a table row.
+ * - *"colclick"* - Emits [[ITableColumnClickEvent]] when the user clicks on a table column header.
+ */
 @customElement("ff-table")
 export default class Table<T> extends CustomElement
 {
@@ -42,7 +73,7 @@ export default class Table<T> extends CustomElement
     rows: T[] = null;
 
     @property({ attribute: false })
-    selectedRows = new Set<T>();
+    selectedRows: Set<T> | T = null;
 
     @property({ attribute: false })
     columns: ITableColumn<T>[] = null;
@@ -53,11 +84,9 @@ export default class Table<T> extends CustomElement
     @property({ type: Boolean })
     resizable = false;
 
-    @property({ type: Boolean })
-    selectable = false;
-
-    @property({ type: Boolean })
-    multiselect = false;
+    private _sortedRows: T[] = null;
+    private _sortColumnIndex = -1;
+    private _sortReversed = false;
 
     constructor()
     {
@@ -71,16 +100,65 @@ export default class Table<T> extends CustomElement
         this.classList.add("ff-table");
     }
 
-    protected renderHeader(column: ITableColumn<T>): TemplateResult
+    protected getSorter(column: ITableColumn<T>): SortFunction<T>
+    {
+        if (typeof column.sortable === "function") {
+            return column.sortable;
+        }
+
+        return (row0: T, row1: T) => {
+            const content0 = this.getCellContent(row0, column);
+            const content1 = this.getCellContent(row1, column);
+
+            if (typeof content0 !== "string") {
+                return 0;
+            }
+
+            return content0 < content1 ? -1 : (content0 > content1 ? 1 : 0);
+        }
+    }
+
+    protected isRowSelected(row: T): boolean
+    {
+        if (this.selectedRows && this.selectedRows instanceof Set) {
+            return this.selectedRows.has(row);
+        }
+
+        return row === this.selectedRows;
+    }
+
+    protected renderHeader(column: ITableColumn<T>, index: number): TemplateResult
     {
         const header = column.header;
         const defaultWidth = 1 / this.columns.length;
         const width = typeof column.width === "string" ? column.width : ((column.width || defaultWidth) * 100 + "%");
-        const sortIcon = column.sortable ? html`<ff-icon name="sort"></ff-icon>` : null;
-        const classes = column.className || "";
+        let classes = column.className || "";
+        let sortIcon = null;
+
+        if (column.sortable) {
+            classes += " ff-sortable";
+        }
+
+        if (this._sortColumnIndex === -1 && column.sortable) {
+            this._sortColumnIndex = index;
+        }
+
+        if (this._sortColumnIndex === index) {
+            const sorter = this.getSorter(column);
+            if (sorter) {
+                if (this._sortReversed) {
+                    this._sortedRows.sort((row0, row1) => sorter(row1, row0));
+                }
+                else {
+                    this._sortedRows.sort(sorter);
+                }
+
+                sortIcon = html`<ff-icon class="ff-table-sort-icon" name="${this._sortReversed ? "caret-up" : "caret-down"}"></ff-icon>`;
+            }
+        }
 
         if (typeof header === "string") {
-            return html`<th class="ff-table-header ${classes}" style="width: ${width}" @click=${e => this.onClickHeader(e, column)}>${header}${sortIcon}</th>`;
+            return html`<th class="ff-table-header ${classes}" style="width: ${width}" @click=${e => this.onClickHeader(e, column, index)}>${header}${sortIcon}</th>`;
         }
 
         return header(column, this.onClickHeader);
@@ -89,7 +167,7 @@ export default class Table<T> extends CustomElement
     protected renderRow(row: T, index: number): TemplateResult
     {
         const columns = this.columns;
-        const selected = this.selectedRows.has(row);
+        const selected = this.isRowSelected(row);
 
         return html`<tr ?selected=${selected} @click=${e => this.onClickRow(e, row)}>${columns.map(column =>
                 this.renderCell(row, column, index, selected))}</tr>`;
@@ -97,85 +175,64 @@ export default class Table<T> extends CustomElement
 
     protected renderCell(row: T, column: ITableColumn<T>, index: number, selected: boolean): TemplateResult
     {
+        const content = this.getCellContent(row, column);
+
+        if (typeof content === "string") {
+            const classes = column.className || "";
+            return html`<td class="ff-table-cell ${classes}">${content}</td>`;
+        }
+
+        return content;
+    }
+
+    protected getCellContent(row: T, column: ITableColumn<T>): string | TemplateResult
+    {
         const cell = column.cell;
-        const classes = column.className || "";
 
         if (typeof cell === "string") {
-            return html`<td class="ff-table-cell ${classes}">${row[cell]}</td>`;
+            return row[cell];
         }
 
-        const result = cell(row);
-        if (typeof result === "string") {
-            return html`<td class="ff-table-cell ${classes}">${result}</td>`;
-        }
-
-        return result;
+        return cell(row);
     }
 
     protected render()
     {
-        const rows = this.rows;
-        const selectedRows = this.selectedRows;
-
-        const columns = this.columns;
-
-        if (!rows || !columns) {
-            this.selectedRows.clear();
+        if (!this.rows || !this.columns) {
             return html`<div class="ff-placeholder"><div class="ff-text">${this.placeholder}</div></div>`;
         }
 
-        // update set of selected rows from new array of rows
-        if (selectedRows.size > 0) {
-            const _selectedRows = new Set<T>();
-            rows.forEach(row => {
-                if (selectedRows.has(row)) {
-                    _selectedRows.add(row);
-                }
-            });
+        const rows = this._sortedRows = this.rows.slice();
+        const columns = this.columns;
 
-            this.selectedRows.clear();
-            this.selectedRows = _selectedRows;
-        }
-
-        return html`<table><thead><tr>${columns.map(column => this.renderHeader(column))}</tr></thead>
+        return html`<table><thead><tr>${columns.map((column, index) => this.renderHeader(column, index))}</tr></thead>
             <tbody>${rows.map((row, index) => this.renderRow(row, index))}</tbody></table>`;
     }
 
-    protected onClickHeader(event: MouseEvent, column: ITableColumn<T>)
+    protected onClickHeader(event: MouseEvent, column: ITableColumn<T>, index: number)
     {
-        console.log("Table.onClickHeader", column.header);
+        if (column.sortable) {
+            if (this._sortColumnIndex === index) {
+                this._sortReversed = !this._sortReversed;
+            }
+            else {
+                this._sortColumnIndex = index;
+                this._sortReversed = false;
+            }
+
+            this.requestUpdate();
+        }
+
+        this.dispatchEvent(new CustomEvent("colclick", {
+            detail: { column }
+        }));
     }
 
     protected onClickRow(event: MouseEvent, row: T)
     {
-        if (this.selectable) {
-            const selectedRows = this.selectedRows;
-
-            const selected = selectedRows.has(row);
-            if (event.ctrlKey && this.multiselect) {
-                if (selected) {
-                    selectedRows.delete(row);
-                    this.emitRowSelectEvent(row, false);
-                }
-                else {
-                    selectedRows.add(row);
-                    this.emitRowSelectEvent(row, true);
-                }
-                this.performUpdate();
-            }
-            else if (!selected) {
-                selectedRows.forEach(row => this.emitRowSelectEvent(row, false));
-                selectedRows.clear();
-                selectedRows.add(row);
-                this.performUpdate();
-            }
-        }
-    }
-
-    protected emitRowSelectEvent(row: T, selected: boolean)
-    {
-        this.dispatchEvent(new CustomEvent("select", {
-            detail: { row, selected }
+        this.dispatchEvent(new CustomEvent("rowclick", {
+            detail: { row }
         }));
     }
+
 }

@@ -654,9 +654,9 @@ ff-popup-button {
     border-collapse: collapse;
     border-spacing: 0;
   }
-  tr:nth-child(2) {
-    background-color: $color-background-darker;
-  }
+  //tr:nth-child(2) {
+  //  background-color: $color-background-darker;
+  //}
   tr[selected] {
     background-color: $color-primary;
   }
@@ -673,6 +673,11 @@ ff-popup-button {
     display: flex;
     justify-content: center;
     align-items: center;
+  }
+  .ff-table-sort-icon {
+    height: 0.8em;
+    margin-left: 4px;
+    color: $color-icon;
   }
 }
 

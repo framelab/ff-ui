@@ -11,6 +11,10 @@ import CustomElement, { customElement, property, html, PropertyValues } from "./
 
 export type TextAlign = "left" | "right" | "center";
 
+/**
+ * Emitted when the text is edited.
+ * @event change
+ */
 export interface ITextEditChangeEvent extends CustomEvent
 {
     type: "change";
