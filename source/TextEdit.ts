@@ -49,9 +49,17 @@ export default class TextEdit extends CustomElement
 
     protected initialValue: string = "";
 
+    focus()
+    {
+        const element: HTMLElement = this.getElementsByTagName("textarea")[0];
+        if (element) {
+            element.focus();
+        }
+    }
+
     hasFocus()
     {
-        return this.getElementsByTagName("input")[0] === document.activeElement;
+        return this.getElementsByTagName("textarea")[0] === document.activeElement;
     }
 
     protected firstConnected()
@@ -61,6 +69,7 @@ export default class TextEdit extends CustomElement
 
     protected shouldUpdate(changedProperties: PropertyValues): boolean
     {
+        // prevent rendering during editing
         if (this.hasFocus()) {
             return false;
         }
@@ -92,7 +101,8 @@ export default class TextEdit extends CustomElement
         event.stopPropagation();
         event.preventDefault();
 
-        this.dispatchChangeEvent(event.target.value, false);
+        this.text = event.target.value;
+        this.dispatchChangeEvent(this.text, false);
     }
 
     protected onInput(event)
@@ -100,7 +110,8 @@ export default class TextEdit extends CustomElement
         event.stopPropagation();
         event.preventDefault();
 
-        this.dispatchChangeEvent(event.target.value, true);
+        this.text = event.target.value;
+        this.dispatchChangeEvent(this.text, true);
     }
 
     protected onFocus(event)
@@ -111,6 +122,7 @@ export default class TextEdit extends CustomElement
     protected onBlur(event)
     {
         this.commit(event.target);
+        this.requestUpdate();
     }
 
     protected revert(element: HTMLTextAreaElement)

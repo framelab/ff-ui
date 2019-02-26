@@ -288,6 +288,15 @@ button, input {
   @include ellipsis;
 }
 
+.ff-placeholder {
+  flex: 1 1 auto;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // CONTROLS
 
@@ -667,12 +676,6 @@ ff-popup-button {
     background-color: $color-background;
     color: $color-text-dark;
     text-align: start;
-  }
-  .ff-placeholder {
-    @include fullsize;
-    display: flex;
-    justify-content: center;
-    align-items: center;
   }
   .ff-table-sort-icon {
     height: 0.8em;
