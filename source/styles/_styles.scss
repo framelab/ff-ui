@@ -441,6 +441,7 @@ ff-popup-button {
 
 .ff-line-edit {
   display: block;
+  overflow: hidden;
   background-color: $color-background-darker;
 
   input {
@@ -453,7 +454,6 @@ ff-popup-button {
   flex: 1 1 auto;
   display: flex;
   background-color: $color-background-darker;
-  //min-height: 100px;
 
   textarea {
     display: block;
@@ -543,6 +543,10 @@ ff-popup-button {
     box-sizing: border-box;
     border-bottom: 1px solid $color-background;
   }
+}
+
+.ff-color-button {
+
 }
 
 .ff-viewport-text {
@@ -711,8 +715,7 @@ ff-popup-button {
     .ff-header {
       position: relative;
       cursor: pointer;
-      padding: 0 0 2px 14px;
-      display: flex;
+      padding-left: 14px; // room for triangle
 
       .ff-text {
         user-select: none;

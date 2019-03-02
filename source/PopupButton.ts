@@ -20,9 +20,6 @@ export default class PopupButton extends Button
     @property({ attribute: false })
     contentParent: HTMLElement = this;
 
-    @property({ type: Boolean })
-    transient = false;
-
     constructor()
     {
         super();
@@ -50,20 +47,12 @@ export default class PopupButton extends Button
     {
         super.update(changedProperties);
 
-        const contentElement = this.content;
-
-        if (contentElement && changedProperties.has("selected")) {
-            const parentElement = this.contentParent || this;
-
+        if (changedProperties.has("selected")) {
             if (this.selected) {
-                parentElement.appendChild(contentElement);
-                setTimeout(() => contentElement.style.opacity = "1.0", 0);
+                this.showPopup();
             }
-            else if (contentElement.parentElement === parentElement) {
-                this.focus();
-                contentElement.style.opacity = "0";
-                const duration = parseFloat(window.getComputedStyle(contentElement).transitionDuration) || 0;
-                setTimeout(() => parentElement.removeChild(contentElement), duration * 1000);
+            else if (changedProperties.get("selected"))  {
+                this.hidePopup();
             }
         }
     }
@@ -79,6 +68,30 @@ export default class PopupButton extends Button
     {
         if (event.key === "Escape") {
             this.selected = false;
+        }
+    }
+
+    protected showPopup()
+    {
+        const contentElement = this.content;
+        const parentElement = this.contentParent || this;
+
+        if (contentElement) {
+            parentElement.appendChild(contentElement);
+            setTimeout(() => contentElement.style.opacity = "1.0", 0);
+        }
+    }
+
+    protected hidePopup()
+    {
+        const contentElement = this.content;
+        const parentElement = this.contentParent || this;
+
+        if (contentElement && contentElement.parentElement === parentElement) {
+            this.focus();
+            contentElement.style.opacity = "0";
+            const duration = parseFloat(window.getComputedStyle(contentElement).transitionDuration) || 0;
+            setTimeout(() => parentElement.removeChild(contentElement), duration * 1000);
         }
     }
 }

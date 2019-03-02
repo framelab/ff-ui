@@ -56,18 +56,21 @@ export default class LineEdit extends CustomElement
     align: TextAlign = "left";
 
     protected initialValue: string = "";
+    protected requestFocus = false;
+
+    protected get inputElement() {
+        return this.getElementsByTagName("input")[0] as HTMLInputElement;
+    }
 
     focus()
     {
-        const element: HTMLElement = this.getElementsByTagName("input")[0];
-        if (element) {
-            element.focus();
-        }
+        this.requestFocus = true;
+        this.performUpdate();
     }
 
     hasFocus()
     {
-        return this.getElementsByTagName("input")[0] === document.activeElement;
+        return this.inputElement === document.activeElement;
     }
 
     protected firstConnected()
@@ -92,6 +95,14 @@ export default class LineEdit extends CustomElement
             @keydown=${this.onKeyDown} @change=${this.onChange} @input=${this.onInput}
             @focus=${this.onFocus} @blur=${this.onBlur}
             style="box-sizing: border-box; width:100%; text-align: ${this.align};">`;
+    }
+
+    protected updated()
+    {
+        if (this.requestFocus) {
+            this.requestFocus = false;
+            this.inputElement.focus();
+        }
     }
 
     protected onKeyDown(event: KeyboardEvent)

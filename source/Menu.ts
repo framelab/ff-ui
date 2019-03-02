@@ -75,16 +75,22 @@ export default class Menu extends CustomElement
 
     protected renderItem(item: IMenuItem | string, index: number)
     {
-        if (typeof item === "string") {
-            return html`<ff-button index=${index} selectedIndex=${this.itemIndex} icon="empty" text=${item} @click=${this.onClick} @keydown=${this.onKeyDown}></ff-button>`;
-        }
+        let text, icon;
 
-        if (item.divider) {
+        if (typeof item === "string") {
+            text = item;
+            icon = "empty";
+        }
+        else if (item.divider) {
             return html`<div class="ff-divider"></div>`;
         }
+        else {
+            text = item.text;
+            icon = item.icon || (item.checked ? "check" : "empty");
+        }
 
-        const icon = item.icon || (item.checked ? "check" : "empty");
-        return html`<ff-button index=${index} selectedIndex=${this.itemIndex} icon=${icon} text=${item.text} @click=${this.onClick} @keydown=${this.onKeyDown}></ff-button>`;
+        return html`<ff-button index=${index} selectedIndex=${this.itemIndex}
+            icon=${icon} text=${text} @click=${this.onClick} @keydown=${this.onKeyDown}></ff-button>`;
     }
 
     updated()

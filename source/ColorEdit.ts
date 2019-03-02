@@ -19,6 +19,8 @@ import CustomElement, { customElement, html, property, PropertyValues } from "./
 
 const _hueColor = new Color();
 
+export { Color };
+
 export interface IColorEditChangeEvent extends CustomEvent
 {
     type: "change";
@@ -53,6 +55,8 @@ export default class ColorEdit extends CustomElement
         this.onLumSatChange = this.onLumSatChange.bind(this);
         this.onHueChange = this.onHueChange.bind(this);
         this.onAlphaChange = this.onAlphaChange.bind(this);
+
+        this.addEventListener("click", e => e.stopPropagation());
 
         this._hsv = new Vector3();
         this._lumSatSlider = new VectorSlider().on("change", this.onLumSatChange);
@@ -190,7 +194,8 @@ export default class ColorEdit extends CustomElement
             detail: {
                 color: this.color,
                 isDragging
-            }
+            },
+            bubbles: true
         }));
     }
 }
