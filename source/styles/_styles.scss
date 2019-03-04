@@ -768,9 +768,9 @@ ff-tab-container, ff-dock-stack {
 }
 
 ff-tab-header, ff-dock-panel-header {
-  padding: 0 2px 2px 0;
   background: $color-dock-frame;
   color: $color-text;
+  padding: 1px 3px 2px 2px;
 
   &[active] {
     background: linear-gradient(lighten($color-background, 18%), $color-background);
@@ -781,12 +781,12 @@ ff-tab-header, ff-dock-panel-header {
     pointer-events: none;
   }
   .ff-text {
-    padding: 0 2px;
+    padding: 0 1px;
   }
   .ff-icon {
     top: 1px;
     height: 0.8rem;
-    padding: 2px 4px 3px 2px;
+    padding: 0 1px;
     fill: $color-text-disabled;
   }
 }
