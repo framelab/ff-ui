@@ -234,7 +234,7 @@ button, input {
   flex: 0 0 auto;
   position: relative;
 }
-.ff-flex-item-stretch {
+.ff-flex-item-stretch, .ff-flex-spacer {
   flex: 1 1 auto;
   position: relative;
 }
@@ -331,6 +331,44 @@ button, input {
 
 .ff-button.ff-inline {
 
+}
+
+.ff-button.ff-transparent {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 0 1 auto;
+  flex-wrap: wrap;
+  padding: 5px;
+  background: transparent;
+  fill: $color-icon;
+  transition: fill 0.2s;
+
+  &:hover, &:focus {
+    fill: $color-text;
+  }
+  &[selected] {
+    fill: $color-text;
+  }
+
+  & > .ff-text {
+    margin: 3px;
+    white-space: nowrap;
+  }
+  & > .ff-icon {
+    margin: 3px;
+    height: 1.3em;
+  }
+  & > .ff-caret-down {
+    margin: 3px;
+  }
+
+  &.ff-disabled {
+    color: $color-text-disabled;
+    fill: $color-icon-disabled;
+    user-select: none;
+    pointer-events: none;
+  }
 }
 
 .ff-button.ff-control {

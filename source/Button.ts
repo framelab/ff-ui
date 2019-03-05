@@ -72,6 +72,9 @@ export default class Button extends CustomElement
     @property({ type: Boolean })
     inline = false;
 
+    @property({ type: Boolean })
+    transparent = false;
+
     constructor()
     {
         super();
@@ -104,6 +107,9 @@ export default class Button extends CustomElement
     {
         if (this.inline) {
             this.classList.add("ff-inline", "ff-button");
+        }
+        else if (this.transparent) {
+            this.classList.add("ff-transparent", "ff-button");
         }
         else {
             this.classList.add("ff-control", "ff-button");

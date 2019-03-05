@@ -31,6 +31,12 @@ export default class ButtonGroup extends CustomElement
         this.addEventListener("click", (e) => this.onClick(e));
     }
 
+    protected firstConnected()
+    {
+        this.classList.add("ff-button-group");
+        this.parseChildren();
+    }
+
     protected connected()
     {
         this.observer.observe(this, { childList: true });
@@ -39,11 +45,6 @@ export default class ButtonGroup extends CustomElement
     protected disconnected()
     {
         this.observer.disconnect();
-    }
-
-    protected firstUpdate()
-    {
-        this.parseChildren();
     }
 
     protected onObserver(mutations)
