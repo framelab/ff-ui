@@ -37,7 +37,8 @@
 
 body {
   @include font-ui-normal;
-  font-size: 0.88rem;
+  font-size: 0.85rem;
+  line-height: 1.35;
   background-color: $color-background;
   color: $color-text;
 }
