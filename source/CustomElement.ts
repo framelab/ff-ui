@@ -191,6 +191,11 @@ export default class CustomElement extends LitElement
     protected disconnected()
     {
     }
+
+    protected onUpdate()
+    {
+        this.requestUpdate();
+    }
 }
 
 export function customElement<T extends CustomElement>(tagName?: string)
