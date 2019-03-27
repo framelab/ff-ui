@@ -127,7 +127,13 @@ export default class Tree<T extends any = any> extends CustomElement
             return this.renderNode(root, id, 0);
         }
         else {
-            return this.renderNodeChildren(root, this.getChildren(root), 0);
+            const children = this.getChildren(root);
+            if (children.length > 0) {
+                return this.renderNodeChildren(root, children, 0);
+            }
+            else {
+                return html``;
+            }
         }
     }
 
