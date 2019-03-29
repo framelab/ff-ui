@@ -13,7 +13,7 @@ import CustomElement, { customElement, property, html, TemplateResult } from "./
 ////////////////////////////////////////////////////////////////////////////////
 
 export type RenderHeaderFunction<T> = (column: ITableColumn<T>, clickHandler: (event: MouseEvent, column: ITableColumn<T>, index: number) => void) => TemplateResult;
-export type RenderCellFunction<T> = (row: T) => string | TemplateResult;
+export type RenderCellFunction<T> = (row: T, index: number) => string | TemplateResult;
 export type SortFunction<T> = (row0: T, row1: T) => number;
 
 export interface ITableColumn<T>
@@ -107,8 +107,9 @@ export default class Table<T> extends CustomElement
         }
 
         return (row0: T, row1: T) => {
-            const content0 = this.getCellContent(row0, column);
-            const content1 = this.getCellContent(row1, column);
+            // TODO: Need indices to sort by index
+            const content0 = this.getCellContent(row0, column, 0);
+            const content1 = this.getCellContent(row1, column, 0);
 
             if (typeof content0 !== "string") {
                 return 0;
@@ -175,7 +176,7 @@ export default class Table<T> extends CustomElement
 
     protected renderCell(row: T, column: ITableColumn<T>, index: number, selected: boolean): TemplateResult
     {
-        const content = this.getCellContent(row, column);
+        const content = this.getCellContent(row, column, index);
 
         if (typeof content === "string") {
             const classes = column.className || "";
@@ -185,7 +186,7 @@ export default class Table<T> extends CustomElement
         return content;
     }
 
-    protected getCellContent(row: T, column: ITableColumn<T>): string | TemplateResult
+    protected getCellContent(row: T, column: ITableColumn<T>, index: number): string | TemplateResult
     {
         const cell = column.cell;
 
@@ -193,7 +194,7 @@ export default class Table<T> extends CustomElement
             return row[cell];
         }
 
-        return cell(row);
+        return cell(row, index);
     }
 
     protected render()
