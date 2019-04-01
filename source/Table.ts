@@ -19,7 +19,7 @@ export type SortFunction<T> = (row0: T, row1: T) => number;
 export interface ITableColumn<T>
 {
     header: string | RenderHeaderFunction<T>;
-    cell?: string | RenderCellFunction<T>;
+    cell?: keyof T | RenderCellFunction<T>;
     sortable?: boolean | SortFunction<T>;
     resizable?: boolean;
     width?: number | string;
@@ -36,6 +36,7 @@ export interface ITableRowClickEvent<T> extends CustomEvent
     target: Table<T>;
     detail: {
         row: T;
+        index: number;
     };
 }
 
@@ -170,7 +171,7 @@ export default class Table<T> extends CustomElement
         const columns = this.columns;
         const selected = this.isRowSelected(row);
 
-        return html`<tr ?selected=${selected} @click=${e => this.onClickRow(e, row)}>${columns.map(column =>
+        return html`<tr ?selected=${selected} @click=${e => this.onClickRow(e, row, index)}>${columns.map(column =>
                 this.renderCell(row, column, index, selected))}</tr>`;
     }
 
@@ -188,7 +189,7 @@ export default class Table<T> extends CustomElement
 
     protected getCellContent(row: T, column: ITableColumn<T>, index: number): string | TemplateResult
     {
-        const cell = column.cell;
+        const cell: any = column.cell;
 
         if (typeof cell === "string") {
             return row[cell];
@@ -229,10 +230,10 @@ export default class Table<T> extends CustomElement
         }));
     }
 
-    protected onClickRow(event: MouseEvent, row: T)
+    protected onClickRow(event: MouseEvent, row: T, index: number)
     {
         this.dispatchEvent(new CustomEvent("rowclick", {
-            detail: { row }
+            detail: { row, index }
         }));
     }
 

@@ -79,6 +79,7 @@ export default class Splitter extends CustomElement
 
     protected firstUpdated()
     {
+        this.classList.add("ff-splitter");
         this.setAttribute("touch-action", "none");
 
         this.setStyle({

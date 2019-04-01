@@ -138,13 +138,14 @@ export default class List<T extends any = any> extends CustomElement
         const item = this._itemById.get(element.id);
 
         if (item) {
-            this.onClickItem(event, item);
+            const index = this.data.indexOf(item);
+            this.onClickItem(event, item, index);
         }
 
         event.stopPropagation();
     }
 
-    protected onClickItem(event: MouseEvent, item: T)
+    protected onClickItem(event: MouseEvent, item: T, index: number)
     {
     }
 

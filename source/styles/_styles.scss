@@ -228,8 +228,8 @@ button, input {
 
 .ff-flex-row {
   display: flex;
-  align-items: center;
 }
+
 .ff-flex-column {
   display: flex;
   flex-direction: column;
@@ -237,6 +237,11 @@ button, input {
 .ff-flex-wrap {
   flex-wrap: wrap;
 }
+
+.ff-flex-centered {
+  align-items: center;
+}
+
 .ff-flex-item-fixed {
   flex: 0 0 auto;
   position: relative;
@@ -247,9 +252,7 @@ button, input {
 }
 
 .ff-scroll-y {
-  display: flex;
-  flex-direction: column;
-  flex: 1 1 auto;
+  @include fullsize;
   overflow-y: auto;
 }
 
@@ -302,6 +305,19 @@ button, input {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.ff-splitter-section {
+  flex: 1 1 auto;
+  position: relative;
+  box-sizing: border-box;
+}
+
+.ff-splitter[direction="vertical"] + .ff-splitter-section {
+  border-top: 2px solid $color-background-darker;
+}
+.ff-splitter:not([direction="vertical"]) + .ff-splitter-section {
+  border-left: 2px solid $color-background-darker;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -488,6 +504,7 @@ ff-popup-button {
   display: block;
   overflow: hidden;
   background-color: $color-background-darker;
+  min-height: 1.2em;
 
   input {
     padding: 2px;
@@ -693,12 +710,12 @@ ff-popup-button {
 
 .ff-table {
   position: relative;
-  width: 100%;
   box-sizing: border-box;
+  width: 100%;
 
   table {
-    width: 100%;
     box-sizing: border-box;
+    width: 100%;
     table-layout: fixed;
     border-collapse: collapse;
     border-spacing: 0;
@@ -713,7 +730,7 @@ ff-popup-button {
     padding: 4px;
   }
   th {
-    background-color: $color-background;
+    background-color: $color-background-darker;
     color: $color-text-dark;
     text-align: start;
   }
