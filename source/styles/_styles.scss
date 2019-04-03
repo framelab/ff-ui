@@ -775,19 +775,19 @@ ff-popup-button {
       }
     }
 
-    &[expanded] .ff-header {
-      @include triangle($color-icon, 3px, 180deg);
+    &.ff-inner[expanded] > .ff-header {
+      @include triangle($color-icon, 4px, 180deg);
     }
-    &:not([expanded]) .ff-header {
-      @include triangle($color-icon, 3px, 90deg);
+    &.ff-inner:not([expanded]) > .ff-header {
+      @include triangle($color-icon, 4px, 90deg);
     }
     &.ff-leaf .ff-header {
-      @include dot($color-icon-disabled, 3px, 6px, 0.6em);
+      //@include dot($color-icon-disabled, 3px, 6px, 0.6em);
       cursor: default;
     }
 
     .ff-content {
-      margin-left: 10px;
+      margin-left: 10px; // indent
     }
     &:not([expanded]) > .ff-content {
       display: none;

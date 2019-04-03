@@ -5,9 +5,11 @@
  * License: MIT
  */
 
-import CustomElement, { customElement, property, PropertyValues } from "./CustomElement";
+import CustomElement, { customElement, html, property, PropertyValues } from "./CustomElement";
 
 ////////////////////////////////////////////////////////////////////////////////
+
+export { customElement, html, property, PropertyValues };
 
 export type DialogMode = "default" | "popup" | "modal";
 

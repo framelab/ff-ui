@@ -5,19 +5,19 @@
  * License: MIT
  */
 
-import CustomElement, { customElement, property } from "./CustomElement";
+import CustomElement, { customElement, property, html, PropertyValues } from "./CustomElement";
 
 ////////////////////////////////////////////////////////////////////////////////
 
-export type FloaterPosition = "fixed" | "anchor" | "center";
-export type FloaterAlign = "start" | "center" | "end" | "fixed";
-export type FloaterJustify = FloaterAlign;
+export { customElement, property, html, PropertyValues };
+
+export type PopupPosition = "fixed" | "anchor" | "center";
+export type PopupAlign = "start" | "center" | "end" | "fixed";
+export type PopupJustify = PopupAlign;
 
 @customElement("ff-popup")
 export default class Popup extends CustomElement
 {
-    static readonly closeEvent = "ff-close";
-
     @property({ attribute: false })
     anchor: HTMLElement = null;
 
@@ -25,13 +25,13 @@ export default class Popup extends CustomElement
     portal: HTMLElement = null;
 
     @property({ type: String })
-    position: FloaterPosition = undefined;
+    position: PopupPosition = undefined;
 
     @property({ type: String })
-    align: FloaterAlign = undefined;
+    align: PopupAlign = undefined;
 
     @property({ type: String })
-    justify: FloaterJustify = undefined;
+    justify: PopupJustify = undefined;
 
     @property({ type: Number })
     positionX = 0;
@@ -122,7 +122,7 @@ export default class Popup extends CustomElement
         }
 
         if (this.keepVisible && this.position !== "center") {
-            position = this.keepFloaterVisible(position, thisRect, portalRect);
+            position = this.keepElementVisible(position, thisRect, portalRect);
         }
 
         this.style.left = Math.round(position.x) + "px";
@@ -186,7 +186,7 @@ export default class Popup extends CustomElement
         return position;
     }
 
-    protected keepFloaterVisible(position: { x: number, y: number }, thisRect: ClientRect, portalRect: ClientRect)
+    protected keepElementVisible(position: { x: number, y: number }, thisRect: ClientRect, portalRect: ClientRect)
     {
         const offsetX = this.offsetX;
         const offsetY = this.offsetY;
@@ -225,6 +225,6 @@ export default class Popup extends CustomElement
             return;
         }
 
-        this.dispatchEvent(new CustomEvent(Popup.closeEvent));
+        this.dispatchEvent(new CustomEvent("close"));
     }
 }

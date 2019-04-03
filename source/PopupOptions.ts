@@ -37,7 +37,7 @@ export default class PopupOptions extends Popup
         this.onClose = this.onClose.bind(this);
 
         this.addEventListener("click", this.onClick);
-        this.addEventListener(Popup.closeEvent, this.onClose);
+        this.addEventListener("close", this.onClose);
 
         this.options = options || [];
         this.selectionIndex = -1;

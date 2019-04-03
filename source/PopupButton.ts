@@ -23,7 +23,7 @@ export default class PopupButton extends Button
     constructor()
     {
         super();
-        this.addEventListener(Popup.closeEvent, () => this.selected = false);
+        this.addEventListener("close", () => this.selected = false);
 
         this.onPointerDown = this.onPointerDown.bind(this);
         this.onKeyDown = this.onKeyDown.bind(this);
