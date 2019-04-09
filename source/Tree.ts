@@ -8,11 +8,11 @@
 import { Dictionary } from "@ff/core/types";
 import uniqueId from "@ff/core/uniqueId";
 
-import CustomElement, { customElement, property, html, TemplateResult, repeat } from "./CustomElement";
+import CustomElement, { customElement, property, html, PropertyValues, TemplateResult, repeat } from "./CustomElement";
 
 ////////////////////////////////////////////////////////////////////////////////
 
-export { customElement, property, html, TemplateResult };
+export { customElement, property, html, PropertyValues, TemplateResult };
 
 export interface ITreeNode
 {
