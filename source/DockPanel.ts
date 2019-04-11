@@ -207,19 +207,23 @@ export default class DockPanel extends CustomElement
 
     protected onDrop(event: DragEvent)
     {
-        const zone = this.dropZone;
+        const items = Array.from(event.dataTransfer.items);
+        if (items.find(item => item.type === DockPanel.dragDropMimeType)) {
 
-        if (zone !== "none") {
-            this.dropZone = "none";
-            this.updateDropMarker();
+            const zone = this.dropZone;
+
+            if (zone !== "none") {
+                this.dropZone = "none";
+                this.updateDropMarker();
+            }
+
+            event.stopPropagation();
+
+            const panelId = event.dataTransfer.getData(DockPanel.dragDropMimeType);
+            this.movePanel(panelId, zone);
+
+            this.dispatchEvent(new CustomEvent(DockView.changeEvent, { bubbles: true }));
         }
-
-        event.stopPropagation();
-
-        const panelId = event.dataTransfer.getData(DockPanel.dragDropMimeType);
-        this.movePanel(panelId, zone);
-
-        this.dispatchEvent(new CustomEvent(DockView.changeEvent, { bubbles: true }));
     }
 
     protected getDropZone(event: DragEvent): DropZone

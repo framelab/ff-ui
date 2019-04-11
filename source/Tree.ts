@@ -23,11 +23,16 @@ export interface ITreeNode
 @customElement("ff-tree")
 export default class Tree<T extends any = any> extends CustomElement
 {
+    static readonly dragDropMimeType: string = "application/x-ff-tree-node";
+
     @property({ attribute: false })
     root: T = null;
 
     @property({ type: Boolean })
     includeRoot = false;
+
+    @property({ type: Boolean })
+    draggable = false;
 
     private _nodeById: Dictionary<T> = {};
     private _idByNode: Map<T, string> = new Map();
@@ -110,6 +115,14 @@ export default class Tree<T extends any = any> extends CustomElement
     protected firstConnected()
     {
         this.classList.add("ff-tree");
+
+        if (this.draggable) {
+            this.addEventListener("dragstart", this.onDragStart.bind(this));
+            this.addEventListener("dragover", this.onDragOver.bind(this));
+            this.addEventListener("dragenter", this.onDragEnter.bind(this));
+            this.addEventListener("dragleave", this.onDragLeave.bind(this));
+            this.addEventListener("drop", this.onDrop.bind(this));
+        }
     }
 
     protected render()
@@ -203,23 +216,83 @@ export default class Tree<T extends any = any> extends CustomElement
         const header = this.renderNodeHeader(treeNode);
         const content = this.renderNodeContent(treeNode, children, level + 1);
 
+        // const headerHTML = this.draggable ?
+        //     html`<div class="ff-header" draggable="true" @click=${this.onClick} @dblclick=${this.onDblClick}
+        //         @dragstart=${this.onDragStart} @dragover=${this.onDragOver} @drop=${this.onDrop}
+        //         @dragenter=${this.onDragEnter} @dragleave=${this.onDragLeave}>${header}</div>` :
+        //     html`<div class="ff-header" @click=${this.onClick} @dblclick=${this.onDblClick}>${header}</div>`;
+
 
         return html`
             <div class="ff-tree-node-container">
                 <div class=${classes} id=${id} ?selected=${selected} ?expanded=${expanded}>
-                    <div class="ff-header" @click=${this.onClick} @dblclick=${this.onDblClick}>${header}</div>
+                    <div class="ff-header" draggable="true"
+                        @click=${this.onClick} @dblclick=${this.onDblClick}>${header}</div>
                     <div class="ff-content">${content}</div>
                 </div>
             </div>
         `;
     }
 
+    protected onDragStart(event: DragEvent)
+    {
+        const treeNode = this.getNodeFromMouseEvent(event);
+
+        if (treeNode && this.onNodeDragStart(event, treeNode)) {
+            event.dataTransfer.setData(Tree.dragDropMimeType, this.getId(treeNode));
+        }
+        else {
+            event.preventDefault();
+        }
+    }
+
+    protected onDragEnter(event: DragEvent)
+    {
+        const treeNode = this.getNodeFromMouseEvent(event);
+
+        if (treeNode && this.canDrop(event, treeNode)) {
+            this.onNodeDragEnter(event, treeNode);
+        }
+    }
+
+    protected onDragOver(event: DragEvent)
+    {
+        const treeNode = this.getNodeFromMouseEvent(event);
+
+        if (treeNode && this.canDrop(event, treeNode)) {
+            if (this.onNodeDragOver(event, treeNode)) {
+                event.preventDefault();
+            }
+        }
+    }
+
+    protected onDragLeave(event: DragEvent)
+    {
+        const treeNode = this.getNodeFromMouseEvent(event);
+
+        if (treeNode && this.canDrop(event, treeNode)) {
+            this.onNodeDragLeave(event, treeNode);
+        }
+    }
+
+    protected onDrop(event: DragEvent)
+    {
+        const treeNode = this.getNodeFromMouseEvent(event);
+
+        if (treeNode && this.canDrop(event, treeNode)) {
+            this.onNodeDrop(event, treeNode);
+            event.stopPropagation();
+        }
+
+        event.preventDefault();
+    }
+
     protected onClick(event: MouseEvent)
     {
-        const treeNode = this.getNodeFromEvent(event);
+        const treeNode = this.getNodeFromMouseEvent(event);
 
         if (treeNode) {
-            this.onClickNode(event, treeNode);
+            this.onNodeClick(event, treeNode);
         }
 
         event.stopPropagation();
@@ -227,28 +300,77 @@ export default class Tree<T extends any = any> extends CustomElement
 
     protected onDblClick(event: MouseEvent)
     {
-        const treeNode = this.getNodeFromEvent(event);
+        const treeNode = this.getNodeFromMouseEvent(event);
 
         if (treeNode) {
-            this.onDblClickNode(event, treeNode);
+            this.onNodeDblClick(event, treeNode);
         }
 
         event.stopPropagation();
     }
 
-    protected onClickNode(event: MouseEvent, treeNode: T)
+    protected canDrop(event: DragEvent, targetTreeNode: T)
+    {
+        return !!event.dataTransfer.types.find(type => type === Tree.dragDropMimeType);
+    }
+
+    protected onNodeDragStart(event: DragEvent, sourceTreeNode: T)
+    {
+        return true;
+    }
+
+    protected onNodeDragOver(event: DragEvent, targetTreeNode: T)
+    {
+        return true;
+    }
+
+    protected onNodeDragEnter(event: DragEvent, targetTreeNode: T)
+    {
+        const element = this.getElementByNode(targetTreeNode);
+        element.classList.add("ff-drop-target");
+    }
+
+    protected onNodeDragLeave(event: DragEvent, targetTreeNode: T)
+    {
+        const element = this.getElementByNode(targetTreeNode);
+        element.classList.remove("ff-drop-target");
+    }
+
+    protected onNodeDrop(event: DragEvent, targetTreeNode: T)
+    {
+        const element = this.getElementByNode(targetTreeNode);
+        element.classList.remove("ff-drop-target");
+    }
+
+    protected onNodeClick(event: MouseEvent, treeNode: T)
     {
         this.toggleExpanded(treeNode);
     }
 
-    protected onDblClickNode(event: MouseEvent, treeNode: T)
+    protected onNodeDblClick(event: MouseEvent, treeNode: T)
     {
     }
 
-    protected getNodeFromEvent(event: MouseEvent)
+    protected getNodeFromMouseEvent(event: MouseEvent)
     {
-        const headerElement = event.currentTarget as HTMLDivElement;
-        const id = headerElement.parentElement.id; // node element
-        return this._nodeById[id];
+        let target = event.target as HTMLElement;
+
+        while(target && !target.classList.contains("ff-tree-node")) {
+            target = target === this ? null : target.parentElement;
+        }
+
+        return target && this._nodeById[target.id];
+    }
+
+    protected getNodeFromDragEvent(event: DragEvent)
+    {
+        const treeNodeId = event.dataTransfer.getData(Tree.dragDropMimeType);
+        return treeNodeId && this._nodeById[treeNodeId + this._containerId];
+    }
+
+    protected getElementByNode(treeNode: T)
+    {
+        const id = this._idByNode.get(treeNode);
+        return id && document.getElementById(id) as HTMLDivElement;
     }
 }

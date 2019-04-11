@@ -28,7 +28,13 @@ export default class Icon extends CustomElement
     template: TemplateResult = null;
 
     @property({ type: String })
-    name: string = "";
+    name: string;
+
+    constructor(name?: string)
+    {
+        super();
+        this.name = name || "";
+    }
 
     protected firstConnected()
     {

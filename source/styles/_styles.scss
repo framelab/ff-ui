@@ -744,8 +744,8 @@ ff-popup-button {
 .ff-tree {
   .ff-tree-node-container {
     margin-left: -501px;
-    border-top: 1px solid $color-background-light;
-    border-bottom: 1px solid $color-background-light;
+    border-top: 1px solid lighten($color-background, 4%);
+    border-bottom: 1px solid lighten($color-background, 4%);
     margin-bottom: -1px;
   }
 
@@ -775,6 +775,9 @@ ff-popup-button {
       }
     }
 
+    &.ff-drop-target > .ff-header {
+      outline: 1px dashed $color-primary;
+    }
     &.ff-inner[expanded] > .ff-header {
       @include triangle($color-icon, 4px, 180deg);
     }
