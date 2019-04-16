@@ -49,9 +49,10 @@ $color-icon-disabled: #606060 !default;
 
 $color-focus: $color-secondary-light;
 
+$color-prompt: #e6cf5c !default;
 $color-info: #73adff !default;
 $color-success: #8ae65c !default;
-$color-warning: #e6b045 !default;
+$color-warning: #e6a345 !default;
 $color-error: #e64545 !default;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -474,7 +475,13 @@ button, input {
 
 .ff-modal-plane {
   @include fullscreen;
-  background: transparentize(red, 0.6);
+  background-color: transparentize(black, 0.4);
+  opacity: 0;
+  transition: opacity $tx-medium;
+
+  &.ff-transition {
+    opacity: 1;
+  }
 }
 
 ff-dialog {
@@ -654,6 +661,60 @@ ff-popup-button {
   .ff-button {
     flex: 0;
     padding: 8px;
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// MESSAGE BOX
+
+.ff-message-box {
+  position: relative;
+  min-width: 350px;
+  max-width: 450px;
+  width: 90%;
+  padding: 16px;
+  background: $color-background;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.35);
+  opacity: 0;
+  transition: opacity $tx-short;
+
+  &.ff-transition {
+    opacity: 1;
+  }
+
+  .ff-title {
+    align-items: flex-start;
+
+    .ff-type-icon {
+      margin: 0 16px 0 0;
+      height: 2.5em;
+      &[name="prompt"] { fill: $color-prompt; }
+      &[name="info"] { fill: $color-info; }
+      &[name="warning"] { fill: $color-warning; }
+      &[name="error"] { fill: $color-error; }
+    }
+    .ff-content {
+      flex: 1 1 auto;
+      margin: 0 0 2em 0;
+    }
+    .ff-caption {
+      font-size: 1.5em;
+    }
+    .ff-text {
+      margin: 2em 0 1em 0;
+    }
+    .ff-line-edit {
+      margin: 0 0 1em 0;
+      input { padding: 4px }
+    }
+    .ff-close-button  {
+      margin: 0 0 0 16px;
+      padding: 0;
+    }
+  }
+
+  .ff-button + .ff-button {
+    margin-left: 8px;
   }
 }
 

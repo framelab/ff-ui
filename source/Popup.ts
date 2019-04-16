@@ -48,11 +48,21 @@ export default class Popup extends CustomElement
     @property({ type: Boolean })
     keepVisible: boolean = false;
 
+    @property({ type: Boolean })
+    modal: boolean = false;
+
+    private _modalPlane: HTMLElement = null;
+
     constructor()
     {
         super();
         this.onResize = this.onResize.bind(this);
         this.onPointerDown = this.onPointerDown.bind(this);
+    }
+
+    close()
+    {
+        this.dispatchEvent(new CustomEvent("close"));
     }
 
     protected connected()
@@ -61,16 +71,30 @@ export default class Popup extends CustomElement
 
         window.addEventListener("resize", this.onResize);
         document.addEventListener("pointerdown", this.onPointerDown, { capture: true, passive: true });
+
+        if (this.modal) {
+            const plane = this._modalPlane = this.createElement("div");
+            plane.classList.add("ff-modal-plane");
+            this.parentElement.appendChild(plane);
+            setTimeout(() => plane.classList.add("ff-transition"));
+        }
     }
 
     protected disconnected()
     {
         window.removeEventListener("resize", this.onResize);
         document.removeEventListener("pointerdown", this.onPointerDown);
+
+        if (this._modalPlane) {
+            this._modalPlane.remove();
+            this._modalPlane = null;
+        }
     }
 
-    protected firstUpdated()
+    protected firstConnected()
     {
+        super.firstConnected();
+
         this.setStyle({
             position: "fixed",
             zIndex: "1000"
@@ -225,6 +249,6 @@ export default class Popup extends CustomElement
             return;
         }
 
-        this.dispatchEvent(new CustomEvent("close"));
+        this.close();
     }
 }
