@@ -43,6 +43,18 @@ export default class PopupOptions extends Popup
         this.selectionIndex = -1;
     }
 
+    protected firstConnected()
+    {
+        super.firstConnected();
+
+        this.classList.add("ff-popup-options");
+
+        this.setStyle({
+            display: "flex",
+            flexDirection: "column"
+        });
+    }
+
     protected render()
     {
         return html`
@@ -61,18 +73,6 @@ export default class PopupOptions extends Popup
         if (button) {
             button.focus();
         }
-    }
-
-    protected firstUpdated()
-    {
-        super.firstUpdated();
-
-        this.classList.add("ff-popup-options");
-
-        this.setStyle({
-            display: "flex",
-            flexDirection: "column"
-        });
     }
 
     protected onClick(event: MouseEvent)

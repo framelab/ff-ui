@@ -100,7 +100,8 @@ export default class List<T extends any = any> extends CustomElement
                 const expanded = this.isItemExpanded(item);
                 const classes = "ff-list-item " + this.getClass(item);
                 
-                return html`<div class=${classes} id=${id} ?selected=${selected} ?expanded=${expanded} @click=${this.onClick}>
+                return html`<div class=${classes} id=${id} ?selected=${selected} ?expanded=${expanded}
+                        @click=${this.onClick} @dblclick=${this.onDblClick}>
                     ${this.renderItem(item)}
                 </div>`;
             }
@@ -145,7 +146,24 @@ export default class List<T extends any = any> extends CustomElement
         event.stopPropagation();
     }
 
+    protected onDblClick(event: MouseEvent)
+    {
+        const element = event.currentTarget as HTMLDivElement;
+        const item = this._itemById.get(element.id);
+
+        if (item) {
+            const index = this.data.indexOf(item);
+            this.onDblClickItem(event, item, index);
+        }
+
+        event.stopPropagation();
+    }
+
     protected onClickItem(event: MouseEvent, item: T, index: number)
+    {
+    }
+
+    protected onDblClickItem(event: MouseEvent, item: T, index: number)
     {
     }
 

@@ -16,7 +16,7 @@ import "./Icon";
 ////////////////////////////////////////////////////////////////////////////////
 
 export type TMessageBoxType = "info" | "warning" | "error" | "prompt";
-export type TMessageBoxButtons = "ok" | "ok-cancel" | "cancel";
+export type TMessageBoxButtons = "ok" | "ok-cancel" | "cancel" | "yes-no";
 
 export interface IMessageBoxCloseEvent extends CustomEvent
 {
@@ -131,6 +131,10 @@ export default class MessageBox extends Popup
         }
         if (buttons === "ok-cancel" || buttons === "cancel") {
             buttonElements.push(html`<ff-button text="Cancel" @click=${this.onCancel}></ff-button>`);
+        }
+        if (buttons === "yes-no") {
+            buttonElements.push(html`<ff-button class="ff-default" text="Yes" @click=${this.onOK}></ff-button>`);
+            buttonElements.push(html`<ff-button text="No" @click=${this.onCancel}></ff-button>`);
         }
 
         const inputElement = this.type === "prompt" ?
