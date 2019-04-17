@@ -86,6 +86,7 @@ export default class Button extends CustomElement
     protected firstConnected()
     {
         this.tabIndex = 0;
+        this.classList.add("ff-button");
     }
 
     protected shouldUpdate(changedProperties: PropertyValues)
@@ -105,14 +106,16 @@ export default class Button extends CustomElement
 
     protected update(changedProperties: PropertyValues)
     {
+        this.classList.remove("ff-inline", "ff-transparent", "ff-control");
+
         if (this.inline) {
-            this.classList.add("ff-inline", "ff-button");
+            this.classList.add("ff-inline");
         }
         else if (this.transparent) {
-            this.classList.add("ff-transparent", "ff-button");
+            this.classList.add("ff-transparent");
         }
         else {
-            this.classList.add("ff-control", "ff-button");
+            this.classList.add("ff-control");
         }
 
         super.update(changedProperties);

@@ -345,7 +345,6 @@ button, input {
 }
 
 .ff-button {
-  position: relative;
   cursor: pointer;
 
   &[vertical] {
@@ -354,10 +353,19 @@ button, input {
 }
 
 .ff-button.ff-inline {
-
+  .ff-icon + .ff-text {
+    padding-left: 0.5em;
+  }
+  .ff-icon {
+    display: inline;
+  }
+  .ff-text {
+    display: inline;
+  }
 }
 
 .ff-button.ff-transparent {
+  position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -396,6 +404,7 @@ button, input {
 }
 
 .ff-button.ff-control {
+  position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
