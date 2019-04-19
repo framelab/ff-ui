@@ -16,7 +16,7 @@ export { customElement, property, html, TemplateResult };
 export default class List<T extends any = any> extends CustomElement
 {
     @property({ attribute: false })
-    data: T[] = null;
+    data: Readonly<T[]> = null;
 
     private _itemById: Map<string, T>;
     private _idByItem: Map<T, string>;
