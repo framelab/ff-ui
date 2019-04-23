@@ -49,9 +49,15 @@ export default class TextEdit extends CustomElement
 
     protected initialValue: string = "";
 
+    select()
+    {
+        const element = this.getElementsByTagName("textarea").item(0);
+        element.select();
+    }
+
     focus()
     {
-        const element: HTMLElement = this.getElementsByTagName("textarea")[0];
+        const element = this.getElementsByTagName("textarea").item(0);
         if (element) {
             element.focus();
         }
