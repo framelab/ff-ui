@@ -39,6 +39,11 @@ export default class Notification extends CustomElement
 {
     static readonly stackId: string = "ff-notification-stack";
 
+    static show(message: string, level?: NotificationLevel, timeout?: number)
+    {
+        new Notification(message, level, timeout);
+    }
+
     @property({ type: String })
     message: string;
 

@@ -236,7 +236,7 @@ export default class Tree<T extends any = any> extends CustomElement
 
     protected onDragStart(event: DragEvent)
     {
-        const treeNode = this.getNodeFromMouseEvent(event);
+        const treeNode = this.getNodeFromEventTarget(event);
 
         if (treeNode && this.onNodeDragStart(event, treeNode)) {
             event.dataTransfer.setData(Tree.dragDropMimeType, this.getId(treeNode));
@@ -248,7 +248,7 @@ export default class Tree<T extends any = any> extends CustomElement
 
     protected onDragEnter(event: DragEvent)
     {
-        const treeNode = this.getNodeFromMouseEvent(event);
+        let treeNode = this.getNodeFromEventTarget(event);
 
         if (treeNode && this.canDrop(event, treeNode)) {
             this.onNodeDragEnter(event, treeNode);
@@ -257,7 +257,7 @@ export default class Tree<T extends any = any> extends CustomElement
 
     protected onDragOver(event: DragEvent)
     {
-        const treeNode = this.getNodeFromMouseEvent(event);
+        const treeNode = this.getNodeFromEventTarget(event);
 
         if (treeNode && this.canDrop(event, treeNode)) {
             if (this.onNodeDragOver(event, treeNode)) {
@@ -268,7 +268,7 @@ export default class Tree<T extends any = any> extends CustomElement
 
     protected onDragLeave(event: DragEvent)
     {
-        const treeNode = this.getNodeFromMouseEvent(event);
+        const treeNode = this.getNodeFromEventTarget(event);
 
         if (treeNode && this.canDrop(event, treeNode)) {
             this.onNodeDragLeave(event, treeNode);
@@ -277,7 +277,7 @@ export default class Tree<T extends any = any> extends CustomElement
 
     protected onDrop(event: DragEvent)
     {
-        const treeNode = this.getNodeFromMouseEvent(event);
+        const treeNode = this.getNodeFromEventTarget(event);
 
         if (treeNode && this.canDrop(event, treeNode)) {
             this.onNodeDrop(event, treeNode);
@@ -289,7 +289,7 @@ export default class Tree<T extends any = any> extends CustomElement
 
     protected onClick(event: MouseEvent)
     {
-        const treeNode = this.getNodeFromMouseEvent(event);
+        const treeNode = this.getNodeFromEventTarget(event);
 
         if (treeNode) {
             this.onNodeClick(event, treeNode);
@@ -300,7 +300,7 @@ export default class Tree<T extends any = any> extends CustomElement
 
     protected onDblClick(event: MouseEvent)
     {
-        const treeNode = this.getNodeFromMouseEvent(event);
+        const treeNode = this.getNodeFromEventTarget(event);
 
         if (treeNode) {
             this.onNodeDblClick(event, treeNode);
@@ -309,7 +309,13 @@ export default class Tree<T extends any = any> extends CustomElement
         event.stopPropagation();
     }
 
-    protected canDrop(event: DragEvent, targetTreeNode: T)
+    /**
+     * Test whether the payload of the given drag event can be dropped onto the given tree node.
+     * The tree node may be null, indicating a drop onto the "empty" area below the tree.
+     * @param event
+     * @param targetTreeNode
+     */
+    protected canDrop(event: DragEvent, targetTreeNode: T): boolean
     {
         return !!event.dataTransfer.types.find(type => type === Tree.dragDropMimeType);
     }
@@ -351,7 +357,7 @@ export default class Tree<T extends any = any> extends CustomElement
     {
     }
 
-    protected getNodeFromMouseEvent(event: MouseEvent)
+    protected getNodeFromEventTarget(event: Event): T | null
     {
         let target = event.target as HTMLElement;
 
@@ -360,12 +366,6 @@ export default class Tree<T extends any = any> extends CustomElement
         }
 
         return target && this._nodeById[target.id];
-    }
-
-    protected getNodeFromDragEvent(event: DragEvent)
-    {
-        const treeNodeId = event.dataTransfer.getData(Tree.dragDropMimeType);
-        return treeNodeId && this._nodeById[treeNodeId + this._containerId];
     }
 
     protected getElementByNode(treeNode: T)

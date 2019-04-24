@@ -312,6 +312,7 @@ button, input {
   flex: 1 1 auto;
   position: relative;
   box-sizing: border-box;
+  overflow: hidden;
 }
 
 .ff-splitter[direction="vertical"] + .ff-splitter-section {
@@ -812,6 +813,9 @@ ff-popup-button {
 }
 
 .ff-tree {
+  position: relative;
+  overflow-y: auto;
+
   .ff-tree-node-container {
     margin-left: -501px;
     border-top: 1px solid lighten($color-background, 4%);

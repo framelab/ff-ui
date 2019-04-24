@@ -59,7 +59,7 @@ export default class LineEdit extends CustomElement
     protected requestFocus = false;
 
     protected get inputElement() {
-        return this.getElementsByTagName("input")[0] as HTMLInputElement;
+        return this.getElementsByTagName("input").item(0) as HTMLInputElement;
     }
 
     focus()

@@ -49,23 +49,31 @@ export default class TextEdit extends CustomElement
 
     protected initialValue: string = "";
 
+    protected get textArea() {
+        return this.getElementsByTagName("textarea").item(0) as HTMLTextAreaElement;
+    }
+
     select()
     {
-        const element = this.getElementsByTagName("textarea").item(0);
-        element.select();
+        const textArea = this.textArea;
+        textArea && textArea.select();
     }
 
     focus()
     {
-        const element = this.getElementsByTagName("textarea").item(0);
-        if (element) {
-            element.focus();
-        }
+        const textArea = this.textArea;
+        textArea && textArea.focus();
+    }
+
+    blur()
+    {
+        const textArea = this.textArea;
+        textArea && textArea.blur();
     }
 
     hasFocus()
     {
-        return this.getElementsByTagName("textarea")[0] === document.activeElement;
+        return this.textArea === document.activeElement;
     }
 
     protected firstConnected()
