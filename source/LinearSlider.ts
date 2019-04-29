@@ -114,8 +114,9 @@ export default class LinearSlider extends CustomElement implements IDragTarget
         }
 
         if (changedProperties.has("value")) {
-            const x = this._isVertical ? 0 : this.value * 100;
-            const y = this._isVertical ? (1 - this.value) * 100 : 0;
+            const value = math.limit(this.value, 0, 1);
+            const x = this._isVertical ? 0 : value * 100;
+            const y = this._isVertical ? (1 - value) * 100 : 0;
             this._knob.style.left = `${x.toFixed(3)}%`;
             this._knob.style.top = `${y.toFixed(3)}%`;
         }
