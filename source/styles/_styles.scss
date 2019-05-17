@@ -488,6 +488,7 @@ button, input {
   background-color: transparentize(black, 0.4);
   opacity: 0;
   transition: opacity $tx-medium;
+  z-index: 990;
 
   &.ff-transition {
     opacity: 1;

@@ -70,20 +70,25 @@ export default class Popup extends CustomElement
         this.calculatePosition();
 
         window.addEventListener("resize", this.onResize);
-        document.addEventListener("pointerdown", this.onPointerDown, { capture: true, passive: true });
 
         if (this.modal) {
             const plane = this._modalPlane = this.createElement("div");
+
             plane.classList.add("ff-modal-plane");
+            plane.addEventListener("mousedown", this.onPointerDown, { capture: true, passive: true });
+
             this.parentElement.appendChild(plane);
             setTimeout(() => plane.classList.add("ff-transition"));
+        }
+        else {
+            document.addEventListener("mousedown", this.onPointerDown, { capture: true, passive: true });
         }
     }
 
     protected disconnected()
     {
         window.removeEventListener("resize", this.onResize);
-        document.removeEventListener("pointerdown", this.onPointerDown);
+        document.removeEventListener("mousedown", this.onPointerDown);
 
         if (this._modalPlane) {
             this._modalPlane.remove();
