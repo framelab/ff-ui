@@ -489,6 +489,7 @@ button, input {
   opacity: 0;
   transition: opacity $tx-medium;
   z-index: 990;
+  pointer-events: auto;
 
   &.ff-transition {
     opacity: 1;

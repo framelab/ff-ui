@@ -6,7 +6,7 @@
  */
 
 import Button from "./Button";
-import Popup from "./Popup";
+
 import { customElement, property, PropertyValues } from "./CustomElement";
 
 ////////////////////////////////////////////////////////////////////////////////

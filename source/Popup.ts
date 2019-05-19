@@ -57,7 +57,8 @@ export default class Popup extends CustomElement
     {
         super();
         this.onResize = this.onResize.bind(this);
-        this.onPointerDown = this.onPointerDown.bind(this);
+        this.onCaptureEvent = this.onCaptureEvent.bind(this);
+        this.onEatEvent = this.onEatEvent.bind(this);
     }
 
     close()
@@ -72,27 +73,31 @@ export default class Popup extends CustomElement
         window.addEventListener("resize", this.onResize);
 
         if (this.modal) {
-            const plane = this._modalPlane = this.createElement("div");
+            const modalPlane = this._modalPlane = this.createElement("div");
 
-            plane.classList.add("ff-modal-plane");
-            plane.addEventListener("mousedown", this.onPointerDown, { capture: true, passive: true });
+            modalPlane.classList.add("ff-modal-plane");
+            modalPlane.addEventListener("mousedown", this.onEatEvent);
+            modalPlane.addEventListener("contextmenu", this.onEatEvent);
+            modalPlane.addEventListener("pointerdown", this.onEatEvent);
 
-            this.parentElement.appendChild(plane);
-            setTimeout(() => plane.classList.add("ff-transition"));
+            this.parentElement.appendChild(modalPlane);
+            setTimeout(() => modalPlane.classList.add("ff-transition"));
         }
         else {
-            document.addEventListener("mousedown", this.onPointerDown, { capture: true, passive: true });
+            document.addEventListener("mousedown", this.onCaptureEvent, { capture: true, passive: true });
         }
     }
 
     protected disconnected()
     {
         window.removeEventListener("resize", this.onResize);
-        document.removeEventListener("mousedown", this.onPointerDown);
 
         if (this._modalPlane) {
             this._modalPlane.remove();
             this._modalPlane = null;
+        }
+        else {
+            document.removeEventListener("mousedown", this.onCaptureEvent);
         }
     }
 
@@ -248,12 +253,19 @@ export default class Popup extends CustomElement
         this.calculatePosition();
     }
 
-    protected onPointerDown(event: PointerEvent)
+    protected onCaptureEvent(event: Event)
     {
         if (event.target instanceof Node && this.contains(event.target)) {
             return;
         }
 
         this.close();
+    }
+
+    protected onEatEvent(event: Event)
+    {
+        console.log("Popup.onEatEvent");
+        event.stopPropagation();
+        event.preventDefault();
     }
 }
