@@ -86,7 +86,7 @@ export default class Notification extends CustomElement
 
     protected firstUpdated()
     {
-        this.classList.add("ff-flex-row", "ff-notification", _levelClasses[this.level]);
+        this.classList.add("ff-notification", _levelClasses[this.level]);
 
         if (this.timeout > 0) {
             this._handler = window.setTimeout(() => this.close(), this.timeout);

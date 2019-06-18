@@ -640,12 +640,13 @@ ff-popup-button {
   right: 0;
   width: 30%;
   min-width: 250px;
-  max-width: 400px;
+  max-width: 500px;
 }
 
 .ff-notification {
   position: relative;
   left: 0;
+  display: flex;
   margin: 8px;
   padding: 4px;
   background: $color-background-light;
@@ -669,6 +670,8 @@ ff-popup-button {
   .ff-text {
     flex: 1;
     padding: 8px;
+    text-overflow: ellipsis;
+    overflow: hidden;
   }
   .ff-button {
     flex: 0;
