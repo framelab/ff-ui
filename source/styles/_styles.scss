@@ -99,8 +99,10 @@ $tx-medium: 0.3s;
   bottom: 0;
 }
 
-.ff-fullscreen {
-  @include fullscreen;
+@mixin noselect {
+  user-select: none;
+  -moz-user-select: none;
+  -webkit-user-select: none;
 }
 
 @mixin triangle($color, $size, $angle) {
@@ -211,8 +213,17 @@ button, input {
 ////////////////////////////////////////////////////////////////////////////////
 // SEMANTIC ELEMENTS
 
+.ff-fullscreen {
+  @include fullscreen;
+}
+
+.ff-noselect {
+  @include noselect;
+}
+
 .ff-off {
   user-select: none;
+  -moz-user-select: none;
   -webkit-user-select: none;
   pointer-events: none;
 }
