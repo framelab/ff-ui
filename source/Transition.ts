@@ -13,6 +13,7 @@ export { customElement, property, html };
 
 export type TransitionState = "enter" | "in" | "leave" | "out";
 
+// TODO: Review
 @customElement("ff-transition")
 export default class Transition extends CustomElement
 {

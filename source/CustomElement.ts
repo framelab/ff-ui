@@ -17,10 +17,9 @@ export { repeat } from "lit-html/directives/repeat";
 @customElement("ff-custom-element")
 export default class CustomElement extends LitElement
 {
-    static readonly tagName: string = "ff-custom-element";
-    static readonly shady: boolean = false;
-
-    private _isFirstConnected = false;
+    public static readonly tagName: string = "ff-custom-element";
+    protected static readonly shady: boolean = false;
+    protected static readonly classes: string | string[] = "";
 
     static setStyle(element: HTMLElement, style: Partial<CSSStyleDeclaration>)
     {
@@ -31,6 +30,22 @@ export default class CustomElement extends LitElement
     {
         for (let name in attribs) {
             element.setAttribute(name, attribs[name]);
+        }
+    }
+
+    private _isFirstConnected = false;
+
+    constructor()
+    {
+        super();
+        // note: attributes haven't yet been set in constructor
+
+        const classes = (this.constructor as typeof CustomElement).classes;
+        if (Array.isArray(classes)) {
+            classes.forEach(c => this.addClass(c));
+        }
+        else if (classes) {
+            this.addClass(classes);
         }
     }
 
@@ -192,6 +207,9 @@ export default class CustomElement extends LitElement
     {
     }
 
+    /** Use this member as call target when subscribing to events which require
+     * an update. Calls `LitElement.requestUpdate()`, disregarding any arguments.
+     */
     protected onUpdate()
     {
         this.requestUpdate();

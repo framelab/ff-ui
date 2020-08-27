@@ -9,6 +9,7 @@ import Transition, { customElement, html } from "./Transition";
 
 ////////////////////////////////////////////////////////////////////////////////
 
+// TODO: Review, Incomplete
 @customElement("ff-slide-transition")
 export default class SlideTransition extends Transition
 {
