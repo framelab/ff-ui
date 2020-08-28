@@ -40,7 +40,13 @@ export default class VectorSlider extends CustomElement implements IDragTarget
 
         this._knob = new CustomElement()
         .addClass("ff-knob")
-        .setStyle({ display: "block", position: "relative "});
+        .setStyle({ position: "absolute" });
+
+        // observe size changes, note that ResizeObserver is not defined in TS yet
+        const ResizeObserver = (window as any).ResizeObserver;
+        if (ResizeObserver) {
+            new ResizeObserver(() => this.requestUpdate("value")).observe(this);
+        }
 
         new DragHelper(this);
     }
@@ -107,10 +113,15 @@ export default class VectorSlider extends CustomElement implements IDragTarget
 
     protected update(changedProperties: PropertyValues): void
     {
-        const x = this.value.x * 100;
-        const y = (1 - this.value.y) * 100;
-        this._knob.style.left = `${x.toFixed(3)}%`;
-        this._knob.style.top = `${y.toFixed(3)}%`;
+        const x = math.limit(this.value.x, 0, 1);
+        const y = math.limit(this.value.y, 0, 1);
+        const knob = this._knob;
+
+        const width = this.clientWidth - knob.clientWidth;
+        const height = this.clientHeight - knob.clientHeight;
+
+        knob.style.left = `${(x * width).toFixed(1)}px`;
+        knob.style.top = `${((1 - y) * height).toFixed(1)}px`;
 
         super.update(changedProperties);
     }
