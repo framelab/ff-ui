@@ -65,6 +65,8 @@ export default class Knob extends CustomElement
     {
         const width = context.canvas.width;
         const height = context.canvas.height;
+        console.log(context.canvas.clientWidth);
+        console.log(context.canvas.clientHeight);
         console.log(width, height);
 
         context.fillRect(10, 10, 20, 20);
