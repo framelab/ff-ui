@@ -42,3 +42,8 @@ body {
   background-color: $color-background;
   color: $color-text;
 }
+
+ff-dial {
+  padding: 6px;
+  background-color: lighten($color-background, 3%);
+}

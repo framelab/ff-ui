@@ -49,6 +49,12 @@ export default class DragHelper
     get startY() {
         return this._startY;
     }
+    get lastX() {
+        return this._lastX;
+    }
+    get lastY() {
+        return this._lastY;
+    }
 
     onPointerDown(event: PointerEvent)
     {
@@ -71,12 +77,12 @@ export default class DragHelper
         if (event.isPrimary && this._isDragging) {
 
             const dx = event.clientX - this._lastX;
-            this._lastX = event.clientX;
-
             const dy = event.clientY - this._lastY;
-            this._lastY = event.clientY;
 
             this.target.dragMove(event, dx, dy);
+
+            this._lastX = event.clientX;
+            this._lastY = event.clientY;
         }
 
         event.stopPropagation();

@@ -6,7 +6,7 @@
  */
 
 import math from "@ff/core/math";
-import CustomElement, { customElement, property } from "./CustomElement";
+import CustomElement, { customElement, property, html } from "./CustomElement";
 import DragHelper, { IDragTarget } from "./DragHelper";
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -22,9 +22,9 @@ export interface IGaugeChangeEvent extends CustomElement
 }
 
 @customElement("ff-gauge")
-export default class Gauge extends CustomElement
+export default class Gauge extends CustomElement implements IDragTarget
 {
-    protected readonly classes = [ "ff-control", "ff-knob" ];
+    protected static readonly classes = [ "ff-control", "ff-knob" ];
 
     /** Optional name to identify the component. */
     @property({ type: String })
@@ -38,27 +38,19 @@ export default class Gauge extends CustomElement
     value = 0;
 
     @property({ type: Number })
-    gap = 60;
-
-    @property({ type: Number })
     speed = 1;
 
-
-    private _context: CanvasRenderingContext2D;
 
 
     constructor()
     {
         super();
 
-        const canvas = this.appendElement("canvas");
-        this._context = canvas.getContext("2d");
-
         // observe size changes, note that ResizeObserver is not defined in TS yet
-        const ResizeObserver = (window as any).ResizeObserver;
-        if (ResizeObserver) {
-            new ResizeObserver(() => this.onResize()).observe(this);
-        }
+        // const ResizeObserver = (window as any).ResizeObserver;
+        // if (ResizeObserver) {
+        //     new ResizeObserver(() => this.onResize()).observe(this);
+        // }
 
         new DragHelper(this);
     }
@@ -87,55 +79,27 @@ export default class Gauge extends CustomElement
         this.emitChangeEvent(false);
     }
 
-    protected updated()
+    protected render()
     {
-        this.draw(this._context);
-    }
+        const w = 6;
+        const r = 50 - w * 0.5;
 
-    protected draw(context: CanvasRenderingContext2D)
-    {
-        const style = getComputedStyle(this);
-        const backgroundColor = style.getPropertyValue("--meter-background") || "#303030";
-        const strokeColor = style.getPropertyValue("--meter-color") || "#90e000";
-        const textColor = style.color;
-        const gap = parseFloat(style.getPropertyValue("--meter-gap")) || this.gap;
-        const thickness = parseFloat(style.getPropertyValue("--meter-thickness")) || 1;
+        const gap = 60;
+        const a = 90 + (gap * 0.5);
+        const fb = 1 - (360 - gap) / 360;
+        const fo = 1 - this.value * (360 - gap) / 360;
+        const x = gap * 0.5 + this.value * (360 - gap) - 90;
 
-        const width = context.canvas.width;
-        const height = context.canvas.height;
-        const size = Math.min(width, height);
-        const cx = width * 0.5;
-        const cy = size * 0.5;
-        const lineWidth = size * 0.1 * thickness;
-        const radius = cy - lineWidth * 0.5;
-
-        const start = 90 + gap * 0.5;
-        const arc = 360 - gap;
-        const end = start + arc;
-        const value = math.limit(this.value, 0, 1);
-        const bar = start + arc * value;
-
-        context.clearRect(0, 0, width, height);
-        context.lineWidth = lineWidth;
-
-        // background
-        context.strokeStyle = backgroundColor;
-        context.beginPath();
-        context.ellipse(cx, cy, radius, radius, 0, start * math.DEG2RAD, end * math.DEG2RAD);
-        context.stroke();
-
-        // foreground
-        context.strokeStyle = strokeColor;
-        context.beginPath();
-        context.ellipse(cx, cy, radius, radius, 0, start * math.DEG2RAD, bar * math.DEG2RAD);
-        context.stroke();
-
-        // text
-        context.font = `${style.fontSize} ${style.fontFamily}`;
-        context.fillStyle = textColor;
-        context.textAlign = "center";
-        context.textBaseline = "middle";
-        context.fillText(`${(value * 100).toFixed()} Hz`, cx, cy, radius * 1.5);
+        return html`<svg viewBox="0 0 100 100" stroke-dasharray="1 10">
+            <g transform-origin="50 50" transform="rotate(${a})">
+                <circle cx="50" cy="50" r=${r} stroke="#808080" fill="none" pathLength="1" stroke-dashoffset="${fb}" /> 
+                <circle cx="50" cy="50" r=${r} fill="none" pathLength="1" stroke-dashoffset="${fo}" /> 
+            </g>
+            <g transform-origin="50 50" transform="rotate(${x})">
+                <circle cx="50" cy="50" r="30" stroke="none" fill="#a0a0a0"></circle>
+                <line x1="20" y1="50" x2="50" y2="50" pathLength="1"></line>
+            </g>
+        </svg>`;
     }
 
     protected emitChangeEvent(isDragging: boolean)
@@ -149,12 +113,4 @@ export default class Gauge extends CustomElement
         }));
     }
 
-    protected onResize()
-    {
-        const canvas = this._context.canvas;
-        canvas.width = canvas.clientWidth;
-        canvas.height = canvas.clientHeight;
-
-        this.draw(this._context);
-    }
 }
