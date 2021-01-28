@@ -1,6 +1,6 @@
 /**
  * FF Typescript Foundation Library
- * Copyright 2019 Ralph Wiedemeier, Frame Factory GmbH
+ * Copyright 2021 Ralph Wiedemeier, Frame Factory GmbH
  *
  * License: MIT
  */
@@ -18,10 +18,12 @@ export interface ITreeNode
 {
     id: string;
     children: ITreeNode[];
+    selected?: boolean;
+    expanded?: boolean;
 }
 
 @customElement("ff-tree")
-export default class Tree<T extends any = any> extends CustomElement
+export default class Tree<T extends ITreeNode> extends CustomElement
 {
     static readonly dragDropMimeType: string = "application/x-ff-tree-node";
 
