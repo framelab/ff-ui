@@ -14,10 +14,10 @@ import CustomElement, { customElement, property, html, PropertyValues, TemplateR
 
 export { customElement, property, html, PropertyValues, TemplateResult };
 
-export interface ITreeNode
+export interface ITreeNode extends Dictionary<unknown>
 {
-    id: string;
-    children: ITreeNode[];
+    id?: string;
+    children?: ITreeNode[];
     selected?: boolean;
     expanded?: boolean;
 }
