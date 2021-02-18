@@ -14,7 +14,7 @@ import CustomElement, { customElement, property, html, PropertyValues, TemplateR
 
 export { customElement, property, html, PropertyValues, TemplateResult };
 
-export interface ITreeNode extends Dictionary<unknown>
+export interface ITreeNode extends Dictionary<any>
 {
     id?: string;
     children?: ITreeNode[];
