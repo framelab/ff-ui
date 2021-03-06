@@ -10,7 +10,7 @@ import { LitElement } from "lit-element";
 
 ////////////////////////////////////////////////////////////////////////////////
 
-export { property, PropertyValues } from "lit-element";
+export { property, query, queryAll, css, PropertyValues } from "lit-element";
 export { html, svg, render, TemplateResult } from "lit-html";
 export { repeat } from "lit-html/directives/repeat";
 
@@ -18,14 +18,21 @@ export { repeat } from "lit-html/directives/repeat";
 export default class CustomElement extends LitElement
 {
     public static readonly tagName: string = "ff-custom-element";
+
     protected static readonly shady: boolean = false;
     protected static readonly classes: string | string[] = "";
 
+    /** 
+     * Sets the given styles at the given element.
+     */
     static setStyle(element: HTMLElement, style: Partial<CSSStyleDeclaration>)
     {
         Object.assign(element.style, style);
     }
 
+    /**
+     * Sets the given attributes at the given element.
+     */
     static setAttribs(element: HTMLElement, attribs: Dictionary<string>)
     {
         for (let name in attribs) {
@@ -35,6 +42,7 @@ export default class CustomElement extends LitElement
 
     private _isFirstConnected = false;
 
+    
     constructor()
     {
         super();
@@ -49,17 +57,26 @@ export default class CustomElement extends LitElement
         }
     }
 
+    /**
+     * Returns true if this element is using shadow DOM.
+     */
     get shady()
     {
         return (this.constructor as typeof CustomElement).shady;
     }
 
+    /**
+     * Appends this element to the given parent.
+     */
     appendTo(parent: Element): this
     {
         parent.appendChild(this);
         return this;
     }
 
+    /**
+     * Removes all child elements.
+     */
     removeChildren()
     {
         while(this.firstChild) {
@@ -67,6 +84,9 @@ export default class CustomElement extends LitElement
         }
     }
 
+    /**
+     * Returns an array with all child elements.
+     */
     getChildrenArray()
     {
         return Array.from(this.children);
@@ -155,21 +175,41 @@ export default class CustomElement extends LitElement
         return this;
     }
 
+    /**
+     * Returns true if this element is the focused element of the document.
+     */
     hasFocus()
     {
         return document.activeElement === this;
     }
 
+    /**
+     * Attaches an event listener to this element.
+     * This is a convenience method for 'addEventListener'.
+     */
     on<T extends Event>(type: string, listener: (event: T) => any, options?: boolean | AddEventListenerOptions)
     {
         this.addEventListener(type, listener, options);
         return this;
     }
 
+    /**
+     * Removes an event listener from this element.
+     * This is a convenience alias for 'removeEventListener'.
+     */
     off<T extends Event>(type: string, listener: (event: T) => any, options?: boolean | AddEventListenerOptions)
     {
         this.removeEventListener(type, listener, options);
         return this;
+    }
+
+    /**
+     * Dispatches a custom event of the given type.
+     * The detail information is available on the event as 'event.detail'.
+     */
+    emit<T extends CustomEvent = CustomEvent>(type: string, detail: T["detail"])
+    {
+        this.dispatchEvent(new CustomEvent(type, { detail }));
     }
 
     connectedCallback()
@@ -180,7 +220,6 @@ export default class CustomElement extends LitElement
         }
 
         this.connected();
-
         super.connectedCallback();
     }
 
@@ -195,16 +234,32 @@ export default class CustomElement extends LitElement
         return this.shady ? super.createRenderRoot() : this;
     }
 
-    protected firstConnected()
+    /**
+     * Called after the element has been added to the document
+     * for the first time.
+     * No need to call super from this method.
+     */
+    protected firstConnected(): void
     {
+        return;
     }
 
-    protected connected()
+    /**
+     * Called after the element has been added to the document.
+     * No need to call super from this method.
+     */
+    protected connected(): void
     {
+        return;
     }
 
-    protected disconnected()
+    /**
+     * Called after the element has been removed from the document.
+     * No need to cal super from this method.
+     */
+    protected disconnected(): void
     {
+        return;
     }
 
     /** Use this member as call target when subscribing to events which require
@@ -216,9 +271,13 @@ export default class CustomElement extends LitElement
     }
 }
 
+/**
+ * Decorator defining the tag name for a custom element.
+ * @param tagName The tag name under which this element is registered.
+ */
 export function customElement<T extends CustomElement>(tagName?: string)
 {
-    return <T extends CustomElement>(constructor: TypeOf<T>) => {
+    return (constructor: TypeOf<T>) => {
         (constructor as any).tagName = tagName;
         customElements.define((constructor as any).tagName, constructor);
         return constructor as any;
