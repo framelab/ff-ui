@@ -22,25 +22,10 @@ export interface ICanvasMountEvent extends CustomEvent
     }
 }
 
-/**
- * Fired after canvas (i.e. the browser window) is resized.
- * Contains the new width and height of the HTML canvas element.
- */
-export interface ICanvasResizeEvent extends CustomEvent
-{
-    detail: {
-        /** The new width of the HTML canvas element. */
-        width: number;
-        /** The new height of the HTML canvas element. */
-        height: number;
-    }
-}
-
 @customElement("ff-canvas")
 export class Canvas extends CustomElement
 {
-    static readonly mountEvent = "ff-mount";
-    static readonly resizeEvent = "ff-resize";
+    static readonly mountEvent = "mount";
 
     protected canvas: HTMLCanvasElement;
 
@@ -48,19 +33,16 @@ export class Canvas extends CustomElement
     {
         super();
 
-        this.onResize = this.onResize.bind(this);
-
         const canvas = this.canvas = document.createElement("canvas");
         canvas.style.display = "block";
         canvas.style.width = "100%";
         canvas.style.height = "100%";
+
         this.appendChild(canvas);
     }
 
     protected connected()
     {
-        window.addEventListener("resize", this.onResize);
-
         this.dispatchEvent(new CustomEvent(Canvas.mountEvent, {
             detail: { canvas: this.canvas }
         }) as ICanvasMountEvent);
@@ -71,18 +53,5 @@ export class Canvas extends CustomElement
         this.dispatchEvent(new CustomEvent(Canvas.mountEvent, {
             detail: { canvas: null }
         }) as ICanvasMountEvent);
-
-        window.removeEventListener("resize", this.onResize);
-    }
-
-    protected onResize()
-    {
-        const canvas = this.canvas;
-        const width = canvas.clientWidth;
-        const height = canvas.clientHeight;
-
-        this.dispatchEvent(new CustomEvent(Canvas.resizeEvent, {
-            detail: { width, height }
-        }) as ICanvasResizeEvent);
     }
 }
