@@ -302,8 +302,17 @@ button, input {
   flex-wrap: wrap;
 }
 
+.ff-flex-start {
+    justify-content: start;
+}
 .ff-flex-centered {
   align-items: center;
+}
+.ff-flex-content-center {
+    justify-content: center;
+}
+.ff-flex-items-center {
+    align-items: center;
 }
 
 .ff-flex-item-fixed {

@@ -5,6 +5,16 @@
  * License: MIT
  */
 
- .flex-grow {
-     flex-grow: 1;
- }
+$breakpoints: (
+    small: 412px,
+    medium: 768px,
+    large: 1024px,    
+);
+
+$font-sizes: 12 14 16 18 20 24 28 32 36 40;
+
+@each $size in $font-sizes {
+    
+}
+
+$radius-base: 0.25em;
