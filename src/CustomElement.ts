@@ -35,7 +35,7 @@ export default class CustomElement extends LitElement
      */
     static setAttribs(element: HTMLElement, attribs: Dictionary<string>)
     {
-        for (let name in attribs) {
+        for (const name in attribs) {
             element.setAttribute(name, attribs[name]);
         }
     }

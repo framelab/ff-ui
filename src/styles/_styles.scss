@@ -286,9 +286,9 @@ button, input {
   pointer-events: auto;
 }
 
-.ff-focusable {
-  tab-index: 0;
-}
+// .ff-focusable {
+//   tab-index: 0;
+// }
 
 .ff-flex-row {
   display: flex;
@@ -417,15 +417,18 @@ button, input {
   }
 }
 
-.ff-button {
+ff-button {
   cursor: pointer;
 
   &[vertical] {
     flex-direction: column;
   }
+
+  padding: 0.5em;
+  background-color: $color-background-light;
 }
 
-.ff-button.ff-inline {
+ff-button.ff-inline {
   .ff-icon + .ff-text {
     padding-left: 0.5em;
   }
@@ -437,7 +440,7 @@ button, input {
   }
 }
 
-.ff-button.ff-transparent {
+ff-button.ff-transparent {
   position: relative;
   display: flex;
   justify-content: center;
@@ -476,15 +479,13 @@ button, input {
   }
 }
 
-.ff-button.ff-control {
+ff-button.ff-control {
   position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
-  flex: 1 1 auto;
+  //flex: 1 1 auto;
   flex-wrap: wrap;
-  padding: 5px;
-  background: $color-background-light;
   transition: background-color 0.2s;
 
   &:hover, &:focus {
