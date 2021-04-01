@@ -35,6 +35,8 @@ export interface IButtonKeyboardEvent extends KeyboardEvent
 @customElement("ff-button")
 export default class Button extends CustomElement
 {
+    protected static readonly classes = "ff-button";
+
     /** Optional name to identify the button. */
     @property({ type: String })
     name = "";
@@ -79,14 +81,13 @@ export default class Button extends CustomElement
     {
         super();
 
-        this.addEventListener("click", (e) => this.onClick(e));
-        this.addEventListener("keydown", (e) => this.onKeyDown(e));
+        this.on("click", (e) => this.onClick(e));
+        this.on("keydown", (e) => this.onKeyDown(e));
     }
 
     protected firstConnected()
     {
         this.tabIndex = 0;
-        this.classList.add("ff-button");
     }
 
     protected shouldUpdate(changedProperties: PropertyValues)

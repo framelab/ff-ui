@@ -5,7 +5,7 @@
  * License: MIT
  */
 
-import CustomElement, { customElement } from "./CustomElement";
+import CustomElement, { customElement, property, PropertyValues } from "./CustomElement";
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -47,8 +47,13 @@ export interface ICanvasResizeEvent extends CustomEvent
 @customElement("ff-canvas")
 export class Canvas extends CustomElement
 {
+    protected static readonly classes = "ff-canvas";
+
     static readonly mountEvent = "mount";
     static readonly resizeEvent = "resize";
+
+    @property({ type: Number })
+    aspect: number;
 
     private _canvas: HTMLCanvasElement;
     private _resizeObserver: ResizeObserver;
@@ -85,6 +90,25 @@ export class Canvas extends CustomElement
         this.dispatchEvent(new CustomEvent(Canvas.mountEvent, {
             detail: { canvas: null }
         }) as ICanvasMountEvent);
+    }
+
+    protected update(changed: PropertyValues)
+    {
+        if (changed.has("aspect")) {
+            const aspect = this.aspect;
+            const style = this.style;
+
+            if (aspect === undefined) {
+                style.maxHeight = undefined;
+                style.maxWidth = undefined;
+            }
+            else {
+                style.maxHeight = `${100 / aspect}vw`;
+                style.maxWidth = `${100 * aspect}vh`;
+            }
+        }
+
+        super.update(changed);
     }
 
     protected onResize(entries: ResizeObserverEntry[])

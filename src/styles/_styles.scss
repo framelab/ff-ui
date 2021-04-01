@@ -417,7 +417,7 @@ button, input {
   }
 }
 
-ff-button {
+.ff-button {
   cursor: pointer;
 
   &[vertical] {
@@ -428,7 +428,7 @@ ff-button {
   background-color: $color-background-light;
 }
 
-ff-button.ff-inline {
+.ff-button.ff-inline {
   .ff-icon + .ff-text {
     padding-left: 0.5em;
   }
@@ -440,7 +440,7 @@ ff-button.ff-inline {
   }
 }
 
-ff-button.ff-transparent {
+.ff-button.ff-transparent {
   position: relative;
   display: flex;
   justify-content: center;
@@ -479,7 +479,7 @@ ff-button.ff-transparent {
   }
 }
 
-ff-button.ff-control {
+.ff-button.ff-control {
   position: relative;
   display: flex;
   justify-content: center;

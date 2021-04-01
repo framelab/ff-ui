@@ -187,7 +187,8 @@ export default class CustomElement extends LitElement
      * Attaches an event listener to this element.
      * This is a convenience method for 'addEventListener'.
      */
-    on<T extends Event>(type: string, listener: (event: T) => any, options?: boolean | AddEventListenerOptions)
+    on<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+    on(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions) 
     {
         this.addEventListener(type, listener, options);
         return this;
@@ -197,7 +198,8 @@ export default class CustomElement extends LitElement
      * Removes an event listener from this element.
      * This is a convenience alias for 'removeEventListener'.
      */
-    off<T extends Event>(type: string, listener: (event: T) => any, options?: boolean | AddEventListenerOptions)
+    off<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+    off(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions)
     {
         this.removeEventListener(type, listener, options);
         return this;
