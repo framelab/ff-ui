@@ -5,13 +5,15 @@
  * License: MIT
  */
 
-import { customElement, property, html, PropertyValues } from "./CustomElement";
+import { customElement, property, html } from "./CustomElement";
 
 import Button from "./Button";
 import "./Menu";
 import { IMenuItem } from "./Menu";
 
 ////////////////////////////////////////////////////////////////////////////////
+
+export { IMenuItem };
 
 export type DropdownDirection = "up" | "down";
 export type DropdownAlign = "left" | "right";
